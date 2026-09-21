@@ -28,6 +28,12 @@ Copy-Item (Join-Path $root "README.md") $content
 # AppData, but make sure nothing in the content folder could look like one.
 Get-ChildItem $content -Recurse | Where-Object { $_.Name -like "*bridge*" } | Remove-Item -Force
 
+# A dev build (dotnet build -p:SpireTalkDev=true) carries the test bridge; never ship one.
+if (Select-String -Path (Join-Path $content "SpireTalk.dll") -Pattern "SpireTalkTestBridge" -Quiet) {
+    Remove-Item -Recurse -Force $content
+    throw "SpireTalk.dll is a dev build (test bridge inside). Rebuild without -p:SpireTalkDev=true and stage again."
+}
+
 $manifest = Get-Content (Join-Path $root "SpireTalk.json") | ConvertFrom-Json
 Write-Host "Staged SpireTalk $($manifest.version) in $content"
 Get-ChildItem $content | ForEach-Object { Write-Host ("  {0,-16} {1,10:N0} bytes" -f $_.Name, $_.Length) }

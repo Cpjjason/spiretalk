@@ -64,6 +64,10 @@ public sealed class AncientConversation
     private bool _rerollUsed;
     private string? _previousPlayerLine;
     private TalkInputBox? _inputBox;
+    private NpcTurn? _lastTurn;
+    private bool _visitBonusGiven;
+    /// <summary>Cancelled when the room goes away, so a late reply never touches a dead layout.</summary>
+    private readonly CancellationTokenSource _lifetime = new();
 
     private AncientConversation(AncientEventModel ancient, NpcDefinition npc, IReadOnlyList<EventOption> vanillaOptions)
     {
@@ -80,6 +84,12 @@ public sealed class AncientConversation
     // ── Entry points ─────────────────────────────────────────────────────
 
     /// <summary>Build the "Talk with …" option that the option-list patch appends to the initial page.</summary>
+    /// <summary>False once this visit's lines are spent: the option would only cost a wasted opener.</summary>
+    public static bool CanOfferTalk(AncientEventModel ancient)
+    {
+        return !Active.TryGetValue(ancient, out var convo) || convo._linesUsed < ConversationRules.LinesPerVisit;
+    }
+
     public static EventOption CreateTalkOption(AncientEventModel ancient, IReadOnlyList<EventOption> vanillaOptions)
     {
         var title = Loc.Event("talk.title");
@@ -126,18 +136,37 @@ public sealed class AncientConversation
         if (Active.Remove(ancient, out var convo))
         {
             convo.DisposeInput();
+            try { convo._lifetime.Cancel(); } catch { /* already disposed */ }
         }
+    }
+
+    private bool Gone => _lifetime.IsCancellationRequested;
+
+    /// <summary>Per-line timeout tied to the room's lifetime.</summary>
+    private CancellationTokenSource TurnTimeout(int seconds)
+    {
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
+        cts.CancelAfter(TimeSpan.FromSeconds(seconds));
+        return cts;
     }
 
     // ── Conversation flow ────────────────────────────────────────────────
 
     private async Task StartAsync()
     {
-        if (_busy) return;
+        if (_busy || Gone) return;
         _busy = true;
         _ended = false;
         try
         {
+            // Talk → End → Talk again in the same room: pick the conversation back up where it
+            // was instead of paying for (and sitting through) a second greeting.
+            if (_ctx != null && _lastTurn != null && _linesUsed < ConversationRules.LinesPerVisit)
+            {
+                Present(_lastTurn);
+                return;
+            }
+
             var backend = MainFile.Backend;
             if (!backend.IsConfigured)
             {
@@ -145,6 +174,13 @@ public sealed class AncientConversation
             }
 
             ShowThinking();
+            // Showing up counts for something when the mod keeps its own ledger (Ancient
+            // Affection has its own ways of earning); once per room.
+            if (!_visitBonusGiven)
+            {
+                _visitBonusGiven = true;
+                AffectionService.VisitBonus(_key, NpcKind.Ancient);
+            }
             _ctx = BuildContext();
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
@@ -152,14 +188,19 @@ public sealed class AncientConversation
             _ctx.SyncRelationshipVariables();
             TalkStore.Instance.Save();
 
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+            using var cts = TurnTimeout(90);
             var opener = BuildOpener();
             var turn = await backend.ExchangeAsync(_ctx, opener, true, cts.Token);
+            if (Gone) return;
             await HandleTurnAsync(turn, opener, isOpener: true);
+        }
+        catch (OperationCanceledException) when (Gone)
+        {
+            // room left mid-request; nothing to draw on
         }
         catch (Exception ex)
         {
-            Fail(ex);
+            if (!Gone) Fail(ex);
         }
         finally
         {
@@ -184,13 +225,18 @@ public sealed class AncientConversation
             _ctx.SyncRelationshipVariables();
 
             ShowThinking();
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+            using var cts = TurnTimeout(90);
             var turn = await MainFile.Backend.ExchangeAsync(_ctx, playerLine, false, cts.Token);
+            if (Gone) return;
             await HandleTurnAsync(turn, playerLine, isOpener: false);
+        }
+        catch (OperationCanceledException) when (Gone)
+        {
+            // room left mid-request
         }
         catch (Exception ex)
         {
-            Fail(ex);
+            if (!Gone) Fail(ex);
         }
         finally
         {
@@ -203,11 +249,12 @@ public sealed class AncientConversation
         if (_ctx == null) return;
 
         // 1. Memory — both directions, so any backend (and the next visit) can read it back.
-        TalkStore.Instance.AppendHistory(_key, "player", playerLine);
+        _lastTurn = turn;
+        TalkStore.Instance.AppendHistory(_key, "player", playerLine, _runKey);
         var npcText = turn.JoinedText;
         if (!string.IsNullOrWhiteSpace(npcText))
         {
-            TalkStore.Instance.AppendHistory(_key, "npc", npcText);
+            TalkStore.Instance.AppendHistory(_key, "npc", npcText, _runKey);
             _record.LastLine = Truncate(npcText, 300);
         }
 
@@ -263,7 +310,7 @@ public sealed class AncientConversation
         TalkStore.Instance.Save();
 
         var restored = new List<EventOption>(_vanillaOptions);
-        restored.Add(CreateTalkOption(_ancient, _vanillaOptions));
+        if (_linesUsed < ConversationRules.LinesPerVisit) restored.Add(CreateTalkOption(_ancient, _vanillaOptions));
         SetEventState(_vanillaDescription, restored);
 
         var layout = Layout;
@@ -340,7 +387,7 @@ public sealed class AncientConversation
         DisposeInput();
 
         var restored = new List<EventOption>(_vanillaOptions);
-        restored.Add(CreateTalkOption(_ancient, _vanillaOptions));
+        if (_linesUsed < ConversationRules.LinesPerVisit) restored.Add(CreateTalkOption(_ancient, _vanillaOptions));
         try
         {
             SetEventState(_vanillaDescription, restored);
@@ -466,7 +513,7 @@ public sealed class AncientConversation
 
     private VisitContext BuildContext()
     {
-        var ctx = new VisitContext { NpcKey = _key, Npc = _npc, Language = Loc.ReplyLanguageName() };
+        var ctx = new VisitContext { NpcKey = _key, Npc = _npc, Language = Loc.ReplyLanguageName(), RunKey = _runKey };
         foreach (var kv in GameContext.Collect(_ancient))
         {
             ctx.Variables[kv.Key] = kv.Value?.DeepClone();
@@ -476,7 +523,7 @@ public sealed class AncientConversation
         ctx.Married = married;
         ctx.LinesLeft = ConversationRules.LinesPerVisit;
         ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Ancient, ctx.Tier, RewardState());
-        ctx.History.AddRange(TalkStore.Instance.HistoryOf(_key));
+        ctx.History.AddRange(TalkStore.Instance.HistoryOf(_key, _runKey));
         ctx.Variables["affection_source"] = AffectionService.UsingAncientAffection ? "Ancient Affection mod" : "SpireTalk";
         return ctx;
     }

@@ -17,6 +17,8 @@ public sealed class TalkStore
     public sealed class NpcRecord
     {
         [JsonPropertyName("sessionId")] public string? SessionId { get; set; }
+        /// <summary>Run the Yumina session was opened in; only consulted when memory is per-run.</summary>
+        [JsonPropertyName("sessionRun")] public string? SessionRunKey { get; set; }
         [JsonPropertyName("affection")] public int Affection { get; set; }
         [JsonPropertyName("talks")] public int Talks { get; set; }
         [JsonPropertyName("lastTalkUtc")] public string? LastTalkUtc { get; set; }
@@ -29,6 +31,8 @@ public sealed class TalkStore
         [JsonPropertyName("role")] public string Role { get; set; } = "player";
         [JsonPropertyName("text")] public string Text { get; set; } = "";
         [JsonPropertyName("utc")] public string? Utc { get; set; }
+        /// <summary>Run (seed:character) the line was said in, so per-run memory can filter.</summary>
+        [JsonPropertyName("run")] public string? Run { get; set; }
     }
 
     /// <summary>Rewards already handed out in one run (keyed by run seed + character).</summary>
@@ -87,19 +91,28 @@ public sealed class TalkStore
         return run;
     }
 
-    public void AppendHistory(string npcKey, string role, string text)
+    public void AppendHistory(string npcKey, string role, string text, string? runKey = null)
     {
         var rec = Get(npcKey);
-        rec.History.Add(new HistoryEntry { Role = role, Text = text, Utc = DateTime.UtcNow.ToString("o") });
+        rec.History.Add(new HistoryEntry { Role = role, Text = text, Utc = DateTime.UtcNow.ToString("o"), Run = runKey });
         if (rec.History.Count > MaxHistoryPerNpc)
         {
             rec.History.RemoveRange(0, rec.History.Count - MaxHistoryPerNpc);
         }
     }
 
-    public IEnumerable<HistoryLine> HistoryOf(string npcKey)
+    /// <summary>
+    /// What this NPC remembers. Every NPC has its own log; with "remember past runs" off only
+    /// the lines from <paramref name="runKey"/> come back, so each run starts as a stranger.
+    /// </summary>
+    public IEnumerable<HistoryLine> HistoryOf(string npcKey, string? runKey = null)
     {
-        return Get(npcKey).History.Select(h => new HistoryLine(h.Role, h.Text, h.Utc));
+        var history = Get(npcKey).History.AsEnumerable();
+        if (!SpireTalkConfig.RememberAcrossRuns && runKey != null)
+        {
+            history = history.Where(h => h.Run == runKey);
+        }
+        return history.Select(h => new HistoryLine(h.Role, h.Text, h.Utc));
     }
 
     public void Save()

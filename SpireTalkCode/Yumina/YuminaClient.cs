@@ -64,7 +64,7 @@ public sealed class YuminaClient
         {
             Timeout = TimeSpan.FromSeconds(120),
         };
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("SpireTalk/0.1 (Slay the Spire 2 mod)");
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd("SpireTalk/" + MainFile.Version + " (Slay the Spire 2 mod)");
     }
 
     public string BaseUrl => _baseUrl;
@@ -91,6 +91,17 @@ public sealed class YuminaClient
         _token = (token ?? "").Trim();
     }
 
+    /// <summary>Whole number from an int, a float or a numeric string; null otherwise.</summary>
+    private static int? ReadInt(JsonNode? node)
+    {
+        if (node is not JsonValue v) return null;
+        if (v.TryGetValue<int>(out var i)) return i;
+        if (v.TryGetValue<long>(out var l)) return (int)Math.Clamp(l, int.MinValue, int.MaxValue);
+        if (v.TryGetValue<double>(out var d)) return (int)Math.Floor(d);
+        if (v.TryGetValue<string>(out var s) && double.TryParse(s, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var p)) return (int)Math.Floor(p);
+        return null;
+    }
+
     // ── Auth / discovery ──────────────────────────────────────────────────
 
     public async Task<WhoAmI> WhoAmIAsync(CancellationToken ct)
@@ -102,7 +113,7 @@ public sealed class YuminaClient
         return new WhoAmI(
             data["userId"]?.GetValue<string>() ?? "",
             data["name"]?.GetValue<string>() ?? "",
-            data["credits"]?.GetValue<int?>(),
+            ReadInt(data["credits"]),
             data["plan"]?.GetValue<string>());
     }
 

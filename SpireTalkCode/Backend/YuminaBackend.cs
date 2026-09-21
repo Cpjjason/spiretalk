@@ -59,11 +59,16 @@ public sealed class YuminaBackend : INpcBackend
 
     private async Task<string> EnsureSessionAsync(VisitContext ctx, TalkStore.NpcRecord record, string worldId, CancellationToken ct)
     {
-        if (SpireTalkConfig.RememberAcrossRuns && !string.IsNullOrEmpty(record.SessionId))
+        // Each NPC has its own Yumina session (its own memory). With "remember past runs" off, the
+        // session is also tied to the run, so a new run gets a fresh one — but within a run every
+        // line goes to the same session.
+        var reusable = !string.IsNullOrEmpty(record.SessionId)
+                       && (SpireTalkConfig.RememberAcrossRuns || record.SessionRunKey == ctx.RunKey);
+        if (reusable)
         {
             try
             {
-                if (await _client.SessionExistsAsync(record.SessionId, ct)) return record.SessionId;
+                if (await _client.SessionExistsAsync(record.SessionId!, ct)) return record.SessionId!;
             }
             catch (YuminaException ex) when (ex.StatusCode is 403 or 404)
             {
@@ -72,6 +77,7 @@ public sealed class YuminaBackend : INpcBackend
         }
         var id = await _client.CreateSessionAsync(worldId, "STS2 · " + ctx.Npc.Name, ct);
         record.SessionId = id;
+        record.SessionRunKey = ctx.RunKey;
         TalkStore.Instance.Save();
         return id;
     }

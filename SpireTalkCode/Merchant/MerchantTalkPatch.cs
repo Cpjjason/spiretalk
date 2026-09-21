@@ -20,9 +20,9 @@ using SpireTalk.Yumina;
 namespace SpireTalk.Merchant;
 
 /// <summary>
-/// The Merchant has no dialogue flow in vanilla. We add three things: an AI greeting bubble when
-/// the shop opens, a "Talk" button that opens a conversation panel (same 3-line rules as the
-/// Ancients), and a per-visit discount that the merchant can grant as a reward.
+/// The Merchant has no dialogue flow in vanilla. We add two things: a "Talk" button that opens
+/// a conversation panel (same 3-line rules as the Ancients; the AI's first line is fetched when
+/// the panel opens), and a per-visit discount that the merchant can grant as a reward.
 /// </summary>
 internal static class MerchantTalk
 {
@@ -70,9 +70,10 @@ internal static class MerchantTalk
             if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered but no solo local player; skipping", 1);
             return;
         }
-        if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered; greeting via " + MainFile.Backend.DisplayName, 1);
+        // The vanilla merchant already says hello; the AI only speaks once the player opens the
+        // panel, so a shop visit without a chat costs nothing.
+        if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered; talk via " + MainFile.Backend.DisplayName, 1);
         _conversation = new MerchantConversation(owner);
-        _ = _conversation.GreetAsync(node);
     }
 
     /// <summary>Vanilla path: the dialogue node is initialised on room entry. Just remember it; Open starts the visit.</summary>
@@ -265,6 +266,7 @@ internal sealed class MerchantConversation
     private TalkPanel? _panel;
     private bool _busy;
     private bool _greeted;
+    private bool _visitBonusGiven;
     private int _linesUsed;
     private int _netDeltaThisVisit;
     private int _rewardsThisVisit;
@@ -279,8 +281,8 @@ internal sealed class MerchantConversation
         _runKey = RewardExecutor.RunKey(owner);
     }
 
-    /// <summary>Greeting bubble on entering the shop; also primes the conversation context.</summary>
-    public async Task GreetAsync(NMerchantDialogue? node)
+    /// <summary>First AI line of the visit; runs when the panel is opened for the first time.</summary>
+    public async Task GreetAsync()
     {
         if (_greeted) return;
         _greeted = true;
@@ -288,6 +290,11 @@ internal sealed class MerchantConversation
         if (!backend.IsConfigured) return;
         try
         {
+            if (!_visitBonusGiven)
+            {
+                _visitBonusGiven = true;
+                AffectionService.VisitBonus(MerchantTalk.NpcKey, NpcKind.Merchant);
+            }
             _ctx = BuildContext();
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
@@ -299,25 +306,22 @@ internal sealed class MerchantConversation
             var opener = BuildOpener();
             var turn = await backend.ExchangeAsync(_ctx, opener, true, cts.Token);
             _lastTurn = turn;
-            TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", opener);
+            TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", opener, _runKey);
             if (!string.IsNullOrWhiteSpace(turn.JoinedText))
             {
-                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.JoinedText);
+                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.JoinedText, _runKey);
                 _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
             }
             TalkStore.Instance.Save();
 
-            var first = turn.Lines.FirstOrDefault() ?? "";
-            if (first.Length > 160) first = first[..160].TrimEnd() + "…";
-            if (first.Length > 0) MerchantTalk.ShowBubble(first);
-            if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Merchant] greeting shown: {first}", 1);
-            // If the panel is already open (fast player), fill it.
+            if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Merchant] greeting shown: {turn.Lines.FirstOrDefault() ?? ""}", 1);
             if (_panel != null && GodotObject.IsInstanceValid(_panel)) Present(turn);
         }
         catch (Exception ex)
         {
             MainFile.Logger.Warn($"[Merchant] greeting skipped: {ex.GetType().Name}: {ex.Message}", 1);
             _ctx = null;
+            _greeted = false; // reopening the panel tries again
             // A player already staring at the "…" panel gets the reason and a way out.
             if (_panel != null && GodotObject.IsInstanceValid(_panel)) _panel.SetError(Loc.DescribeError(ex));
         }
@@ -335,9 +339,20 @@ internal sealed class MerchantConversation
         var host = (Node?)NGame.Instance;
         if (host == null) return;
         host.AddChild(_panel);
+        if (!MainFile.Backend.IsConfigured)
+        {
+            _panel.SetError(Loc.Ui("ErrNotConfigured"));
+            return;
+        }
+        if (!_greeted)
+        {
+            _panel.SetThinking();
+            _ = GreetAsync();
+            return;
+        }
         if (_ctx == null)
         {
-            _panel.SetError(MainFile.Backend.IsConfigured ? Loc.EventText("silence") : Loc.Ui("ErrNotConfigured"));
+            _panel.SetError(Loc.EventText("silence"));
             return;
         }
         if (_lastTurn != null) Present(_lastTurn);
@@ -375,10 +390,10 @@ internal sealed class MerchantConversation
             var turn = await MainFile.Backend.ExchangeAsync(_ctx, playerLine, false, cts.Token);
             _lastTurn = turn;
 
-            TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", playerLine);
+            TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", playerLine, _runKey);
             if (!string.IsNullOrWhiteSpace(turn.JoinedText))
             {
-                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.JoinedText);
+                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.JoinedText, _runKey);
                 _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
             }
 
@@ -442,7 +457,7 @@ internal sealed class MerchantConversation
 
     private VisitContext BuildContext()
     {
-        var ctx = new VisitContext { NpcKey = MerchantTalk.NpcKey, Npc = _npc, Language = Loc.ReplyLanguageName() };
+        var ctx = new VisitContext { NpcKey = MerchantTalk.NpcKey, Npc = _npc, Language = Loc.ReplyLanguageName(), RunKey = _runKey };
         foreach (var kv in GameContext.CollectForMerchant(_owner))
         {
             ctx.Variables[kv.Key] = kv.Value?.DeepClone();
@@ -452,7 +467,7 @@ internal sealed class MerchantConversation
         ctx.Married = married;
         ctx.LinesLeft = ConversationRules.LinesPerVisit;
         ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Merchant, ctx.Tier, RewardState());
-        ctx.History.AddRange(TalkStore.Instance.HistoryOf(MerchantTalk.NpcKey));
+        ctx.History.AddRange(TalkStore.Instance.HistoryOf(MerchantTalk.NpcKey, _runKey));
         ctx.Variables["affection_source"] = AffectionService.UsingAncientAffection ? "Ancient Affection mod" : "SpireTalk";
         return ctx;
     }

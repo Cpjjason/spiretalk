@@ -58,6 +58,25 @@ public sealed class DirectBackend : INpcBackend
     }
 
     private static bool LooksLikeOllama => BaseUrl.Contains(":11434", StringComparison.Ordinal) || BaseUrl.Contains("ollama", StringComparison.OrdinalIgnoreCase);
+    private static bool LooksLikeOpenRouter => BaseUrl.Contains("openrouter.ai", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>One retry after a short pause for the failures that usually clear themselves.</summary>
+    private async Task<string> CompleteWithRetryAsync(JsonObject body, CancellationToken ct)
+    {
+        try
+        {
+            return await CompleteAsync(body, ct);
+        }
+        catch (YuminaException ex) when (!ct.IsCancellationRequested && IsTransient(ex))
+        {
+            MainFile.Logger.Warn($"[Direct] {ex.Code ?? "?"} {ex.Message} — retrying once", 1);
+            await Task.Delay(TimeSpan.FromSeconds(2), ct);
+            return await CompleteAsync(body, ct);
+        }
+    }
+
+    private static bool IsTransient(YuminaException ex) =>
+        ex.Code is "RATE_LIMITED" or "NETWORK" or "EMPTY" || ex.StatusCode is >= 500 and < 600;
 
     private static string Model => string.IsNullOrWhiteSpace(SpireTalkConfig.OwnModel) ? "google/gemini-2.5-flash-lite" : SpireTalkConfig.OwnModel.Trim();
 
@@ -90,8 +109,13 @@ public sealed class DirectBackend : INpcBackend
             // content unless thinking is switched off. Other servers reject unknown fields.
             body["think"] = false;
         }
+        else if (LooksLikeOpenRouter)
+        {
+            // Same problem with reasoning models behind OpenRouter: keep the tokens for the reply.
+            body["reasoning"] = new JsonObject { ["exclude"] = true, ["effort"] = "low" };
+        }
 
-        var raw = await CompleteAsync(body, ct);
+        var raw = await CompleteWithRetryAsync(body, ct);
         return Parse(raw);
     }
 

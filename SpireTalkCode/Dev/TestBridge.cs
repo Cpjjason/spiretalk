@@ -1,3 +1,4 @@
+#if SPIRETALK_DEV
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -529,3 +530,4 @@ public sealed partial class TestBridge : Node
         }
     }
 }
+#endif

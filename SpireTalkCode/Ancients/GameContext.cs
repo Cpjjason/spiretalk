@@ -83,6 +83,8 @@ public static class GameContext
             var run = owner.RunState;
             vars["act"] = run.Act.Title.GetFormattedText();
             vars["act_index"] = run.CurrentActIndex + 1;
+            vars["floor_in_act"] = run.ActFloor;
+            vars["floor_total"] = run.TotalFloor;
             vars["ascension"] = run.AscensionLevel;
             vars["players"] = run.Players.Count;
         }

@@ -13,6 +13,8 @@ public sealed class VisitContext
 {
     public required string NpcKey { get; init; }
     public required NpcDefinition Npc { get; init; }
+    /// <summary>seed:character of the current run — scopes per-run memory and one-per-run rewards.</summary>
+    public string RunKey { get; init; } = "no-run";
     public NpcKind Kind => Npc.Kind;
 
     /// <summary>Run snapshot + relationship state, same keys in both backends.</summary>

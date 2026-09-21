@@ -6,8 +6,8 @@
 
 ## What it does
 
-- **Talk** — a new option on every Ancient's page and a **Talk** button in the shop. Three lines per visit: pick one of three suggested replies or type your own.
-- **They remember** — each NPC keeps its own conversation history per save profile. Neow will bring up what you told her two runs ago.
+- **Talk** — a new option on every Ancient's page and a **Talk** button in the shop. Three lines per visit: pick one of three suggested replies or type your own. The AI is only called when you actually talk (the shop's own greeting stays vanilla).
+- **They remember** — each NPC keeps its own memory, per save profile: what you said to Neow stays with Neow. By default they remember across runs; switch *NPCs remember past runs* off and every run starts fresh.
 - **Affection** — every line you say is judged by that NPC's own values (−3 … +3 per line, at most ±8 per visit). Tiers: hostile / stranger / friendly / close / devoted.
 - **Rewards** — asked nicely at the right tier, an NPC may:
   | reward | who | tier | limit |
@@ -21,7 +21,7 @@
   | a potion on the house | Merchant | devoted, needs a free slot | once per run |
 
   One reward per visit, never on the greeting, and the AI only *narrates* — the mod validates every reward against these rules and applies it through the game's own commands.
-- **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile.
+- **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile, and showing up to talk earns +2 by itself.
 - **Single player only.** In multiplayer the Talk option is not offered.
 
 ## Setup (pick one)
@@ -38,7 +38,8 @@ The mod ships no AI-generated art and phones home to nothing except the endpoint
 Requirements: .NET 9 SDK, Godot 4.5.1 mono (Mega Crit fork, see `Sts2PathDiscovery.props`), the game installed via Steam.
 
 ```
-dotnet publish -c Release   # builds SpireTalk.dll, copies it to <game>/mods/SpireTalk/, exports SpireTalk.pck
+dotnet publish -c Release                     # builds SpireTalk.dll, copies it to <game>/mods/SpireTalk/, exports SpireTalk.pck
+dotnet build -c Release -p:SpireTalkDev=true   # dev build: compiles in the file-driven test bridge (never ship this one)
 ```
 
 Delete the old `SpireTalk.pck` before publishing if the export step is skipped as up-to-date.
@@ -57,8 +58,8 @@ Open source. Server side (game tokens, device-code sign-in, the STS2 worlds) liv
 
 ### 功能
 
-- **交谈** — 每位先民的选项里多一个「交谈」，商店右上多一个「聊聊」。每次最多三句：从三个建议回复里选，或自己打字。
-- **有记忆** — 每个 NPC 按存档档案各存一份对话记录。涅奥会提起你两局前说过的话。
+- **交谈** — 每位先民的选项里多一个「交谈」，商店右上多一个「聊聊」。每次最多三句：从三个建议回复里选，或自己打字。只有真开口才会调用 AI（商店原本的招呼还是游戏自己的）。
+- **有记忆** — 每个 NPC 各有各的记忆（按存档档案存）：跟涅奥说的话只有涅奥记得。默认跨局记得；把「NPC 记得之前几局的事」关掉，每局都从头认识。
 - **好感度** — 你说的每一句都按该 NPC 自己的价值观打分（每句 −3…+3，每次最多 ±8）。分档：敌意 / 陌生 / 友好 / 亲近 / 挚爱。
 - **奖励** — 在对的档位好好开口，NPC 可能会：
   | 奖励 | 谁 | 档位 | 上限 |
@@ -72,7 +73,7 @@ Open source. Server side (game tokens, device-code sign-in, the STS2 worlds) liv
   | 免费药水 | 商人 | 挚爱，需有空位 | 每局一次 |
 
   每次拜访最多一个奖励，开场白不给奖励；AI 只负责「说」，每个奖励都由模组按上面的规则校验后，用游戏自己的指令发放。
-- **和 Ancient Affection 联动** — 装了那个模组时，SpireTalk 直接读写它的好感度，聊天推动的就是它解锁好感遗物和结婚的那个数字。没装时，SpireTalk 自己按档案记好感度。
+- **和 Ancient Affection 联动** — 装了那个模组时，SpireTalk 直接读写它的好感度，聊天推动的就是它解锁好感遗物和结婚的那个数字。没装时，SpireTalk 自己按档案记好感度，来聊一次本身就 +2。
 - **仅单人模式。** 多人局不提供交谈选项。
 
 ### 设置（二选一）

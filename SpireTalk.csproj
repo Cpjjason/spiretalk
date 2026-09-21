@@ -50,7 +50,12 @@
     </Target>
 
     <!-- Every build drops the DLL + manifest straight into the game's mods folder. -->
-    <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent">
+    <!-- dotnet build -p:SpireTalkDev=true compiles the test bridge in; Workshop builds leave it out. -->
+  <PropertyGroup Condition="'$(SpireTalkDev)' == 'true'">
+    <DefineConstants>$(DefineConstants);SPIRETALK_DEV</DefineConstants>
+  </PropertyGroup>
+
+  <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent">
         <Message Text="Copying .dll and manifest to mods folder." Importance="high" />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
