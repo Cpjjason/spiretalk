@@ -12,6 +12,8 @@
         <GodotDisabledSourceGenerators>GodotPluginsInitializer</GodotDisabledSourceGenerators>
         <!-- Mods are MSIL; the local sts2.dll is platform-specific. -->
         <NoWarn>$(NoWarn);MSB3270</NoWarn>
+        <!-- Godot SDK skips copying package DLLs to the build output; we need Jint + Acornima there to ship them. -->
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
     <ItemGroup Condition="Exists('$(Sts2DataDir)')">
@@ -28,7 +30,11 @@
     <ItemGroup>
         <PackageReference Include="Alchyr.Sts2.BaseLib" Version="3.4.7" PrivateAssets="All"/>
         <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="0.1.9" />
+        <!-- Jint runs the Yumina engine bundle (Engine/yumina-runtime.js) inside the game; pure managed, no native V8. -->
+        <PackageReference Include="Jint" Version="4.16.3" />
         <AdditionalFiles Include="SpireTalk/localization/**/*.json"/>
+        <EmbeddedResource Include="Engine/yumina-runtime.js" LogicalName="SpireTalk.Engine.yumina-runtime.js" />
+        <EmbeddedResource Include="Cards/*.json" LogicalName="SpireTalk.Cards.%(Filename).json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -59,6 +65,8 @@
         <Message Text="Copying .dll and manifest to mods folder." Importance="high" />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
+        <!-- The game loads only <ModId>.dll itself; MainFile resolves these two from the mod folder on demand. -->
+        <Copy SourceFiles="$(OutDir)Jint.dll;$(OutDir)Acornima.dll" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
     </Target>
 
     <Target Name="NeedGodotForPublish" BeforeTargets="Publish">

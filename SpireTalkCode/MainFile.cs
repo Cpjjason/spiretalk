@@ -49,6 +49,11 @@ public partial class MainFile : Node
 
     public static void Initialize()
     {
+        // The game loads only SpireTalk.dll (default AssemblyLoadContext, LoadFromAssemblyPath), so its
+        // dependencies next to it are invisible to the runtime until we point at them. Registered before
+        // anything that references Jint gets JIT-compiled.
+        AppDomain.CurrentDomain.AssemblyResolve += ResolveBundledAssembly;
+
         var config = new SpireTalkConfig();
         ModConfigRegistry.Register(ModId, config);
         config.ConfigChanged += (_, _) =>
@@ -69,6 +74,43 @@ public partial class MainFile : Node
 #endif
 
         Logger.Info($"[Init] SpireTalk {Version} ready. mode={SpireTalkConfig.Mode} backend={Backend.DisplayName} configured={Backend.IsConfigured}", 1);
+        EngineSelfTest();
+    }
+
+    private static readonly string[] BundledAssemblies = { "Jint", "Acornima" };
+
+    /// <summary>Resolve Jint and its parser from the mod folder (the game never probes there).</summary>
+    public static System.Reflection.Assembly? ResolveBundledAssembly(object? sender, ResolveEventArgs args)
+    {
+        var name = new System.Reflection.AssemblyName(args.Name).Name;
+        if (name == null || Array.IndexOf(BundledAssemblies, name) < 0) return null;
+        var dir = Path.GetDirectoryName(typeof(MainFile).Assembly.Location);
+        if (dir == null) return null;
+        var path = Path.Combine(dir, name + ".dll");
+        if (!File.Exists(path))
+        {
+            Logger.Error($"[Engine] {name}.dll missing next to SpireTalk.dll ({dir})");
+            return null;
+        }
+        Logger.Info($"[Engine] resolving {name} from {path}", 1);
+        return System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(typeof(MainFile).Assembly)!.LoadFromAssemblyPath(path);
+    }
+
+    /// <summary>Load-time proof that the engine bundle runs in-game; kept out of the hot path.</summary>
+    private static void EngineSelfTest()
+    {
+        try
+        {
+            using var stream = typeof(MainFile).Assembly.GetManifestResourceStream("SpireTalk.Cards.NEOW.json");
+            if (stream == null) { Logger.Error("[Engine] NEOW card not embedded"); return; }
+            using var reader = new StreamReader(stream);
+            var report = Engine.YuminaRuntime.Instance.SelfTest(reader.ReadToEnd());
+            Logger.Info($"[Engine] self-test: {report}", 1);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"[Engine] self-test failed: {ex}");
+        }
     }
 
     /// <summary>Resolve which Yumina world an NPC talks through: server manifest first, bundled fallback second.</summary>
