@@ -204,7 +204,8 @@ public sealed class AncientConversation
         }
 
         // 3. Reward — validate against the rules, then let the game do it.
-        var reward = ConversationRules.Validate(turn.Action, NpcKind.Ancient, _ctx.Tier, RewardState(), MaxHp());
+        // Rewards are earned with lines, never handed out on the greeting.
+        var reward = isOpener ? NpcAction.None : ConversationRules.Validate(turn.Action, NpcKind.Ancient, _ctx.Tier, RewardState(), MaxHp());
         var rewardSummary = "none";
         if (!reward.IsNone && _ancient.Owner != null)
         {
