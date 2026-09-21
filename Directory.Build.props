@@ -1,0 +1,9 @@
+<Project>
+    <PropertyGroup>
+        <!-- Godot 4.5.1 mono (official build; same minor as Megadot per ModTemplate Setup wiki). Do not use newer Godot for PCK export. -->
+        <GodotPath>C:/Users/peiji/Downloads/Slay the spire Mod/tools/Godot_v4.5.1-stable_mono_win64/Godot_v4.5.1-stable_mono_win64/Godot_v4.5.1-stable_mono_win64.exe</GodotPath>
+
+        <!-- Explicit install path (Steam x86 default); auto-discovery also works if Steam is standard. -->
+        <Sts2Path>C:/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2</Sts2Path>
+    </PropertyGroup>
+</Project>

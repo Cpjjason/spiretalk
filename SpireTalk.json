@@ -1,0 +1,14 @@
+{
+  "id": "SpireTalk",
+  "name": "SpireTalk: Living Ancients",
+  "author": "peiji",
+  "description": "Talk to the Ancients and the Merchant. Every NPC gets a real, remembering personality powered by Yumina (yumina.io). Choice-driven dialogue that fits the vanilla UI, optional free typing, and affection that persists across runs.",
+  "version": "0.1.0",
+  "has_pck": true,
+  "has_dll": true,
+  "min_game_version": "0.111.0",
+  "dependencies": [
+    { "id": "BaseLib", "min_version": "3.4.0" }
+  ],
+  "affects_gameplay": false
+}

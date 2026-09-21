@@ -1,0 +1,42 @@
+{
+  "SPIRETALK.mod_title": "SpireTalk：先民有话说",
+
+  "SPIRETALK-ACCOUNT.title": "Yumina 账号",
+  "SPIRETALK-SERVER_URL.title": "服务器",
+  "SPIRETALK-API_TOKEN.title": "访问令牌（yumina.io → 设置 → 已连接的游戏）",
+  "SPIRETALK-TEST_CONNECTION.title": "检查连接",
+  "SPIRETALK-TEST_CONNECTION_BTN.title": "测试",
+
+  "SPIRETALK-CONVERSATION.title": "对话",
+  "SPIRETALK-ENABLE_ANCIENTS.title": "和远古先民交谈",
+  "SPIRETALK-ENABLE_MERCHANT.title": "商人会招呼你",
+  "SPIRETALK-FREE_TEXT_INPUT.title": "显示输入框，自己打字说话",
+  "SPIRETALK-REMEMBER_ACROSS_RUNS.title": "NPC 记得之前几局的事",
+  "SPIRETALK-LANGUAGE.title": "回复语言",
+  "SPIRETALK-LANGUAGE.FollowGame": "跟随游戏语言",
+  "SPIRETALK-LANGUAGE.English": "English",
+  "SPIRETALK-LANGUAGE.ChineseSimplified": "简体中文",
+  "SPIRETALK-LANGUAGE.ChineseTraditional": "繁體中文",
+  "SPIRETALK-LANGUAGE.Japanese": "日本語",
+  "SPIRETALK-LANGUAGE.Korean": "한국어",
+  "SPIRETALK-MODEL.title": "模型（留空 = Yumina 默认）",
+
+  "SPIRETALK-DATA.title": "数据",
+  "SPIRETALK-DEBUG_LOGGING.title": "详细日志",
+  "SPIRETALK-RESET_MEMORIES.title": "清空本档案的全部对话记忆",
+  "SPIRETALK-RESET_MEMORIES_BTN.title": "清空",
+
+  "SPIRETALK-MSG.TestOk": "连接成功",
+  "SPIRETALK-MSG.TestOkBody": "已登录：{0}。积分：{1}。可对话的 NPC：{2} 个。",
+  "SPIRETALK-MSG.TestFailed": "连接失败",
+  "SPIRETALK-MSG.ResetDone": "记忆已清空",
+  "SPIRETALK-MSG.ResetDoneBody": "下次见面时，本档案的所有 NPC 都会把你当陌生人。",
+  "SPIRETALK-MSG.ErrNoToken": "还没填访问令牌。打开模组设置，把 yumina.io → 设置 → 已连接的游戏 里生成的令牌粘贴进来。",
+  "SPIRETALK-MSG.ErrUnauthorized": "访问令牌无效，请到 yumina.io 重新生成一个。",
+  "SPIRETALK-MSG.ErrNoCredits": "你的 Yumina 积分用完了。",
+  "SPIRETALK-MSG.ErrRateLimited": "请求太频繁，稍等一下再试。",
+  "SPIRETALK-MSG.ErrNetwork": "连不上 Yumina 服务器，检查一下网络或服务器地址。",
+  "SPIRETALK-MSG.ErrTimeout": "服务器响应超时。",
+  "SPIRETALK-MSG.ErrNotFound": "服务器不认识这个会话或世界。",
+  "SPIRETALK-MSG.ErrNoWorld": "{0} 还没有配置对应的 Yumina 世界。"
+}

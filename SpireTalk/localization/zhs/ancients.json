@@ -1,0 +1,16 @@
+{
+  "SPIRETALK.dynamic": "{text}",
+  "SPIRETALK.empty": "",
+  "SPIRETALK.talk.title": "交谈",
+  "SPIRETALK.talk.description": "和{AncientName}说说话。",
+  "SPIRETALK.end": "……就聊到这吧。（结束交谈）",
+  "SPIRETALK.next": "……",
+  "SPIRETALK.thinking": "……",
+  "SPIRETALK.silence": "……",
+  "SPIRETALK.farewell": "{AncientName}沉默地注视着你。",
+  "SPIRETALK.failed": "（先民没有回应。{Reason}）",
+  "SPIRETALK.typePlaceholder": "想说点别的？在这里输入，回车发送",
+  "SPIRETALK.defaultChoice1": "跟我讲讲这个地方。",
+  "SPIRETALK.defaultChoice2": "你怎么看我？",
+  "SPIRETALK.defaultChoice3": "我该走了。"
+}

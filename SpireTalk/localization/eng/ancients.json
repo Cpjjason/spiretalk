@@ -1,0 +1,16 @@
+{
+  "SPIRETALK.dynamic": "{text}",
+  "SPIRETALK.empty": "",
+  "SPIRETALK.talk.title": "Talk",
+  "SPIRETALK.talk.description": "Speak with {AncientName}.",
+  "SPIRETALK.end": "…that is all. (End the conversation)",
+  "SPIRETALK.next": "…",
+  "SPIRETALK.thinking": "…",
+  "SPIRETALK.silence": "…",
+  "SPIRETALK.farewell": "{AncientName} watches you in silence.",
+  "SPIRETALK.failed": "(The Ancient does not answer. {Reason})",
+  "SPIRETALK.typePlaceholder": "Say something else… (Enter to send)",
+  "SPIRETALK.defaultChoice1": "Tell me about this place.",
+  "SPIRETALK.defaultChoice2": "What do you make of me?",
+  "SPIRETALK.defaultChoice3": "I should get going."
+}
