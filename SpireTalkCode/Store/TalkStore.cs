@@ -2,12 +2,14 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Godot;
 using MegaCrit.Sts2.Core.Saves;
+using SpireTalk.Npc;
 
 namespace SpireTalk.Store;
 
 /// <summary>
-/// Profile-scoped persistence for everything SpireTalk remembers between runs:
-/// which Yumina session belongs to which NPC, affection, and visit counts.
+/// Profile-scoped persistence for everything SpireTalk remembers between runs: which Yumina
+/// session belongs to which NPC, our own affection mirror, conversation history (for the
+/// direct backend and for "remember past visits"), and which one-per-run rewards were given.
 /// Stored as JSON next to the game's own profile data so profiles stay isolated.
 /// </summary>
 public sealed class TalkStore
@@ -19,15 +21,36 @@ public sealed class TalkStore
         [JsonPropertyName("talks")] public int Talks { get; set; }
         [JsonPropertyName("lastTalkUtc")] public string? LastTalkUtc { get; set; }
         [JsonPropertyName("lastLine")] public string? LastLine { get; set; }
+        [JsonPropertyName("history")] public List<HistoryEntry> History { get; set; } = new();
+    }
+
+    public sealed class HistoryEntry
+    {
+        [JsonPropertyName("role")] public string Role { get; set; } = "player";
+        [JsonPropertyName("text")] public string Text { get; set; } = "";
+        [JsonPropertyName("utc")] public string? Utc { get; set; }
+    }
+
+    /// <summary>Rewards already handed out in one run (keyed by run seed + character).</summary>
+    public sealed class RunRecord
+    {
+        [JsonPropertyName("gold")] public List<string> GoldGiven { get; set; } = new();
+        [JsonPropertyName("heal")] public List<string> HealGiven { get; set; } = new();
+        [JsonPropertyName("potion")] public List<string> PotionGiven { get; set; } = new();
+        [JsonPropertyName("gift")] public List<string> GiftGiven { get; set; } = new();
+        [JsonPropertyName("touchedUtc")] public string? TouchedUtc { get; set; }
     }
 
     public sealed class Data
     {
-        [JsonPropertyName("version")] public int Version { get; set; } = 1;
+        [JsonPropertyName("version")] public int Version { get; set; } = 2;
         [JsonPropertyName("npcs")] public Dictionary<string, NpcRecord> Npcs { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        [JsonPropertyName("runs")] public Dictionary<string, RunRecord> Runs { get; set; } = new();
     }
 
     private const string FileName = "spiretalk.json";
+    private const int MaxHistoryPerNpc = 80;
+    private const int MaxRunsKept = 20;
     private static readonly JsonSerializerOptions JsonOpts = new() { WriteIndented = true };
 
     private Data _data = new();
@@ -44,6 +67,38 @@ public sealed class TalkStore
             _data.Npcs[npcKey] = rec;
         }
         return rec;
+    }
+
+    public RunRecord GetRun(string runKey)
+    {
+        EnsureLoaded();
+        if (!_data.Runs.TryGetValue(runKey, out var run))
+        {
+            run = new RunRecord();
+            _data.Runs[runKey] = run;
+            if (_data.Runs.Count > MaxRunsKept)
+            {
+                var oldest = _data.Runs.OrderBy(kv => kv.Value.TouchedUtc ?? "").First().Key;
+                if (oldest != runKey) _data.Runs.Remove(oldest);
+            }
+        }
+        run.TouchedUtc = DateTime.UtcNow.ToString("o");
+        return run;
+    }
+
+    public void AppendHistory(string npcKey, string role, string text)
+    {
+        var rec = Get(npcKey);
+        rec.History.Add(new HistoryEntry { Role = role, Text = text, Utc = DateTime.UtcNow.ToString("o") });
+        if (rec.History.Count > MaxHistoryPerNpc)
+        {
+            rec.History.RemoveRange(0, rec.History.Count - MaxHistoryPerNpc);
+        }
+    }
+
+    public IEnumerable<HistoryLine> HistoryOf(string npcKey)
+    {
+        return Get(npcKey).History.Select(h => new HistoryLine(h.Role, h.Text, h.Utc));
     }
 
     public void Save()

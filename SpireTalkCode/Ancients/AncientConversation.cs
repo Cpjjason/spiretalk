@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Text;
-using System.Text.Json.Nodes;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Ancients;
@@ -9,26 +8,37 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Events;
-using MegaCrit.Sts2.Core.Saves;
+using SpireTalk.Affection;
+using SpireTalk.Npc;
+using SpireTalk.Rewards;
 using SpireTalk.Store;
 using SpireTalk.Yumina;
 
 namespace SpireTalk.Ancients;
 
 /// <summary>
-/// Drives one AI conversation inside an Ancient event. The vanilla event stays intact: we add a
-/// "Talk" option to the initial page, and while talking we swap the page's description/options
-/// for AI-generated dialogue lines and choices. Ending the talk restores the vanilla options.
+/// Drives one visit's conversation inside an Ancient event. The vanilla event stays intact: we
+/// add a "Talk" option to the initial page; while talking we swap the page's options for AI
+/// choices and render the NPC's lines as the game's own dialogue bubbles. Ending the talk
+/// restores the vanilla options (or the rerolled ones, if the NPC rerolled them).
+///
+/// Every backend produces an <see cref="NpcTurn"/>; this class applies <see cref="ConversationRules"/>:
+/// the 3-line budget, the clamped affection delta, and reward validation + execution.
 /// </summary>
 public sealed class AncientConversation
 {
     private const int MaxDialogueLines = 4;
     private const int MaxLineChars = 220;
     private const string FallbackSfx = AncientDialogueLine.sfxFallbackPath;
+    internal const string TalkTextKey = "SPIRETALK_TALK";
 
     private static readonly MethodInfo SetEventStateMethod =
         AccessTools.Method(typeof(EventModel), "SetEventState", new[] { typeof(LocString), typeof(IEnumerable<EventOption>) })
         ?? throw new InvalidOperationException("EventModel.SetEventState not found — game version mismatch?");
+
+    private static readonly MethodInfo GenerateOptionsMethod =
+        AccessTools.Method(typeof(EventModel), "GenerateInitialOptionsWrapper")
+        ?? throw new InvalidOperationException("EventModel.GenerateInitialOptionsWrapper not found");
 
     private static readonly FieldInfo OptionsContainerField =
         AccessTools.Field(typeof(NEventLayout), "_optionsContainer")
@@ -38,25 +48,33 @@ public sealed class AncientConversation
 
     private readonly AncientEventModel _ancient;
     private readonly string _key;
+    private readonly NpcDefinition _npc;
     private readonly LocString _vanillaDescription;
-    private readonly List<EventOption> _vanillaOptions;
     private readonly string _sfx;
     private readonly TalkStore.NpcRecord _record;
+    private readonly string _runKey;
 
-    private string? _sessionId;
+    private List<EventOption> _vanillaOptions;
+    private VisitContext? _ctx;
     private bool _busy;
     private bool _ended;
-    private int _turnsThisVisit;
+    private int _linesUsed;
+    private int _netDeltaThisVisit;
+    private int _rewardsThisVisit;
+    private bool _rerollUsed;
+    private string? _previousPlayerLine;
     private TalkInputBox? _inputBox;
 
-    private AncientConversation(AncientEventModel ancient, IReadOnlyList<EventOption> vanillaOptions)
+    private AncientConversation(AncientEventModel ancient, NpcDefinition npc, IReadOnlyList<EventOption> vanillaOptions)
     {
         _ancient = ancient;
         _key = ancient.Id.Entry;
+        _npc = npc;
         _vanillaDescription = ancient.Description ?? ancient.InitialDescription;
-        _vanillaOptions = vanillaOptions.ToList();
+        _vanillaOptions = vanillaOptions.Where(o => o.TextKey != TalkTextKey).ToList();
         _sfx = PickSfx(ancient);
         _record = TalkStore.Instance.Get(_key);
+        _runKey = ancient.Owner != null ? RewardExecutor.RunKey(ancient.Owner) : "no-run";
     }
 
     // ── Entry points ─────────────────────────────────────────────────────
@@ -69,7 +87,7 @@ public sealed class AncientConversation
         var description = Loc.Event("talk.description");
         description.Add("AncientName", ancient.Title);
 
-        return new EventOption(ancient, () => Begin(ancient, vanillaOptions), title, description, "SPIRETALK_TALK", Array.Empty<IHoverTip>())
+        return new EventOption(ancient, () => Begin(ancient, vanillaOptions), title, description, TalkTextKey, Array.Empty<IHoverTip>())
             .ThatWontSaveToChoiceHistory();
     }
 
@@ -77,7 +95,13 @@ public sealed class AncientConversation
     {
         if (!Active.TryGetValue(ancient, out var convo))
         {
-            convo = new AncientConversation(ancient, vanillaOptions);
+            var npc = NpcCatalog.Get(ancient.Id.Entry);
+            if (npc == null)
+            {
+                MainFile.Logger.Warn($"[Talk] no npc definition for {ancient.Id.Entry}", 1);
+                return Task.CompletedTask;
+            }
+            convo = new AncientConversation(ancient, npc, vanillaOptions);
             Active[ancient] = convo;
         }
         return convo.StartAsync();
@@ -100,27 +124,24 @@ public sealed class AncientConversation
         _ended = false;
         try
         {
-            ShowThinking();
-            var client = MainFile.Client;
-            SpireTalkConfig.ApplyToClient();
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
-
-            var worldId = await MainFile.ResolveWorldIdAsync(_key, cts.Token);
-            if (worldId == null)
+            var backend = MainFile.Backend;
+            if (!backend.IsConfigured)
             {
-                throw new YuminaException(string.Format(Loc.Ui("ErrNoWorld"), _key), 404, "NO_WORLD");
+                throw new YuminaException(Loc.Ui("ErrNotConfigured"), null, "NOT_CONFIGURED");
             }
 
-            _sessionId = await EnsureSessionAsync(client, worldId, cts.Token);
-            await client.PatchStateAsync(_sessionId, GameContext.Collect(_ancient, _record), cts.Token);
-
+            ShowThinking();
+            _ctx = BuildContext();
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
+            _ctx.Talks = _record.Talks;
+            _ctx.SyncRelationshipVariables();
             TalkStore.Instance.Save();
 
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
             var opener = BuildOpener();
-            var result = await client.SendMessageAsync(_sessionId, opener, ModelOrNull(), cts.Token);
-            Present(result);
+            var turn = await backend.ExchangeAsync(_ctx, opener, true, cts.Token);
+            await HandleTurnAsync(turn, opener, isOpener: true);
         }
         catch (Exception ex)
         {
@@ -134,15 +155,20 @@ public sealed class AncientConversation
 
     private async Task TurnAsync(string playerLine)
     {
-        if (_busy || _ended || _sessionId == null) return;
+        if (_busy || _ended || _ctx == null) return;
+        if (_linesUsed >= ConversationRules.LinesPerVisit) return;
         _busy = true;
         try
         {
+            _linesUsed++;
+            _ctx.LinesLeft = ConversationRules.LinesPerVisit - _linesUsed;
+            _ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Ancient, _ctx.Tier, RewardState());
+            _ctx.SyncRelationshipVariables();
+
             ShowThinking();
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
-            var result = await MainFile.Client.SendMessageAsync(_sessionId, playerLine, ModelOrNull(), cts.Token);
-            _turnsThisVisit++;
-            Present(result);
+            var turn = await MainFile.Backend.ExchangeAsync(_ctx, playerLine, false, cts.Token);
+            await HandleTurnAsync(turn, playerLine, isOpener: false);
         }
         catch (Exception ex)
         {
@@ -152,6 +178,62 @@ public sealed class AncientConversation
         {
             _busy = false;
         }
+    }
+
+    private async Task HandleTurnAsync(NpcTurn turn, string playerLine, bool isOpener)
+    {
+        if (_ctx == null) return;
+
+        // 1. Memory — both directions, so any backend (and the next visit) can read it back.
+        TalkStore.Instance.AppendHistory(_key, "player", playerLine);
+        var npcText = turn.JoinedText;
+        if (!string.IsNullOrWhiteSpace(npcText))
+        {
+            TalkStore.Instance.AppendHistory(_key, "npc", npcText);
+            _record.LastLine = Truncate(npcText, 300);
+        }
+
+        // 2. Affection — clamp what the NPC proposed, then write it where it lives.
+        var appliedDelta = 0;
+        if (!isOpener)
+        {
+            appliedDelta = ConversationRules.ClampDelta(turn.AffectionDelta, _netDeltaThisVisit, playerLine, _previousPlayerLine);
+            _netDeltaThisVisit += appliedDelta;
+            _ctx.Affection = AffectionService.Apply(_key, NpcKind.Ancient, appliedDelta);
+            _previousPlayerLine = playerLine;
+        }
+
+        // 3. Reward — validate against the rules, then let the game do it.
+        var reward = ConversationRules.Validate(turn.Action, NpcKind.Ancient, _ctx.Tier, RewardState(), MaxHp());
+        var rewardSummary = "none";
+        if (!reward.IsNone && _ancient.Owner != null)
+        {
+            if (reward.Type == "reroll_relics")
+            {
+                if (RerollRelics())
+                {
+                    _rewardsThisVisit++;
+                    _rerollUsed = true;
+                    rewardSummary = "reroll";
+                    RewardExecutor.Toast(string.Format(Loc.EventText("rewardReroll"), _npc.Name));
+                }
+            }
+            else
+            {
+                var outcome = await RewardExecutor.ApplyAsync(reward, _ancient.Owner, _key, _ancient.Title.GetFormattedText(), _runKey);
+                if (outcome.Applied) _rewardsThisVisit++;
+                rewardSummary = outcome.Summary;
+            }
+        }
+        TalkStore.Instance.Save();
+
+        if (SpireTalkConfig.DebugLogging)
+        {
+            MainFile.Logger.Info($"[Talk] {_key} line {_linesUsed}/{ConversationRules.LinesPerVisit}: delta {turn.AffectionDelta}→{appliedDelta} (now {_ctx.Affection}, {ConversationRules.TierName(_ctx.Tier)}) reason='{turn.Reason}' action={turn.Action.Type}→{rewardSummary} model={turn.ModelUsed} credits={turn.CreditsBalance}", 1);
+        }
+
+        // 4. Render.
+        Present(turn);
     }
 
     private void EndConversation()
@@ -172,6 +254,8 @@ public sealed class AncientConversation
             bye.Add("AncientName", _ancient.Title);
             ShowLines(layout, new[] { bye });
         }
+        // Next Talk this visit continues the same budget: the counter only resets with the room.
+        _busy = false;
     }
 
     // ── Rendering ────────────────────────────────────────────────────────
@@ -192,24 +276,27 @@ public sealed class AncientConversation
         }
     }
 
-    private void Present(TurnResult result)
+    private void Present(NpcTurn turn)
     {
-        RememberAffection(result.Variables);
-        if (!string.IsNullOrWhiteSpace(result.Text))
-        {
-            _record.LastLine = Truncate(result.Text, 300);
-        }
-        TalkStore.Instance.Save();
+        if (_ctx == null) return;
+        var outOfLines = _linesUsed >= ConversationRules.LinesPerVisit;
 
-        var choices = result.Choices.Count > 0 ? result.Choices : DefaultChoices();
         var options = new List<EventOption>();
-        foreach (var choice in choices.Take(4))
+        if (!outOfLines)
         {
-            var text = choice;
-            options.Add(new EventOption(_ancient, () => TurnAsync(text), Loc.Event("empty"), Loc.Dynamic(text), "SPIRETALK_CHOICE", Array.Empty<IHoverTip>())
-                .ThatWontSaveToChoiceHistory());
+            var choices = turn.Choices.Count > 0 ? turn.Choices : DefaultChoices();
+            foreach (var choice in choices.Take(3))
+            {
+                var text = choice;
+                options.Add(new EventOption(_ancient, () => TurnAsync(text), Loc.Event("empty"), Loc.Dynamic(text), "SPIRETALK_CHOICE", Array.Empty<IHoverTip>())
+                    .ThatWontSaveToChoiceHistory());
+            }
         }
-        options.Add(new EventOption(_ancient, () => { EndConversation(); return Task.CompletedTask; }, Loc.Event("empty"), Loc.Event("end"), "SPIRETALK_END", Array.Empty<IHoverTip>())
+        var endLabel = Loc.Event(outOfLines ? "endNoLines" : "end");
+        endLabel.Add("Affection", (decimal)_ctx.Affection);
+        endLabel.Add("Tier", Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)));
+        endLabel.Add("LinesLeft", (decimal)Math.Max(0, ConversationRules.LinesPerVisit - _linesUsed));
+        options.Add(new EventOption(_ancient, () => { EndConversation(); return Task.CompletedTask; }, Loc.Event("empty"), endLabel, "SPIRETALK_END", Array.Empty<IHoverTip>())
             .ThatWontSaveToChoiceHistory());
 
         SetEventState(_vanillaDescription, options);
@@ -217,18 +304,13 @@ public sealed class AncientConversation
         var layout = Layout;
         if (layout == null) return;
 
-        var lines = SplitIntoLines(result.Text);
+        var lines = turn.Lines.Count > 0 ? NormalizeLines(turn.Lines) : new List<string>();
         if (lines.Count == 0) lines.Add(Loc.EventText("silence"));
         ShowLines(layout, lines.Select(Loc.Dynamic).ToList());
 
-        if (SpireTalkConfig.FreeTextInput)
+        if (SpireTalkConfig.FreeTextInput && !outOfLines)
         {
-            AttachInputBox(layout);
-        }
-
-        if (SpireTalkConfig.DebugLogging)
-        {
-            MainFile.Logger.Info($"[Talk] {_key}: {lines.Count} line(s), {choices.Count} choice(s), model={result.ModelUsed}, credits={result.CreditsBalance}", 1);
+            AttachInputBox(layout, ConversationRules.LinesPerVisit - _linesUsed);
         }
     }
 
@@ -274,12 +356,13 @@ public sealed class AncientConversation
         layout.OnSetupComplete();
     }
 
-    private void AttachInputBox(NAncientEventLayout layout)
+    private void AttachInputBox(NAncientEventLayout layout, int linesLeft)
     {
         try
         {
             if (OptionsContainerField.GetValue(layout) is not Control container) return;
-            _inputBox = TalkInputBox.Create(Loc.EventText("typePlaceholder"), text =>
+            var placeholder = string.Format(Loc.EventText("typePlaceholder"), linesLeft);
+            _inputBox = TalkInputBox.Create(placeholder, text =>
             {
                 if (_busy || _ended) return;
                 _ = TurnAsync(text);
@@ -302,6 +385,44 @@ public sealed class AncientConversation
         }
     }
 
+    // ── Rewards ──────────────────────────────────────────────────────────
+
+    private ConversationRules.RewardState RewardState()
+    {
+        if (_ancient.Owner == null) return new ConversationRules.RewardState { RewardsThisVisit = 99 };
+        return RewardExecutor.BuildState(_ancient.Owner, _key, _runKey, _rewardsThisVisit, _rerollUsed, discountUsed: true);
+    }
+
+    private int MaxHp()
+    {
+        try
+        {
+            return _ancient.Owner?.Creature.MaxHp ?? 60;
+        }
+        catch
+        {
+            return 60;
+        }
+    }
+
+    /// <summary>Ask the event for a fresh initial page; those become the options restored when the talk ends.</summary>
+    private bool RerollRelics()
+    {
+        try
+        {
+            if (GenerateOptionsMethod.Invoke(_ancient, null) is IReadOnlyList<EventOption> fresh && fresh.Count > 0)
+            {
+                _vanillaOptions = fresh.Where(o => o.TextKey != TalkTextKey && !o.IsProceed).ToList();
+                return _vanillaOptions.Count > 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Talk] reroll failed: {ex.Message}", 1);
+        }
+        return false;
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────
 
     private NAncientEventLayout? Layout => _ancient.Node as NAncientEventLayout;
@@ -311,62 +432,32 @@ public sealed class AncientConversation
         SetEventStateMethod.Invoke(_ancient, new object[] { description, options });
     }
 
-    private async Task<string> EnsureSessionAsync(YuminaClient client, string worldId, CancellationToken ct)
+    private VisitContext BuildContext()
     {
-        if (SpireTalkConfig.RememberAcrossRuns && !string.IsNullOrEmpty(_record.SessionId))
+        var ctx = new VisitContext { NpcKey = _key, Npc = _npc, Language = Loc.ReplyLanguageName() };
+        foreach (var kv in GameContext.Collect(_ancient))
         {
-            try
-            {
-                if (await client.SessionExistsAsync(_record.SessionId, ct))
-                {
-                    return _record.SessionId;
-                }
-            }
-            catch (YuminaException ex) when (ex.StatusCode is 403 or 404)
-            {
-                // fall through and create a fresh one
-            }
+            ctx.Variables[kv.Key] = kv.Value?.DeepClone();
         }
-        var name = "STS2 · " + _ancient.Title.GetFormattedText();
-        var id = await client.CreateSessionAsync(worldId, name, ct);
-        _record.SessionId = id;
-        TalkStore.Instance.Save();
-        return id;
+        var (affection, married) = AffectionService.Read(_key);
+        ctx.Affection = affection;
+        ctx.Married = married;
+        ctx.LinesLeft = ConversationRules.LinesPerVisit;
+        ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Ancient, ctx.Tier, RewardState());
+        ctx.History.AddRange(TalkStore.Instance.HistoryOf(_key));
+        ctx.Variables["affection_source"] = AffectionService.UsingAncientAffection ? "Ancient Affection mod" : "SpireTalk";
+        return ctx;
     }
 
     private string BuildOpener()
     {
         var owner = _ancient.Owner;
         var character = owner != null ? owner.Character.Title.GetFormattedText() : "The traveler";
-        var visit = _record.Talks;
         var sb = new StringBuilder();
-        sb.Append('[').Append(character).Append(" approaches you");
-        sb.Append(visit <= 1 ? " for the first time." : $" again (talk #{visit}).");
-        if (_record.LastLine != null && visit > 1)
-        {
-            sb.Append(" Last time you said: \"").Append(Truncate(_record.LastLine, 120)).Append("\".");
-        }
-        sb.Append(" Reply in ").Append(Loc.ReplyLanguageName()).Append(".]");
+        sb.Append('[').Append(character).Append(" walks up to you");
+        sb.Append(_record.Talks <= 1 ? " for the first time." : $" again (conversation #{_record.Talks}).");
+        sb.Append(" They may say up to ").Append(ConversationRules.LinesPerVisit).Append(" lines this visit. Greet them in character and reply in ").Append(Loc.ReplyLanguageName()).Append(".]");
         return sb.ToString();
-    }
-
-    private static string? ModelOrNull()
-    {
-        var m = SpireTalkConfig.Model?.Trim();
-        if (!string.IsNullOrEmpty(m)) return m;
-        return MainFile.Manifest?.DefaultModel;
-    }
-
-    private void RememberAffection(JsonObject? variables)
-    {
-        if (variables == null) return;
-        var node = variables["affection"];
-        if (node is JsonValue v)
-        {
-            if (v.TryGetValue<int>(out var i)) _record.Affection = i;
-            else if (v.TryGetValue<double>(out var d)) _record.Affection = (int)Math.Round(d);
-            else if (v.TryGetValue<string>(out var s) && int.TryParse(s, out var p)) _record.Affection = p;
-        }
     }
 
     private static List<string> DefaultChoices()
@@ -399,9 +490,26 @@ public sealed class AncientConversation
         return FallbackSfx;
     }
 
+    /// <summary>Bubble-size the backend's lines: paragraphs first, then sentences when a line is too long.</summary>
+    private static List<string> NormalizeLines(IReadOnlyList<string> lines)
+    {
+        var result = new List<string>();
+        foreach (var l in lines)
+        {
+            result.AddRange(SplitIntoLines(l));
+        }
+        if (result.Count > MaxDialogueLines)
+        {
+            var tail = string.Join(" ", result.Skip(MaxDialogueLines - 1));
+            result = result.Take(MaxDialogueLines - 1).ToList();
+            result.Add(tail);
+        }
+        return result;
+    }
+
     /// <summary>
-    /// Break the AI reply into dialogue-bubble sized pieces: paragraphs first, then sentences
-    /// when a paragraph is too long. Anything past the cap is folded into the last line.
+    /// Break a reply into dialogue-bubble sized pieces: paragraphs first, then sentences when a
+    /// paragraph is too long. Anything past the cap is folded into the last line.
     /// </summary>
     internal static List<string> SplitIntoLines(string text)
     {
@@ -450,7 +558,6 @@ public sealed class AncientConversation
             var c = paragraph[i];
             if (c is '.' or '!' or '?' or '。' or '！' or '？' or '…')
             {
-                // swallow closing quotes / repeated terminators
                 var end = i + 1;
                 while (end < paragraph.Length && (paragraph[end] is '"' or '”' or '」' or '』' or '’' or ')' or '）' or '.' or '!' or '?' or '。' or '！' or '？' or '…'))
                     end++;

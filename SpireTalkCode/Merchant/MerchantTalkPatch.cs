@@ -4,107 +4,43 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using MegaCrit.Sts2.Core.Runs;
+using SpireTalk.Affection;
 using SpireTalk.Ancients;
+using SpireTalk.Npc;
+using SpireTalk.Rewards;
 using SpireTalk.Store;
+using SpireTalk.Ui;
 using SpireTalk.Yumina;
 
 namespace SpireTalk.Merchant;
 
 /// <summary>
-/// The Merchant has no dialogue flow in vanilla — just one-liners that fly in on events. We keep
-/// those and add one AI line when the shop opens: the merchant greets this particular climber,
-/// remembering earlier visits. Fire-and-forget; if Yumina is slow or down nothing changes.
+/// The Merchant has no dialogue flow in vanilla. We add three things: an AI greeting bubble when
+/// the shop opens, a "Talk" button that opens a conversation panel (same 3-line rules as the
+/// Ancients), and a per-visit discount that the merchant can grant as a reward.
 /// </summary>
-[HarmonyPatch(typeof(NMerchantDialogue), nameof(NMerchantDialogue.Initialize))]
-internal static class MerchantGreetingPatch
+internal static class MerchantTalk
 {
-    private const string NpcKey = "MERCHANT";
+    public const string NpcKey = "MERCHANT";
 
     private static readonly MethodInfo? ShowRandomMethod = AccessTools.Method(typeof(NMerchantDialogue), "ShowRandom");
+    private static readonly MethodInfo? UpdateVisualMethod = AccessTools.Method(typeof(NMerchantSlot), "UpdateVisual");
     private static readonly PropertyInfo? RunStateProperty = typeof(RunManager).GetProperty("State", BindingFlags.Instance | BindingFlags.NonPublic);
 
-    [HarmonyPostfix]
-    private static void GreetWithYumina(NMerchantDialogue __instance, MerchantDialogueSet dialogueSet)
-    {
-        if (!SpireTalkConfig.EnableMerchant || ShowRandomMethod == null) return;
-        _ = GreetAsync(__instance);
-    }
+    /// <summary>Discount granted this shop visit, applied by the price hook below.</summary>
+    public static int DiscountPercent { get; private set; }
+    public static bool DiscountUsedThisVisit { get; private set; }
 
-    private static async Task GreetAsync(NMerchantDialogue node)
-    {
-        try
-        {
-            var owner = ResolveLocalPlayer();
-            if (owner == null || owner.RunState.Players.Count > 1) return;
+    private static MerchantConversation? _conversation;
+    private static NMerchantDialogue? _dialogueNode;
+    private static NMerchantInventory? _inventoryNode;
 
-            var client = MainFile.Client;
-            SpireTalkConfig.ApplyToClient();
-            if (!client.HasToken) return;
-
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(45));
-            var worldId = await MainFile.ResolveWorldIdAsync(NpcKey, cts.Token);
-            if (worldId == null) return;
-
-            var record = TalkStore.Instance.Get(NpcKey);
-            var sessionId = await EnsureSessionAsync(client, worldId, record, cts.Token);
-            await client.PatchStateAsync(sessionId, GameContext.CollectForMerchant(owner, record), cts.Token);
-
-            record.Talks++;
-            record.LastTalkUtc = DateTime.UtcNow.ToString("o");
-            TalkStore.Instance.Save();
-
-            var character = owner.Character.Title.GetFormattedText();
-            var opener = $"[{character} walks into your shop{(record.Talks > 1 ? $" again (visit #{record.Talks})" : " for the first time")}. Greet them in one or two short sentences. Reply in {Loc.ReplyLanguageName()}.]";
-            var model = SpireTalkConfig.Model?.Trim();
-            if (string.IsNullOrEmpty(model)) model = MainFile.Manifest?.DefaultModel;
-            var result = await client.SendMessageAsync(sessionId, opener, model, cts.Token);
-
-            if (result.Variables?["affection"] is System.Text.Json.Nodes.JsonValue v && v.TryGetValue<int>(out var aff))
-            {
-                record.Affection = aff;
-            }
-            record.LastLine = result.Text.Length > 300 ? result.Text[..300] : result.Text;
-            TalkStore.Instance.Save();
-
-            var line = FirstSentences(result.Text, 160);
-            if (string.IsNullOrWhiteSpace(line)) return;
-            if (!GodotObject.IsInstanceValid(node) || !node.IsInsideTree()) return;
-
-            ShowRandomMethod!.Invoke(node, new object[] { new List<LocString> { Loc.Dynamic(line) } });
-            if (SpireTalkConfig.DebugLogging)
-            {
-                MainFile.Logger.Info($"[Merchant] greeting shown: {line}", 1);
-            }
-        }
-        catch (Exception ex)
-        {
-            MainFile.Logger.Warn($"[Merchant] greeting skipped: {ex.GetType().Name}: {ex.Message}", 1);
-        }
-    }
-
-    private static async Task<string> EnsureSessionAsync(YuminaClient client, string worldId, TalkStore.NpcRecord record, CancellationToken ct)
-    {
-        if (SpireTalkConfig.RememberAcrossRuns && !string.IsNullOrEmpty(record.SessionId))
-        {
-            try
-            {
-                if (await client.SessionExistsAsync(record.SessionId, ct)) return record.SessionId;
-            }
-            catch (YuminaException ex) when (ex.StatusCode is 403 or 404)
-            {
-                // create a new one below
-            }
-        }
-        var id = await client.CreateSessionAsync(worldId, "STS2 · Merchant", ct);
-        record.SessionId = id;
-        TalkStore.Instance.Save();
-        return id;
-    }
-
-    private static Player? ResolveLocalPlayer()
+    public static Player? ResolveLocalPlayer()
     {
         try
         {
@@ -120,12 +56,386 @@ internal static class MerchantGreetingPatch
         return null;
     }
 
-    private static string FirstSentences(string text, int maxChars)
+    /// <summary>New shop visit: reset the per-visit state and start the greeting.</summary>
+    public static void OnShopEntered(NMerchantDialogue node)
     {
-        var lines = AncientConversation.SplitIntoLines(text);
-        if (lines.Count == 0) return "";
-        var first = lines[0];
-        if (first.Length > maxChars) first = first[..maxChars].TrimEnd() + "…";
-        return first;
+        _dialogueNode = node;
+        DiscountPercent = 0;
+        DiscountUsedThisVisit = false;
+        _conversation?.Dispose();
+        _conversation = null;
+        if (!SpireTalkConfig.EnableMerchant) return;
+        var owner = ResolveLocalPlayer();
+        if (owner == null || owner.RunState.Players.Count > 1) return;
+        _conversation = new MerchantConversation(owner);
+        _ = _conversation.GreetAsync(node);
+    }
+
+    public static void OnInventoryOpened(NMerchantInventory inventory)
+    {
+        _inventoryNode = inventory;
+        if (!SpireTalkConfig.EnableMerchant || _conversation == null) return;
+        Callable.From(() => InstallTalkButton(inventory)).CallDeferred();
+    }
+
+    public static void OnInventoryClosed(NMerchantInventory inventory)
+    {
+        var button = inventory.GetNodeOrNull<Control>("SpireTalkMerchantButton");
+        if (button != null) button.Visible = false;
+        _conversation?.ClosePanel();
+    }
+
+    public static void ApplyDiscount(int percent)
+    {
+        DiscountPercent = Math.Clamp(percent, 0, 90);
+        DiscountUsedThisVisit = true;
+        RefreshPrices();
+    }
+
+    private static void RefreshPrices()
+    {
+        var inv = _inventoryNode;
+        if (inv == null || !GodotObject.IsInstanceValid(inv) || UpdateVisualMethod == null) return;
+        try
+        {
+            foreach (var slot in inv.GetAllSlots())
+            {
+                UpdateVisualMethod.Invoke(slot, null);
+            }
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Merchant] price refresh failed: {ex.Message}", 1);
+        }
+    }
+
+    public static void ShowBubble(string text)
+    {
+        var node = _dialogueNode;
+        if (node == null || !GodotObject.IsInstanceValid(node) || !node.IsInsideTree() || ShowRandomMethod == null) return;
+        try
+        {
+            ShowRandomMethod.Invoke(node, new object[] { new List<LocString> { Loc.Dynamic(text) } });
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Merchant] bubble failed: {ex.Message}", 1);
+        }
+    }
+
+    private static void InstallTalkButton(NMerchantInventory inventory)
+    {
+        if (!GodotObject.IsInstanceValid(inventory)) return;
+        var existing = inventory.GetNodeOrNull<Control>("SpireTalkMerchantButton");
+        if (existing != null)
+        {
+            existing.Visible = true;
+            return;
+        }
+        var button = new Button
+        {
+            Name = "SpireTalkMerchantButton",
+            Text = Loc.EventText("merchantTalkButton"),
+            CustomMinimumSize = new Vector2(220, 64),
+            ZIndex = 50,
+        };
+        button.AddThemeFontSizeOverride("font_size", 26);
+        var normal = new StyleBoxFlat
+        {
+            BgColor = new Color(0.07f, 0.06f, 0.08f, 0.85f),
+            BorderColor = new Color(1f, 0.85f, 0.45f, 0.7f),
+            CornerRadiusTopLeft = 10,
+            CornerRadiusTopRight = 10,
+            CornerRadiusBottomLeft = 10,
+            CornerRadiusBottomRight = 10,
+            ContentMarginLeft = 18,
+            ContentMarginRight = 18,
+        };
+        normal.SetBorderWidthAll(2);
+        var hover = (StyleBoxFlat)normal.Duplicate();
+        hover.BgColor = new Color(1f, 0.85f, 0.45f, 0.25f);
+        button.AddThemeStyleboxOverride("normal", normal);
+        button.AddThemeStyleboxOverride("hover", hover);
+        button.AddThemeStyleboxOverride("pressed", hover);
+        button.AddThemeStyleboxOverride("focus", hover);
+        button.AddThemeColorOverride("font_color", new Color(1f, 0.92f, 0.7f));
+        // Top-right of the shop screen, clear of the shelves and the top bar.
+        button.SetAnchorsPreset(Control.LayoutPreset.TopRight);
+        button.Position = new Vector2(-260, 130);
+        button.Pressed += () => _conversation?.OpenPanel();
+        inventory.AddChild(button);
+    }
+}
+
+/// <summary>Patches that hand shop lifecycle events to <see cref="MerchantTalk"/>.</summary>
+[HarmonyPatch(typeof(NMerchantDialogue), nameof(NMerchantDialogue.Initialize))]
+internal static class MerchantDialogueInitPatch
+{
+    [HarmonyPostfix]
+    private static void OnInit(NMerchantDialogue __instance, MerchantDialogueSet dialogueSet)
+    {
+        try
+        {
+            MerchantTalk.OnShopEntered(__instance);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Merchant] init hook failed: {ex.Message}", 1);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(NMerchantInventory), "Open")]
+internal static class MerchantInventoryOpenPatch
+{
+    [HarmonyPostfix]
+    private static void OnOpen(NMerchantInventory __instance)
+    {
+        try
+        {
+            MerchantTalk.OnInventoryOpened(__instance);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Merchant] open hook failed: {ex.Message}", 1);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(NMerchantInventory), "Close")]
+internal static class MerchantInventoryClosePatch
+{
+    [HarmonyPostfix]
+    private static void OnClose(NMerchantInventory __instance)
+    {
+        try
+        {
+            MerchantTalk.OnInventoryClosed(__instance);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Merchant] close hook failed: {ex.Message}", 1);
+        }
+    }
+}
+
+/// <summary>The discount reward: every ordinary price this visit is reduced by the granted percent.</summary>
+[HarmonyPatch(typeof(Hook), nameof(Hook.ModifyMerchantPrice))]
+internal static class MerchantPricePatch
+{
+    [HarmonyPostfix]
+    private static void ApplyTalkDiscount(MerchantEntry entry, ref decimal __result)
+    {
+        var pct = MerchantTalk.DiscountPercent;
+        if (pct <= 0) return;
+        if (entry is MerchantCardRemovalEntry) return;
+        __result = Math.Max(0m, Math.Round(__result * (100m - pct) / 100m));
+    }
+}
+
+/// <summary>One shop visit's conversation with the Merchant, rendered in <see cref="TalkPanel"/>.</summary>
+internal sealed class MerchantConversation
+{
+    private readonly Player _owner;
+    private readonly NpcDefinition _npc;
+    private readonly TalkStore.NpcRecord _record;
+    private readonly string _runKey;
+    private VisitContext? _ctx;
+    private TalkPanel? _panel;
+    private bool _busy;
+    private bool _greeted;
+    private int _linesUsed;
+    private int _netDeltaThisVisit;
+    private int _rewardsThisVisit;
+    private string? _previousPlayerLine;
+    private NpcTurn? _lastTurn;
+
+    public MerchantConversation(Player owner)
+    {
+        _owner = owner;
+        _npc = NpcCatalog.Get(MerchantTalk.NpcKey) ?? new NpcDefinition { Key = "MERCHANT", Name = "The Merchant", KindName = "merchant" };
+        _record = TalkStore.Instance.Get(MerchantTalk.NpcKey);
+        _runKey = RewardExecutor.RunKey(owner);
+    }
+
+    /// <summary>Greeting bubble on entering the shop; also primes the conversation context.</summary>
+    public async Task GreetAsync(NMerchantDialogue node)
+    {
+        if (_greeted) return;
+        _greeted = true;
+        var backend = MainFile.Backend;
+        if (!backend.IsConfigured) return;
+        try
+        {
+            _ctx = BuildContext();
+            _record.Talks++;
+            _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
+            _ctx.Talks = _record.Talks;
+            _ctx.SyncRelationshipVariables();
+            TalkStore.Instance.Save();
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            var opener = BuildOpener();
+            var turn = await backend.ExchangeAsync(_ctx, opener, true, cts.Token);
+            _lastTurn = turn;
+            TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", opener);
+            if (!string.IsNullOrWhiteSpace(turn.JoinedText))
+            {
+                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.JoinedText);
+                _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
+            }
+            TalkStore.Instance.Save();
+
+            var first = turn.Lines.FirstOrDefault() ?? "";
+            if (first.Length > 160) first = first[..160].TrimEnd() + "…";
+            if (first.Length > 0) MerchantTalk.ShowBubble(first);
+            // If the panel is already open (fast player), fill it.
+            if (_panel != null && GodotObject.IsInstanceValid(_panel)) Present(turn);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Merchant] greeting skipped: {ex.GetType().Name}: {ex.Message}", 1);
+            _ctx = null;
+        }
+    }
+
+    public void OpenPanel()
+    {
+        if (_panel != null && GodotObject.IsInstanceValid(_panel))
+        {
+            _panel.Visible = true;
+            return;
+        }
+        var title = _npc.Name;
+        _panel = TalkPanel.Create(title, line => _ = TurnAsync(line), ClosePanel);
+        var host = (Node?)NGame.Instance;
+        if (host == null) return;
+        host.AddChild(_panel);
+        if (_ctx == null)
+        {
+            _panel.SetError(MainFile.Backend.IsConfigured ? Loc.EventText("silence") : Loc.Ui("ErrNotConfigured"));
+            return;
+        }
+        if (_lastTurn != null) Present(_lastTurn);
+        else _panel.SetThinking();
+    }
+
+    public void ClosePanel()
+    {
+        if (_panel != null && GodotObject.IsInstanceValid(_panel))
+        {
+            _panel.QueueFree();
+        }
+        _panel = null;
+    }
+
+    public void Dispose()
+    {
+        ClosePanel();
+    }
+
+    private async Task TurnAsync(string playerLine)
+    {
+        if (_busy || _ctx == null) return;
+        if (_linesUsed >= ConversationRules.LinesPerVisit) return;
+        _busy = true;
+        try
+        {
+            _linesUsed++;
+            _ctx.LinesLeft = ConversationRules.LinesPerVisit - _linesUsed;
+            _ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Merchant, _ctx.Tier, RewardState());
+            _ctx.SyncRelationshipVariables();
+            _panel?.SetThinking();
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+            var turn = await MainFile.Backend.ExchangeAsync(_ctx, playerLine, false, cts.Token);
+            _lastTurn = turn;
+
+            TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", playerLine);
+            if (!string.IsNullOrWhiteSpace(turn.JoinedText))
+            {
+                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.JoinedText);
+                _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
+            }
+
+            var delta = ConversationRules.ClampDelta(turn.AffectionDelta, _netDeltaThisVisit, playerLine, _previousPlayerLine);
+            _netDeltaThisVisit += delta;
+            _ctx.Affection = AffectionService.Apply(MerchantTalk.NpcKey, NpcKind.Merchant, delta);
+            _previousPlayerLine = playerLine;
+
+            var reward = ConversationRules.Validate(turn.Action, NpcKind.Merchant, _ctx.Tier, RewardState(), _owner.Creature.MaxHp);
+            var summary = "none";
+            if (!reward.IsNone)
+            {
+                if (reward.Type == "discount")
+                {
+                    MerchantTalk.ApplyDiscount(reward.Amount);
+                    _rewardsThisVisit++;
+                    summary = $"discount {reward.Amount}%";
+                    RewardExecutor.Toast(string.Format(Loc.EventText("rewardDiscount"), reward.Amount));
+                }
+                else
+                {
+                    var outcome = await RewardExecutor.ApplyAsync(reward, _owner, MerchantTalk.NpcKey, _npc.Name, _runKey);
+                    if (outcome.Applied) _rewardsThisVisit++;
+                    summary = outcome.Summary;
+                }
+            }
+            TalkStore.Instance.Save();
+
+            if (SpireTalkConfig.DebugLogging)
+            {
+                MainFile.Logger.Info($"[Merchant] line {_linesUsed}/{ConversationRules.LinesPerVisit}: delta {turn.AffectionDelta}→{delta} (now {_ctx.Affection}) action={turn.Action.Type}→{summary}", 1);
+            }
+            Present(turn);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Merchant] turn failed: {ex.GetType().Name}: {ex.Message}", 1);
+            _panel?.SetError(Loc.DescribeError(ex));
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private void Present(NpcTurn turn)
+    {
+        if (_panel == null || !GodotObject.IsInstanceValid(_panel) || _ctx == null) return;
+        var linesLeft = ConversationRules.LinesPerVisit - _linesUsed;
+        var lines = turn.Lines.Count > 0 ? turn.Lines : new[] { Loc.EventText("silence") };
+        var choices = turn.Choices.Count > 0 ? turn.Choices : new[] { Loc.EventText("defaultChoice1"), Loc.EventText("defaultChoice2"), Loc.EventText("defaultChoice3") };
+        var footer = string.Format(Loc.EventText("merchantFooter"), _ctx.Affection, Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)), linesLeft,
+            MerchantTalk.DiscountPercent > 0 ? string.Format(Loc.EventText("merchantDiscountNote"), MerchantTalk.DiscountPercent) : "");
+        _panel.SetTurn(lines, choices, linesLeft, SpireTalkConfig.FreeTextInput, footer);
+    }
+
+    private ConversationRules.RewardState RewardState()
+    {
+        return RewardExecutor.BuildState(_owner, MerchantTalk.NpcKey, _runKey, _rewardsThisVisit, rerollUsed: true, MerchantTalk.DiscountUsedThisVisit);
+    }
+
+    private VisitContext BuildContext()
+    {
+        var ctx = new VisitContext { NpcKey = MerchantTalk.NpcKey, Npc = _npc, Language = Loc.ReplyLanguageName() };
+        foreach (var kv in GameContext.CollectForMerchant(_owner))
+        {
+            ctx.Variables[kv.Key] = kv.Value?.DeepClone();
+        }
+        var (affection, married) = AffectionService.Read(MerchantTalk.NpcKey);
+        ctx.Affection = affection;
+        ctx.Married = married;
+        ctx.LinesLeft = ConversationRules.LinesPerVisit;
+        ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Merchant, ctx.Tier, RewardState());
+        ctx.History.AddRange(TalkStore.Instance.HistoryOf(MerchantTalk.NpcKey));
+        ctx.Variables["affection_source"] = AffectionService.UsingAncientAffection ? "Ancient Affection mod" : "SpireTalk";
+        return ctx;
+    }
+
+    private string BuildOpener()
+    {
+        var character = _owner.Character.Title.GetFormattedText();
+        return $"[{character} walks into your shop{(_record.Talks <= 1 ? " for the first time" : $" again (visit #{_record.Talks})")}. Greet them in one or two short sentences; they may say up to {ConversationRules.LinesPerVisit} lines this visit. Reply in {Loc.ReplyLanguageName()}.]";
     }
 }

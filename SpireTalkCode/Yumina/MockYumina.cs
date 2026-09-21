@@ -19,7 +19,7 @@ public static class MockYumina
         return u == Marker || u == "mock://" || u.EndsWith("//mock");
     }
 
-    public static Task<WhoAmI> WhoAmIAsync() => Task.FromResult(new WhoAmI("mock-user", "Mock Slayer", 9999));
+    public static Task<WhoAmI> WhoAmIAsync() => Task.FromResult(new WhoAmI("mock-user", "Mock Slayer", 9999, "mock"));
 
     public static Task<IntegrationManifest> ManifestAsync()
     {

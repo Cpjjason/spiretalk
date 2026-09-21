@@ -2,7 +2,6 @@ using System.Text.Json.Nodes;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves;
-using SpireTalk.Store;
 
 namespace SpireTalk.Ancients;
 
@@ -16,14 +15,12 @@ public static class GameContext
     private const int MaxRelics = 14;
     private const int MaxDeckCards = 18;
 
-    public static JsonObject Collect(AncientEventModel ancient, TalkStore.NpcRecord record)
+    public static JsonObject Collect(AncientEventModel ancient)
     {
         var vars = new JsonObject
         {
             ["npc"] = ancient.Id.Entry,
             ["language"] = Loc.ReplyLanguageName(),
-            ["affection"] = record.Affection,
-            ["talks"] = record.Talks,
         };
 
         var owner = ancient.Owner;
@@ -47,14 +44,12 @@ public static class GameContext
         return vars;
     }
 
-    public static JsonObject CollectForMerchant(Player owner, TalkStore.NpcRecord record)
+    public static JsonObject CollectForMerchant(Player owner)
     {
         var vars = new JsonObject
         {
             ["npc"] = "MERCHANT",
             ["language"] = Loc.ReplyLanguageName(),
-            ["affection"] = record.Affection,
-            ["talks"] = record.Talks,
         };
         AddPlayer(vars, owner);
         return vars;

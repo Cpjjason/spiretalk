@@ -11,10 +11,17 @@ public sealed record TurnResult(
     IReadOnlyList<string> Choices,
     JsonObject? Variables,
     string? ModelUsed,
-    int? CreditsBalance);
+    int? CreditsBalance,
+    string? RawContent = null);
 
 /// <summary>Who the token belongs to, as reported by the server.</summary>
-public sealed record WhoAmI(string UserId, string Name, int? Credits);
+public sealed record WhoAmI(string UserId, string Name, int? Credits, string? Plan);
+
+/// <summary>One selectable model from the account's list.</summary>
+public sealed record ModelInfo(string Id, string Name, string? MinPlan, double? AvgCost);
+
+/// <summary>A pending device-code login.</summary>
+public sealed record DeviceStart(string DeviceCode, string UserCode, string VerificationUrl, int ExpiresIn, int Interval);
 
 /// <summary>Server-published mapping of game NPCs to Yumina worlds.</summary>
 public sealed record IntegrationManifest(
@@ -95,7 +102,65 @@ public sealed class YuminaClient
         return new WhoAmI(
             data["userId"]?.GetValue<string>() ?? "",
             data["name"]?.GetValue<string>() ?? "",
-            data["credits"]?.GetValue<int?>());
+            data["credits"]?.GetValue<int?>(),
+            data["plan"]?.GetValue<string>());
+    }
+
+    public async Task<IReadOnlyList<ModelInfo>> ListModelsAsync(CancellationToken ct)
+    {
+        if (IsMock) return new[] { new ModelInfo("mock-model", "Mock model", null, 0) };
+        using var res = await SendAsync(HttpMethod.Get, "/api/models", null, ct);
+        var json = await ReadJsonAsync(res, ct);
+        var list = new List<ModelInfo>();
+        var arr = (json["data"] as JsonObject)?["curated"] as JsonArray ?? (json["data"] as JsonObject)?["all"] as JsonArray;
+        if (arr == null) return list;
+        foreach (var n in arr)
+        {
+            if (n is not JsonObject m) continue;
+            var id = m["id"]?.GetValue<string>();
+            if (string.IsNullOrEmpty(id)) continue;
+            double? cost = null;
+            if (m["avgCostMushies"] is JsonValue cv && cv.TryGetValue<double>(out var c)) cost = c;
+            list.Add(new ModelInfo(id, m["name"]?.GetValue<string>() ?? id, m["minPlan"]?.GetValue<string>(), cost));
+        }
+        return list;
+    }
+
+    // ── Device-code login ─────────────────────────────────────────────────
+
+    public async Task<DeviceStart> StartDeviceLoginAsync(string name, CancellationToken ct)
+    {
+        if (IsMock) throw new YuminaException("Offline mode has no login", null, "OFFLINE");
+        var body = new JsonObject { ["name"] = name };
+        using var res = await SendAsync(HttpMethod.Post, "/api/game-tokens/device", body, ct, requireToken: false);
+        var json = await ReadJsonAsync(res, ct);
+        var d = json["data"] as JsonObject ?? json;
+        return new DeviceStart(
+            d["deviceCode"]?.GetValue<string>() ?? "",
+            d["userCode"]?.GetValue<string>() ?? "",
+            d["verificationUrl"]?.GetValue<string>() ?? _baseUrl + "/link",
+            d["expiresIn"]?.GetValue<int?>() ?? 600,
+            d["interval"]?.GetValue<int?>() ?? 3);
+    }
+
+    /// <summary>Returns the game token once approved, null while pending; throws when denied/expired.</summary>
+    public async Task<string?> PollDeviceLoginAsync(string deviceCode, CancellationToken ct)
+    {
+        using var res = await SendRawAsync(HttpMethod.Get, "/api/game-tokens/device/poll?deviceCode=" + Uri.EscapeDataString(deviceCode), null, ct, requireToken: false);
+        if (res.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            throw new YuminaException("This login request expired. Start again.", 404, "EXPIRED");
+        }
+        await EnsureSuccessAsync(res, ct);
+        var json = await ReadJsonAsync(res, ct);
+        var d = json["data"] as JsonObject ?? json;
+        var status = d["status"]?.GetValue<string>() ?? "pending";
+        return status switch
+        {
+            "approved" => d["token"]?.GetValue<string>(),
+            "denied" => throw new YuminaException("You declined the login in the browser.", 403, "DENIED"),
+            _ => null,
+        };
     }
 
     public async Task<IntegrationManifest> GetManifestAsync(CancellationToken ct)
@@ -141,7 +206,8 @@ public sealed class YuminaClient
     public async Task PatchStateAsync(string sessionId, JsonObject variables, CancellationToken ct)
     {
         if (IsMock) return;
-        var body = new JsonObject { ["state"] = variables };
+        // The route merges `state.variables` into the session; bare keys are ignored.
+        var body = new JsonObject { ["state"] = new JsonObject { ["variables"] = variables } };
         using var res = await SendAsync(HttpMethod.Patch, $"/api/sessions/{sessionId}/state", body, ct);
         await EnsureSuccessAsync(res, ct);
     }
@@ -273,7 +339,7 @@ public sealed class YuminaClient
             credits = cr["balance"]?.GetValue<int?>();
         }
 
-        return new TurnResult(text ?? "", choices, variables, done?["model"]?.GetValue<string>(), credits);
+        return new TurnResult(text ?? "", choices, variables, done?["model"]?.GetValue<string>(), credits, done?["rawContent"]?.GetValue<string>());
     }
 
     private static YuminaException ErrorFromPayload(string payload)
