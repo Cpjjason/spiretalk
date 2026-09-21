@@ -6,8 +6,8 @@
   "SPIRETALK-MODE.Yumina": "Yumina 账号",
   "SPIRETALK-MODE.Offline": "离线（固定台词，用于测试）",
 
-  "SPIRETALK-OWN_KEY.title": "自备 Key（OpenRouter · OpenAI · Ollama · 任何 OpenAI 兼容接口）",
-  "SPIRETALK-OWN_BASE_URL.title": "API 地址",
+  "SPIRETALK-OWN_KEY_SETUP.title": "自备 API Key",
+  "SPIRETALK-OWN_BASE_URL.title": "API 地址（OpenRouter / OpenAI / 本机 Ollama 均可）",
   "SPIRETALK-OWN_KEY.title": "API Key（本机 Ollama 可留空）",
   "SPIRETALK-OWN_MODEL.title": "模型 id（如 gpt-4o-mini、qwen3:8b）",
   "SPIRETALK-OWN_JSON_MODE.title": "要求模型严格输出 JSON（模型报错时可关掉）",

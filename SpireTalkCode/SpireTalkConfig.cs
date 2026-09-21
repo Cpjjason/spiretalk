@@ -38,7 +38,7 @@ public sealed class SpireTalkConfig : SimpleModConfig
 
     // ── Own key (OpenRouter / OpenAI / Ollama / any OpenAI-compatible) ──
 
-    [ConfigSection("OwnKey")]
+    [ConfigSection("OwnKeySetup")]
     [ConfigVisibleIf(nameof(Mode), BackendMode.OwnKey)]
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 200)]
     public static string OwnBaseUrl { get; set; } = "https://openrouter.ai/api/v1";

@@ -6,8 +6,8 @@
   "SPIRETALK-MODE.Yumina": "Yumina account",
   "SPIRETALK-MODE.Offline": "Offline (canned lines, for testing)",
 
-  "SPIRETALK-OWN_KEY.title": "Own key (OpenRouter · OpenAI · Ollama · any OpenAI-compatible)",
-  "SPIRETALK-OWN_BASE_URL.title": "API base URL",
+  "SPIRETALK-OWN_KEY_SETUP.title": "Own API key",
+  "SPIRETALK-OWN_BASE_URL.title": "API base URL (OpenRouter, OpenAI, local Ollama…)",
   "SPIRETALK-OWN_KEY.title": "API key (leave empty for a local Ollama)",
   "SPIRETALK-OWN_MODEL.title": "Model id (e.g. gpt-4o-mini, qwen3:8b)",
   "SPIRETALK-OWN_JSON_MODE.title": "Ask the model for strict JSON (turn off if a model errors)",

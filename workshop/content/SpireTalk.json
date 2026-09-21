@@ -1,0 +1,17 @@
+{
+  "id": "SpireTalk",
+  "name": "SpireTalk: Living Ancients",
+  "author": "peiji",
+  "description": "Talk to the Ancients and the Merchant. Bring your own API key (OpenRouter / OpenAI / Ollama) or sign in to Yumina; three lines per visit, they remember you across runs, and a good relationship can earn a relic reroll, gold, healing, a potion or a shop discount. Works with or without Ancient Affection.",
+  "version": "0.2.0",
+  "has_pck": true,
+  "has_dll": true,
+  "min_game_version": "0.111.0",
+  "dependencies": [
+    {
+      "id": "BaseLib",
+      "min_version": "3.4.0"
+    }
+  ],
+  "affects_gameplay": true
+}

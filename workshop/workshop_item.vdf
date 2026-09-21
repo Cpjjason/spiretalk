@@ -1,0 +1,11 @@
+"workshopitem"
+{
+	"appid"		"2868840"
+	"publishedfileid"		"0"
+	"contentfolder"		"C:\Users\peiji\Downloads\Slay the spire Mod\SpireTalk\workshop\content"
+	"previewfile"		"C:\Users\peiji\Downloads\Slay the spire Mod\SpireTalk\workshop\preview.png"
+	"visibility"		"2"
+	"title"		"SpireTalk: Living Ancients"
+	"description"		"Talk to the eight Ancients and the Merchant. Every NPC answers in character, remembers what you said across runs, and a good relationship can earn a relic reroll, gold, healing, a potion, a shop discount or one of Ancient Affection's keepsake relics.\n\n[h2]How it works[/h2]\n[list]\n[*] A new [b]Talk[/b] option on every Ancient's page and a [b]Talk[/b] button in the shop. Three lines per visit: pick a suggested reply or type your own.\n[*] Each NPC keeps its own memory per save profile.\n[*] Every line is judged by that NPC's own values (-3..+3, at most ±8 per visit). Tiers: hostile / stranger / friendly / close / devoted.\n[*] One reward per visit at most, never on the greeting, validated by the mod and applied through the game's own commands - the AI only narrates.\n[*] With [b]Ancient Affection[/b] installed the same affection number is used; without it the mod keeps its own.\n[*] Single player only.\n[/list]\n\n[h2]Setup (pick one)[/h2]\n[b]Own API key[/b] - Mods → SpireTalk → \"My own API key\". OpenRouter (default), OpenAI or a local Ollama. Enter base URL, key, model id, press Test.\n[b]Yumina account[/b] - press Sign in, allow in the browser, done. The panel shows credits, plan and the model in use. Tokens are revocable at yumina.io → Settings → Connected games.\n\nRequires BaseLib. No AI-generated art. Open source: https://github.com/lovetimo0421/yumina-oss\n\n[h2]中文[/h2]\n和八位远古先民以及商人聊天。每位 NPC 都有自己的性格和跨局记忆；关系够好可以换来一批新遗物、金币、治疗、药水、商店折扣，或 Ancient Affection 的信物遗物。每次拜访三句，可选可打字。支持自己的 API Key（OpenRouter / OpenAI / Ollama）或 Yumina 账号登录。装了 Ancient Affection 时直接用它的好感度。仅单人模式。需要 BaseLib。"
+	"changenote"		"0.2.0 - first public build"
+}
