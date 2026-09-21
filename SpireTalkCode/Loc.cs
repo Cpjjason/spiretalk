@@ -1,6 +1,6 @@
 using System.Text;
 using MegaCrit.Sts2.Core.Localization;
-using SpireTalk.Yumina;
+using SpireTalk.Backend;
 
 namespace SpireTalk;
 
@@ -128,17 +128,17 @@ public static class Loc
 
     public static string DescribeError(Exception ex)
     {
-        if (ex is YuminaException ye)
+        if (ex is BackendException ye)
         {
             var key = ye.Code switch
             {
-                "NO_TOKEN" => "ErrNoToken",
                 "UNAUTHORIZED" => "ErrUnauthorized",
                 "NO_CREDITS" => "ErrNoCredits",
                 "RATE_LIMITED" => "ErrRateLimited",
                 "NETWORK" => "ErrNetwork",
                 "TIMEOUT" => "ErrTimeout",
                 "NOT_FOUND" => "ErrNotFound",
+                "NOT_CONFIGURED" => "ErrNotConfigured",
                 _ => null,
             };
             if (key != null)

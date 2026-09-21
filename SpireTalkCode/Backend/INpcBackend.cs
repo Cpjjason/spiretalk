@@ -3,10 +3,10 @@ using SpireTalk.Npc;
 namespace SpireTalk.Backend;
 
 /// <summary>
-/// Something that can play an NPC. Three implementations: Yumina (account), Direct (the
-/// player's own OpenAI-compatible key: OpenRouter, OpenAI, local Ollama…), and Mock (offline).
-/// All of them must honour the same contract: read the context, answer as the NPC, propose
-/// choices / an affection delta / an action. The controller applies the rules afterwards.
+/// Something that can play an NPC: read the context, answer as the NPC, propose choices / an
+/// affection delta / an action. The controller applies the rules afterwards. The one
+/// implementation is <see cref="EngineBackend"/> (Yumina engine in-process + the player's key);
+/// the interface stays so tests and future hosts can swap it.
 /// </summary>
 public interface INpcBackend
 {

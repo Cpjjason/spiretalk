@@ -15,7 +15,7 @@ using SpireTalk.Npc;
 using SpireTalk.Rewards;
 using SpireTalk.Store;
 using SpireTalk.Ui;
-using SpireTalk.Yumina;
+using SpireTalk.Backend;
 
 namespace SpireTalk.Merchant;
 
@@ -309,7 +309,7 @@ internal sealed class MerchantConversation
             TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", opener, _runKey);
             if (!string.IsNullOrWhiteSpace(turn.JoinedText))
             {
-                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.JoinedText, _runKey);
+                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.ToTranscript(), _runKey);
                 _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
             }
             TalkStore.Instance.Save();
@@ -386,14 +386,14 @@ internal sealed class MerchantConversation
             _ctx.SyncRelationshipVariables();
             _panel?.SetThinking();
 
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
             var turn = await MainFile.Backend.ExchangeAsync(_ctx, playerLine, false, cts.Token);
             _lastTurn = turn;
 
             TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", playerLine, _runKey);
             if (!string.IsNullOrWhiteSpace(turn.JoinedText))
             {
-                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.JoinedText, _runKey);
+                TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.ToTranscript(), _runKey);
                 _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
             }
 
@@ -430,7 +430,9 @@ internal sealed class MerchantConversation
         }
         catch (Exception ex)
         {
+            _linesUsed--;
             MainFile.Logger.Warn($"[Merchant] turn failed: {ex.GetType().Name}: {ex.Message}", 1);
+            if (SpireTalkConfig.DebugLogging) MainFile.Logger.Warn($"[Merchant] {ex}", 1);
             _panel?.SetError(Loc.DescribeError(ex));
         }
         finally

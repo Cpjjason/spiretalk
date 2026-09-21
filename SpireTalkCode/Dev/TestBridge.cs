@@ -39,7 +39,7 @@ public sealed partial class TestBridge : Node
         try
         {
             if (!ShouldInstall) return;
-            var tree = Engine.GetMainLoop() as SceneTree;
+            var tree = Godot.Engine.GetMainLoop() as SceneTree;
             if (tree == null) return;
             var node = new TestBridge { Name = "SpireTalkTestBridge", ProcessMode = ProcessModeEnum.Always };
             tree.Root.CallDeferred(Node.MethodName.AddChild, node);
@@ -512,7 +512,7 @@ public sealed partial class TestBridge : Node
         {
             sb.Append(" run=? (").Append(ex.Message).Append(')');
         }
-        sb.Append(" mode=").Append(SpireTalkConfig.Mode).Append(" backend=").Append(MainFile.Backend.DisplayName).Append(" configured=").Append(MainFile.Backend.IsConfigured);
+        sb.Append(" backend=").Append(MainFile.Backend.DisplayName).Append(" configured=").Append(MainFile.Backend.IsConfigured);
         return sb.ToString();
     }
 

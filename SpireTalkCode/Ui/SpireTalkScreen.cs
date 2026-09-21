@@ -2,28 +2,19 @@ using BaseLib.Config.UI;
 using Godot;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
-using SpireTalk.Yumina;
 
 namespace SpireTalk.Ui;
 
 /// <summary>
-/// The mod's own settings sheet: a parchment page in the game's modal layer. What the player sees
-/// first is the part everyone needs — an API endpoint, a key, a model — and the conversation
-/// switches. The Yumina account lives behind a small link in the corner of the sheet.
+/// The mod's own settings sheet: a parchment page in the game's modal layer — an API endpoint, a
+/// key, a model, and the conversation switches. That is all the mod needs.
 /// </summary>
 public sealed partial class SpireTalkScreen : Control, IScreenContext
 {
     private const float SheetWidth = 1180f;
 
     private SpireTalkConfig _config = null!;
-    private VBoxContainer _providerCard = null!;
-    private VBoxContainer _ownKeyCard = null!;
-    private VBoxContainer _yuminaCard = null!;
-    private Button _cornerLink = null!;
     private MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel _ownStatus = null!;
-    private MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel _yuminaStatus = null!;
-    private Button _reopenLink = null!;
-    private NConfigButton _loginButton = null!;
 
     public Control? DefaultFocusedControl => null;
 
@@ -40,7 +31,6 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
 
     private void Close()
     {
-        DeviceLogin.Cancel();
         _config.SaveDebounced(200);
         NModalContainer.Instance?.Clear();
     }
@@ -101,21 +91,13 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         column.AddThemeConstantOverride("separation", 14);
         well.AddChild(column);
 
-        _providerCard = new VBoxContainer();
-        _providerCard.AddThemeConstantOverride("separation", 12);
-        _ownKeyCard = BuildOwnKeyCard();
-        _yuminaCard = BuildYuminaCard();
-        _providerCard.AddChild(_ownKeyCard);
-        _providerCard.AddChild(_yuminaCard);
-        column.AddChild(_providerCard);
+        column.AddChild(BuildOwnKeyCard());
 
         column.AddChild(GameArt.Spacer(4));
         column.AddChild(GameArt.Rule(new Color(1f, 1f, 1f, 0.12f)));
         column.AddChild(GameArt.Spacer(4));
 
         column.AddChild(BuildConversationBlock());
-
-        ShowProvider(SpireTalkConfig.Mode == BackendMode.Yumina ? BackendMode.Yumina : BackendMode.OwnKey, save: false);
         return well;
     }
 
@@ -142,78 +124,21 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var card = new VBoxContainer();
         card.AddThemeConstantOverride("separation", 8);
 
-        var head = new HBoxContainer();
-        var title = SectionTitle(Loc.Ui("OwnKeyTitle"));
-        head.AddChild(title);
-        _cornerLink = GameArt.LinkButton(Loc.Ui("CornerYumina"), GameArt.Muted, 22);
-        _cornerLink.Pressed += () => ShowProvider(BackendMode.Yumina, save: true);
-        head.AddChild(_cornerLink);
-        card.AddChild(head);
+        card.AddChild(SectionTitle(Loc.Ui("OwnKeyTitle")));
 
         card.AddChild(Row(Loc.Ui("OwnBaseUrl"), _config.MakeLineEdit(nameof(SpireTalkConfig.OwnBaseUrl))));
         card.AddChild(Row(Loc.Ui("OwnKey"), _config.MakeLineEdit(nameof(SpireTalkConfig.OwnKey), secret: true)));
         card.AddChild(Row(Loc.Ui("OwnModel"), _config.MakeLineEdit(nameof(SpireTalkConfig.OwnModel))));
 
-        var toggles = new HBoxContainer();
-        toggles.AddThemeConstantOverride("separation", 16);
-        var jsonLabel = GameArt.Label(Loc.Ui("OwnJsonMode"), 23, GameArt.Muted, wrap: false);
-        jsonLabel.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
-        jsonLabel.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        toggles.AddChild(jsonLabel);
-        var tick = _config.MakeTickbox(nameof(SpireTalkConfig.OwnJsonMode));
-        tick.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        toggles.AddChild(tick);
-        toggles.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
-        var test = _config.MakeButton(Loc.Ui("TestBtn"), () => _ = RunOwnKeyTest(), "#4a9d7a");
-        toggles.AddChild(test);
-        card.AddChild(toggles);
-
-        _ownStatus = GameArt.Label(Loc.Ui("OwnKeyHint"), 22, GameArt.Muted);
-        card.AddChild(_ownStatus);
-        return card;
-    }
-
-    private VBoxContainer BuildYuminaCard()
-    {
-        var card = new VBoxContainer();
-        card.AddThemeConstantOverride("separation", 10);
-
-        var head = new HBoxContainer();
-        head.AddChild(SectionTitle(Loc.Ui("YuminaTitle")));
-        var back = GameArt.LinkButton(Loc.Ui("CornerOwnKey"), GameArt.Muted, 22);
-        back.Pressed += () => ShowProvider(BackendMode.OwnKey, save: true);
-        head.AddChild(back);
-        card.AddChild(head);
-
         var actions = new HBoxContainer();
         actions.AddThemeConstantOverride("separation", 16);
-        _loginButton = _config.MakeButton(Loc.Ui("LoginBtn"), () => _ = RunLogin(), "#c9a227");
-        actions.AddChild(_loginButton);
-        var logout = _config.MakeButton(Loc.Ui("LogoutBtn"), () =>
-        {
-            DeviceLogin.Cancel();
-            SpireTalkConfig.Logout();
-            SetStatus(_yuminaStatus, Loc.Ui("LoggedOutBody"), ok: true);
-        }, "#b03f3f");
-        actions.AddChild(logout);
         actions.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
-        var test = _config.MakeButton(Loc.Ui("TestBtn"), () => _ = RunYuminaTest(), "#4a9d7a");
+        var test = _config.MakeButton(Loc.Ui("TestBtn"), () => _ = RunOwnKeyTest(), "#4a9d7a");
         actions.AddChild(test);
         card.AddChild(actions);
 
-        _yuminaStatus = GameArt.Label(Loc.Ui("LoginHint"), 22, GameArt.Muted);
-        card.AddChild(_yuminaStatus);
-        _reopenLink = GameArt.LinkButton(Loc.Ui("ReopenBrowser"), GameArt.Gold, 22);
-        _reopenLink.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
-        _reopenLink.Visible = false;
-        _reopenLink.Pressed += DeviceLogin.ReopenBrowser;
-        card.AddChild(_reopenLink);
-
-        card.AddChild(Row(Loc.Ui("ApiToken"), _config.MakeLineEdit(nameof(SpireTalkConfig.ApiToken), secret: true)));
-        card.AddChild(Row(Loc.Ui("ServerUrl"), _config.MakeLineEdit(nameof(SpireTalkConfig.ServerUrl))));
-
-        // Live account block: who is signed in, credits, plan, model picker.
-        AccountPanel.Install(_config, card, compact: true);
+        _ownStatus = GameArt.Label(Loc.Ui("OwnKeyHint"), 22, GameArt.Muted);
+        card.AddChild(_ownStatus);
         return card;
     }
 
@@ -263,7 +188,6 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         {
             SpireTalkConfig.ResetMemories();
             SetStatus(_ownStatus, Loc.Ui("ResetDoneBody"), ok: true);
-            SetStatus(_yuminaStatus, Loc.Ui("ResetDoneBody"), ok: true);
         }, "#b03f3f");
         bottom.AddChild(reset);
         block.AddChild(bottom);
@@ -290,15 +214,6 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
 
     // ── Behaviour ────────────────────────────────────────────────────────
 
-    private void ShowProvider(BackendMode mode, bool save)
-    {
-        var yumina = mode == BackendMode.Yumina;
-        _ownKeyCard.Visible = !yumina;
-        _yuminaCard.Visible = yumina;
-        if (save) SpireTalkConfig.SetMode(mode);
-        if (yumina) AccountPanel.Refresh();
-    }
-
     private static void SetStatus(MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel label, string text, bool ok)
     {
         if (!GodotObject.IsInstanceValid(label)) return;
@@ -311,48 +226,6 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         SetStatus(_ownStatus, Loc.Ui("Testing"), ok: true);
         var (ok, text) = await SpireTalkConfig.TestOwnKeyAsync();
         SetStatus(_ownStatus, text, ok);
-    }
-
-    private async Task RunYuminaTest()
-    {
-        SetStatus(_yuminaStatus, Loc.Ui("Testing"), ok: true);
-        var (ok, text) = await SpireTalkConfig.TestConnectionAsync();
-        SetStatus(_yuminaStatus, text, ok);
-    }
-
-    private async Task RunLogin()
-    {
-        if (DeviceLogin.InProgress) return;
-        _loginButton.Disable();
-        try
-        {
-            await DeviceLogin.StartAsync(update =>
-            {
-                if (!IsInsideTree()) return;
-                switch (update.Phase)
-                {
-                    case DeviceLogin.Phase.Waiting:
-                        SetStatus(_yuminaStatus, update.Text, ok: true);
-                        _reopenLink.Visible = true;
-                        break;
-                    case DeviceLogin.Phase.Done:
-                        SetStatus(_yuminaStatus, update.Text, ok: true);
-                        _reopenLink.Visible = false;
-                        break;
-                    case DeviceLogin.Phase.Failed:
-                        SetStatus(_yuminaStatus, update.Text, ok: false);
-                        _reopenLink.Visible = false;
-                        break;
-                    default:
-                        _reopenLink.Visible = false;
-                        break;
-                }
-            });
-        }
-        finally
-        {
-            if (IsInsideTree() && GodotObject.IsInstanceValid(_loginButton)) _loginButton.Enable();
-        }
     }
 
     // Esc: the press is swallowed and the sheet closes on the RELEASE, so neither half of the key
@@ -383,6 +256,5 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
     public override void _ExitTree()
     {
         try { NHotkeyManager.Instance?.RemoveBlockingScreen(this); } catch { /* optional */ }
-        DeviceLogin.Cancel();
     }
 }

@@ -12,7 +12,7 @@ using SpireTalk.Affection;
 using SpireTalk.Npc;
 using SpireTalk.Rewards;
 using SpireTalk.Store;
-using SpireTalk.Yumina;
+using SpireTalk.Backend;
 
 namespace SpireTalk.Ancients;
 
@@ -170,7 +170,7 @@ public sealed class AncientConversation
             var backend = MainFile.Backend;
             if (!backend.IsConfigured)
             {
-                throw new YuminaException(Loc.Ui("ErrNotConfigured"), null, "NOT_CONFIGURED");
+                throw new BackendException(Loc.Ui("ErrNotConfigured"), null, "NOT_CONFIGURED");
             }
 
             ShowThinking();
@@ -188,7 +188,7 @@ public sealed class AncientConversation
             _ctx.SyncRelationshipVariables();
             TalkStore.Instance.Save();
 
-            using var cts = TurnTimeout(90);
+            using var cts = TurnTimeout(120);
             var opener = BuildOpener();
             var turn = await backend.ExchangeAsync(_ctx, opener, true, cts.Token);
             if (Gone) return;
@@ -225,7 +225,7 @@ public sealed class AncientConversation
             _ctx.SyncRelationshipVariables();
 
             ShowThinking();
-            using var cts = TurnTimeout(90);
+            using var cts = TurnTimeout(120);
             var turn = await MainFile.Backend.ExchangeAsync(_ctx, playerLine, false, cts.Token);
             if (Gone) return;
             await HandleTurnAsync(turn, playerLine, isOpener: false);
@@ -236,6 +236,8 @@ public sealed class AncientConversation
         }
         catch (Exception ex)
         {
+            // A line that never got an answer is not a line spent.
+            _linesUsed--;
             if (!Gone) Fail(ex);
         }
         finally
@@ -254,7 +256,7 @@ public sealed class AncientConversation
         var npcText = turn.JoinedText;
         if (!string.IsNullOrWhiteSpace(npcText))
         {
-            TalkStore.Instance.AppendHistory(_key, "npc", npcText, _runKey);
+            TalkStore.Instance.AppendHistory(_key, "npc", turn.ToTranscript(), _runKey);
             _record.LastLine = Truncate(npcText, 300);
         }
 
@@ -295,7 +297,7 @@ public sealed class AncientConversation
 
         if (SpireTalkConfig.DebugLogging)
         {
-            MainFile.Logger.Info($"[Talk] {_key} line {_linesUsed}/{ConversationRules.LinesPerVisit}: delta {turn.AffectionDelta}→{appliedDelta} (now {_ctx.Affection}, {ConversationRules.TierName(_ctx.Tier)}) reason='{turn.Reason}' action={turn.Action.Type}→{rewardSummary} model={turn.ModelUsed} credits={turn.CreditsBalance}", 1);
+            MainFile.Logger.Info($"[Talk] {_key} line {_linesUsed}/{ConversationRules.LinesPerVisit}: delta {turn.AffectionDelta}→{appliedDelta} (now {_ctx.Affection}, {ConversationRules.TierName(_ctx.Tier)}) reason='{turn.Reason}' action={turn.Action.Type}→{rewardSummary} model={turn.ModelUsed}", 1);
         }
 
         // 4. Render.
@@ -383,6 +385,7 @@ public sealed class AncientConversation
     private void Fail(Exception ex)
     {
         MainFile.Logger.Warn($"[Talk] {_key} failed: {ex.GetType().Name}: {ex.Message}", 1);
+        if (SpireTalkConfig.DebugLogging) MainFile.Logger.Warn($"[Talk] {ex}", 1);
         _ended = true;
         DisposeInput();
 

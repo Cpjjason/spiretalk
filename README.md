@@ -24,15 +24,15 @@
 - **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile, and showing up to talk earns +2 by itself.
 - **Single player only.** In multiplayer the Talk option is not offered.
 
-## Setup (pick one)
+## Setup
 
-Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*).
+Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*). Enter an API endpoint, your key and a model id, press **Test**; the result shows right underneath. Works with OpenRouter (default), OpenAI, or a local Ollama (`http://localhost:11434/v1`, leave the key empty) — anything that speaks the OpenAI chat-completions dialect.
 
-**A. Your own API key** — the sheet opens on this. Works with OpenRouter (default), OpenAI, or a local Ollama (`http://localhost:11434/v1`, leave the key empty). Enter the base URL, key and a model id, press **Test**; the result shows right underneath.
+That is the whole setup. There is no account: the NPCs run on the Yumina engine *inside the game*, and the only thing the mod ever connects to is the endpoint you configure. No AI-generated art ships with it.
 
-**B. Yumina account** — the small link in the corner, *Have a Yumina account?*, switches the sheet over. Press **Sign in**: your browser opens a page on yumina.io, you press *Allow*, and the game receives a token by itself (no password is typed in the game). The account line shows who is signed in, credits and plan; the model can be picked from the list. Tokens can be revoked any time at yumina.io → Settings → Connected games.
+## Cards
 
-The mod ships no AI-generated art and phones home to nothing except the endpoint you configure.
+Each NPC is a Yumina card — an ordinary Yumina world (persona, rules, variables) as JSON. Nine ship inside the mod. To change how an NPC talks, drop a card into `%APPDATA%\SlayTheSpire2\spiretalk\cards\`: it replaces the built-in one for the NPC it names (`spiretalk.npc`, or an id like `sts2-neow`). Cards can be written in Yumina Studio and exported, or copied from `Cards/` and edited by hand. Sharing a persona means sharing a file.
 
 ## Building
 
@@ -45,11 +45,11 @@ dotnet build -c Release -p:SpireTalkDev=true   # dev build: compiles in the file
 
 Delete the old `SpireTalk.pck` before publishing if the export step is skipped as up-to-date.
 
-NPC personas and the affection rules live in `SpireTalk/npcs.json`; the Yumina worlds are generated from the same file, so both backends speak with one voice. Localization: `SpireTalk/localization/{eng,zhs,zht,jpn,kor}/`.
+NPC personas and the affection rules live in `SpireTalk/npcs.json`; `node tools/build-cards.mjs` compiles them into the cards under `Cards/`. The engine itself is `Engine/yumina-runtime.js` — `packages/engine` from the Yumina repo bundled into one file (`pnpm build` there produces `dist/yumina-runtime.js`; copy it over to update). It runs in-game through Jint. Localization: `SpireTalk/localization/{eng,zhs,zht,jpn,kor}/`.
 
 ## Source
 
-Open source. Server side (game tokens, device-code sign-in, the STS2 worlds) lives in the Yumina repo: https://github.com/lovetimo0421/yumina-oss
+Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 
 ---
 
@@ -77,16 +77,16 @@ Open source. Server side (game tokens, device-code sign-in, the STS2 worlds) liv
 - **和 Ancient Affection 联动** — 装了那个模组时，SpireTalk 直接读写它的好感度，聊天推动的就是它解锁好感遗物和结婚的那个数字。没装时，SpireTalk 自己按档案记好感度，来聊一次本身就 +2。
 - **仅单人模式。** 多人局不提供交谈选项。
 
-### 设置（二选一）
+### 设置
 
-点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。
+点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。填接口地址、Key、模型 id，点「测试」，结果就写在下面一行。支持 OpenRouter（默认）、OpenAI、本机 Ollama（地址 `http://localhost:11434/v1`，Key 留空）——凡是 OpenAI 聊天接口那一套都行。
 
-**A. 自己的 API Key** — 设置页默认就是这个。支持 OpenRouter（默认）、OpenAI、本机 Ollama（地址 `http://localhost:11434/v1`，Key 留空）。填地址、Key、模型 id，点「测试」，结果就写在下面一行。
+设置就这些，不需要任何账号：NPC 由游戏内置的 Yumina 引擎驱动，模组除了你自己填的接口之外不连任何服务器。模组不含任何 AI 生成的美术。
 
-**B. Yumina 账号** — 角落的小字「有 Yumina 账号？」切过去。点「登录」：浏览器打开 yumina.io 的授权页，点「允许」，游戏自己拿到令牌（游戏里不输密码）。账号行显示登录者、积分、套餐，模型在列表里选。令牌随时可在 yumina.io → 设置 → 已连接的游戏 里吊销。
+### 卡
 
-模组不含任何 AI 生成的美术，除了你自己配置的接口之外不连任何服务器。
+每个 NPC 就是一张 Yumina 卡——普通的 Yumina 世界（人设、规则、变量），JSON 格式，模组自带九张。想换一位 NPC 的说话方式，把卡放进 `%APPDATA%\SlayTheSpire2\spiretalk\cards\`，它会顶替内置的那张（按卡里的 `spiretalk.npc`，或者 `sts2-neow` 这样的 id 认 NPC）。卡可以在 Yumina Studio 里写好导出，也可以从 `Cards/` 复制一张手改。分享人设就是分享一个文件。
 
 ### 开源
 
-服务端（游戏令牌、设备码登录、STS2 世界）在 Yumina 仓库：https://github.com/lovetimo0421/yumina-oss
+引擎是 Yumina 的：https://github.com/lovetimo0421/yumina-oss

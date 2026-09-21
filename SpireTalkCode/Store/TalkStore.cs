@@ -7,17 +7,20 @@ using SpireTalk.Npc;
 namespace SpireTalk.Store;
 
 /// <summary>
-/// Profile-scoped persistence for everything SpireTalk remembers between runs: which Yumina
-/// session belongs to which NPC, our own affection mirror, conversation history (for the
-/// direct backend and for "remember past visits"), and which one-per-run rewards were given.
+/// Profile-scoped persistence for everything SpireTalk remembers between runs: each NPC's engine
+/// session state, our own affection mirror, conversation history ("remember past visits"), and
+/// which one-per-run rewards were given.
 /// Stored as JSON next to the game's own profile data so profiles stay isolated.
 /// </summary>
 public sealed class TalkStore
 {
     public sealed class NpcRecord
     {
-        [JsonPropertyName("sessionId")] public string? SessionId { get; set; }
-        /// <summary>Run the Yumina session was opened in; only consulted when memory is per-run.</summary>
+        /// <summary>Engine state snapshot (variables + turn counter) of this NPC's session, as JSON.</summary>
+        [JsonPropertyName("engineState")] public string? EngineState { get; set; }
+        /// <summary>Which card file the session was opened on; a different card starts fresh.</summary>
+        [JsonPropertyName("engineCard")] public string? EngineCard { get; set; }
+        /// <summary>Run the session was opened in; only consulted when memory is per-run.</summary>
         [JsonPropertyName("sessionRun")] public string? SessionRunKey { get; set; }
         [JsonPropertyName("affection")] public int Affection { get; set; }
         [JsonPropertyName("talks")] public int Talks { get; set; }
