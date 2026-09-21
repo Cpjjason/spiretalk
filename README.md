@@ -26,10 +26,11 @@
 
 ## Setup (pick one)
 
-**A. Your own API key** — Mods → SpireTalk → *How the NPCs think* → **My own API key**.
-Works with OpenRouter (default), OpenAI, or a local Ollama (`http://localhost:11434/v1`, leave the key empty). Enter the base URL, key and a model id, press **Test**.
+Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*).
 
-**B. Yumina account** — choose **Yumina account**, press **Sign in**. Your browser opens a page on yumina.io; press *Allow* and the game receives a token by itself (no password is typed in the game). The account panel shows who is signed in, credits, plan and the model in use; you can pick another model from the list. Tokens can be revoked any time at yumina.io → Settings → Connected games.
+**A. Your own API key** — the sheet opens on this. Works with OpenRouter (default), OpenAI, or a local Ollama (`http://localhost:11434/v1`, leave the key empty). Enter the base URL, key and a model id, press **Test**; the result shows right underneath.
+
+**B. Yumina account** — the small link in the corner, *Have a Yumina account?*, switches the sheet over. Press **Sign in**: your browser opens a page on yumina.io, you press *Allow*, and the game receives a token by itself (no password is typed in the game). The account line shows who is signed in, credits and plan; the model can be picked from the list. Tokens can be revoked any time at yumina.io → Settings → Connected games.
 
 The mod ships no AI-generated art and phones home to nothing except the endpoint you configure.
 
@@ -78,10 +79,11 @@ Open source. Server side (game tokens, device-code sign-in, the STS2 worlds) liv
 
 ### 设置（二选一）
 
-**A. 自己的 API Key** — 模组配置 → SpireTalk → *NPC 用什么来思考* → **我自己的 API Key**。
-支持 OpenRouter（默认）、OpenAI、本机 Ollama（地址 `http://localhost:11434/v1`，Key 留空）。填地址、Key、模型 id，点「测试」。
+点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。
 
-**B. Yumina 账号** — 选 **Yumina 账号**，点「登录」。浏览器会打开 yumina.io 的授权页，点「允许」，游戏自己拿到令牌（游戏里不输密码）。账号面板显示登录者、积分、套餐、当前模型，可以在列表里换模型。令牌随时可在 yumina.io → 设置 → 已连接的游戏 里吊销。
+**A. 自己的 API Key** — 设置页默认就是这个。支持 OpenRouter（默认）、OpenAI、本机 Ollama（地址 `http://localhost:11434/v1`，Key 留空）。填地址、Key、模型 id，点「测试」，结果就写在下面一行。
+
+**B. Yumina 账号** — 角落的小字「有 Yumina 账号？」切过去。点「登录」：浏览器打开 yumina.io 的授权页，点「允许」，游戏自己拿到令牌（游戏里不输密码）。账号行显示登录者、积分、套餐，模型在列表里选。令牌随时可在 yumina.io → 设置 → 已连接的游戏 里吊销。
 
 模组不含任何 AI 生成的美术，除了你自己配置的接口之外不连任何服务器。
 
