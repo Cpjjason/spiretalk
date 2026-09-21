@@ -36,7 +36,8 @@ public enum ReplyLanguage
 /// </summary>
 public sealed class SpireTalkConfig : SimpleModConfig
 {
-    public static SpireTalkConfig? Instance { get; private set; }
+    // A field, not a property: BaseLib persists every public static property of this class.
+    public static SpireTalkConfig? Instance;
 
     public SpireTalkConfig()
     {

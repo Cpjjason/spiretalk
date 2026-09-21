@@ -28,16 +28,44 @@ public sealed partial class MainMenuButton : TextureButton
             TooltipText = Loc.Ui("ScreenTitle"),
         };
         b.SetAnchorsPreset(LayoutPreset.TopRight);
-        // The top-right column of 64px icons: patch notes at y=16, RitsuLib's gear at y=88 (when
-        // installed); we take the next slot, aligned to the same x=1832 on the 1920-wide canvas.
-        b.OffsetLeft = -(1920f - 1832f) - (ButtonSize - 64f) / 2f;
-        b.OffsetTop = 160f - (ButtonSize - 64f) / 2f;
-        b.OffsetRight = b.OffsetLeft + ButtonSize;
-        b.OffsetBottom = b.OffsetTop + ButtonSize;
+        // The top-right column of 64px icons (patch notes at y=16, other mods' icons below it on
+        // the same x=1832 of the 1920-wide canvas): take the first free slot, decided a frame
+        // later so icons other mods add in their own _Ready patches are already there.
+        b.PlaceAt(88f);
+        b.CallDeferred(nameof(SettleIntoColumn));
         b.MouseEntered += b.OnHover;
         b.MouseExited += b.OnUnhover;
         b.Pressed += SpireTalkScreen.Open;
         return b;
+    }
+
+    private void PlaceAt(float top)
+    {
+        OffsetLeft = -(1920f - 1832f) - (ButtonSize - 64f) / 2f;
+        OffsetTop = top - (ButtonSize - 64f) / 2f;
+        OffsetRight = OffsetLeft + ButtonSize;
+        OffsetBottom = OffsetTop + ButtonSize;
+    }
+
+    private void SettleIntoColumn()
+    {
+        try
+        {
+            var parent = GetParent<Control>();
+            var lowest = 16f + 64f; // below the patch-notes scroll
+            foreach (var child in parent.GetChildren())
+            {
+                if (child is not Control c || ReferenceEquals(c, this) || !c.Visible) continue;
+                var x = c.GlobalPosition.X;
+                if (x < 1800f || x > 1870f || c.GlobalPosition.Y > 600f) continue;
+                lowest = Math.Max(lowest, c.GlobalPosition.Y + c.Size.Y);
+            }
+            PlaceAt(lowest + 8f);
+        }
+        catch
+        {
+            // keep the default slot
+        }
     }
 
     private void OnHover()
