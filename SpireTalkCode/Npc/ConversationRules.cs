@@ -80,6 +80,9 @@ public static class ConversationRules
         public bool GiftGivenThisRun;
         public bool PlayerHurt;
         public bool PotionSlotFree;
+        /// <summary>Ancient Affection is installed, so its bond relics can be handed out through talk.</summary>
+        public bool AffectionRelicsAvailable;
+        public bool AffectionRelicGivenThisRun;
     }
 
     /// <summary>Actions an NPC of this kind may offer at this tier, given what was already given.</summary>
@@ -93,6 +96,7 @@ public static class ConversationRules
             if (tier >= Tier.Friendly && !s.GoldGivenThisRun) allowed.Add("gold");
             if (tier >= Tier.Friendly && !s.HealGivenThisRun && s.PlayerHurt) allowed.Add("heal");
             if (tier >= Tier.Close && !s.PotionGivenThisRun && s.PotionSlotFree) allowed.Add("potion");
+            if (tier >= Tier.Close && s.AffectionRelicsAvailable && !s.AffectionRelicGivenThisRun) allowed.Add("affection_relic");
         }
         else
         {
@@ -116,6 +120,7 @@ public static class ConversationRules
             "potion" => new NpcAction("potion", 1),
             "gift_potion" => new NpcAction("gift_potion", 1),
             "reroll_relics" => new NpcAction("reroll_relics", 1),
+            "affection_relic" => new NpcAction("affection_relic", 1),
             _ => NpcAction.None,
         };
     }

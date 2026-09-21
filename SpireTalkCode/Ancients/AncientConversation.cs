@@ -27,7 +27,7 @@ namespace SpireTalk.Ancients;
 /// </summary>
 public sealed class AncientConversation
 {
-    private const int MaxDialogueLines = 4;
+    private const int MaxDialogueLines = 3;
     private const int MaxLineChars = 220;
     private const string FallbackSfx = AncientDialogueLine.sfxFallbackPath;
     internal const string TalkTextKey = "SPIRETALK_TALK";
@@ -239,7 +239,7 @@ public sealed class AncientConversation
             }
             else
             {
-                var outcome = await RewardExecutor.ApplyAsync(reward, _ancient.Owner, _key, _ancient.Title.GetFormattedText(), _runKey);
+                var outcome = await RewardExecutor.ApplyAsync(reward, _ancient.Owner, _key, _ancient.Title.GetFormattedText(), _runKey, _ancient, _ctx.Affection);
                 if (outcome.Applied) _rewardsThisVisit++;
                 rewardSummary = outcome.Summary;
             }

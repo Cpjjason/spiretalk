@@ -24,6 +24,7 @@
   "SPIRETALK.rewardHeal": "{0} mends your wounds (+{1} HP)",
   "SPIRETALK.rewardPotion": "{0} gives you {1}",
   "SPIRETALK.rewardReroll": "{0} offers a different set of relics",
+  "SPIRETALK.rewardAffectionRelic": "{0} presses a keepsake into your hands: {1}",
   "SPIRETALK.rewardDiscount": "{0}% off this visit",
   "SPIRETALK.merchantTalkButton": "Talk",
   "SPIRETALK.merchantFooter": "affection {0} · {1} · {2} line(s) left {3}",

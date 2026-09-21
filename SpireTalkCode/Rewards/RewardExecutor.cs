@@ -57,17 +57,35 @@ public static class RewardExecutor
             GiftGivenThisRun = run.GiftGiven.Contains(npcKey),
             PlayerHurt = hurt,
             PotionSlotFree = potionFree,
+            AffectionRelicsAvailable = SpireTalk.Affection.AncientAffectionBridge.Enabled,
+            AffectionRelicGivenThisRun = run.AffectionRelicGiven.Contains(npcKey),
         };
     }
 
     /// <summary>Apply everything except reroll_relics / discount, which the callers own.</summary>
-    public static async Task<Outcome> ApplyAsync(NpcAction action, Player player, string npcKey, string npcName, string runKey)
+    public static async Task<Outcome> ApplyAsync(NpcAction action, Player player, string npcKey, string npcName, string runKey, object? ancientEvent = null, int affection = 0)
     {
         var run = TalkStore.Instance.GetRun(runKey);
         try
         {
             switch (action.Type)
             {
+                case "affection_relic":
+                {
+                    // One of Ancient Affection's own bond relics, chosen by its selector so the pool,
+                    // upgrade tiers and "not already owned" filter match what its option would give.
+                    if (ancientEvent == null) return new Outcome(false, "", "affection_relic needs an ancient event");
+                    if (SpireTalk.Affection.AncientAffectionBridge.PickBondRelic(ancientEvent, npcKey, affection) is not MegaCrit.Sts2.Core.Models.RelicModel relic)
+                    {
+                        return new Outcome(false, "", "affection_relic: Ancient Affection did not offer a relic");
+                    }
+                    relic.Owner = player;
+                    await RelicCmd.Obtain(relic, player, -1);
+                    run.AffectionRelicGiven.Add(npcKey);
+                    TalkStore.Instance.Save();
+                    var relicTitle = SafeTitle(() => relic.Title.GetFormattedText());
+                    return Done(string.Format(Loc.EventText("rewardAffectionRelic"), npcName, relicTitle), "affection relic " + relicTitle);
+                }
                 case "gold":
                 {
                     await PlayerCmd.GainGold(action.Amount, player);

@@ -38,6 +38,7 @@ public sealed class TalkStore
         [JsonPropertyName("heal")] public List<string> HealGiven { get; set; } = new();
         [JsonPropertyName("potion")] public List<string> PotionGiven { get; set; } = new();
         [JsonPropertyName("gift")] public List<string> GiftGiven { get; set; } = new();
+        [JsonPropertyName("affectionRelic")] public List<string> AffectionRelicGiven { get; set; } = new();
         [JsonPropertyName("touchedUtc")] public string? TouchedUtc { get; set; }
     }
 

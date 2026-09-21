@@ -24,6 +24,7 @@
   "SPIRETALK.rewardHeal": "{0}治愈了你（+{1} 生命）",
   "SPIRETALK.rewardPotion": "{0}给了你 {1}",
   "SPIRETALK.rewardReroll": "{0}换了一批遗物",
+  "SPIRETALK.rewardAffectionRelic": "{0}把一件信物遗物交到你手里：{1}",
   "SPIRETALK.rewardDiscount": "本次商店 {0}% 折扣",
   "SPIRETALK.merchantTalkButton": "聊聊",
   "SPIRETALK.merchantFooter": "好感 {0} · {1} · 还能说 {2} 句 {3}",

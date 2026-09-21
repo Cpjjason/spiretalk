@@ -90,6 +90,43 @@ public static class AncientAffectionBridge
         }
     }
 
+    /// <summary>
+    /// Ask Ancient Affection to pick one of ITS bond relics for this ancient (the same pool and
+    /// upgrade tiers its own "show affection" option uses), without granting it. Null when the mod
+    /// is missing or its internals moved. The caller obtains the relic through RelicCmd.
+    /// </summary>
+    public static object? PickBondRelic(object ancientEventModel, string npcKey, int affection)
+    {
+        try
+        {
+            if (!Available || _store == null) return null;
+            var asm = _store.Assembly;
+            var factory = asm.GetType("AncientAffection.AncientAffectionOptionFactory", throwOnError: false);
+            var rngHelper = asm.GetType("AncientAffection.AncientAffectionSeededRng", throwOnError: false);
+            var multiplayer = asm.GetType("AncientAffection.AncientAffectionMultiplayer", throwOnError: false);
+            if (factory == null || rngHelper == null) return null;
+
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+            var forRng = rngHelper.GetMethod("For", flags);
+            var select = factory.GetMethod("CreateBondRewardSelection", flags);
+            if (forRng == null || select == null) return null;
+
+            var rng = forRng.Invoke(null, new object?[] { ancientEventModel, "spiretalk_gift", $"affection={affection};utc={DateTime.UtcNow.Ticks}" });
+            var owner = ancientEventModel.GetType().GetProperty("Owner")?.GetValue(ancientEventModel);
+            var playerKey = "spiretalk";
+            var stableKey = multiplayer?.GetMethod("StablePlayerKey", flags);
+            if (stableKey != null) playerKey = stableKey.Invoke(null, new[] { owner }) as string ?? playerKey;
+
+            var selection = select.Invoke(null, new object?[] { ancientEventModel, npcKey, affection, rng, playerKey });
+            return selection?.GetType().GetProperty("Reward")?.GetValue(selection);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[AA] PickBondRelic({npcKey}) failed: {ex.Message}", 1);
+            return null;
+        }
+    }
+
     /// <summary>Apply a delta to Ancient Affection's store. Returns the new value, or null when the write failed.</summary>
     public static int? Increment(string npcKey, int delta)
     {
