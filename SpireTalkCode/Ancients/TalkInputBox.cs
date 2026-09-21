@@ -12,14 +12,22 @@ public sealed partial class TalkInputBox : MarginContainer
     private LineEdit _edit = null!;
     private Action<string>? _onSubmit;
 
-    public static TalkInputBox Create(string placeholder, Action<string> onSubmit)
+    public enum Look
+    {
+        /// <summary>Translucent dark box for the Ancients' dark event layout.</summary>
+        Dark,
+        /// <summary>Navy tooltip slab, for sitting on the Merchant's parchment sheet.</summary>
+        Parchment,
+    }
+
+    public static TalkInputBox Create(string placeholder, Action<string> onSubmit, Look look = Look.Dark)
     {
         var box = new TalkInputBox { _onSubmit = onSubmit };
-        box.Build(placeholder);
+        box.Build(placeholder, look);
         return box;
     }
 
-    private void Build(string placeholder)
+    private void Build(string placeholder, Look look)
     {
         Name = "SpireTalkInput";
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -58,8 +66,20 @@ public sealed partial class TalkInputBox : MarginContainer
         var focus = (StyleBoxFlat)normal.Duplicate();
         focus.BorderColor = new Color(1f, 0.85f, 0.45f, 0.9f);
         focus.BgColor = new Color(0f, 0f, 0f, 0.6f);
-        _edit.AddThemeStyleboxOverride("normal", normal);
-        _edit.AddThemeStyleboxOverride("focus", focus);
+        if (look == Look.Parchment)
+        {
+            // The game's navy tooltip slab reads as "a field" on tan paper; brighten it on focus.
+            var navy = SpireTalk.Ui.GameArt.Navy(20, 10);
+            var navyFocus = SpireTalk.Ui.GameArt.Slice(SpireTalk.Ui.GameArt.NavyPath, 22, 20, 10, null, new Color(1.3f, 1.3f, 1.25f));
+            _edit.AddThemeStyleboxOverride("normal", navy);
+            _edit.AddThemeStyleboxOverride("focus", navyFocus);
+            _edit.AddThemeFontSizeOverride("font_size", 26);
+        }
+        else
+        {
+            _edit.AddThemeStyleboxOverride("normal", normal);
+            _edit.AddThemeStyleboxOverride("focus", focus);
+        }
         _edit.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f, 0.95f));
         _edit.AddThemeColorOverride("font_placeholder_color", new Color(1f, 1f, 1f, 0.45f));
         _edit.AddThemeColorOverride("caret_color", new Color(1f, 0.85f, 0.45f, 1f));

@@ -1,22 +1,25 @@
 using Godot;
+using MegaCrit.Sts2.addons.mega_text;
 using SpireTalk.Ancients;
 
 namespace SpireTalk.Ui;
 
 /// <summary>
-/// A self-contained conversation overlay for NPCs that have no dialogue layout of their own
-/// (the Merchant). Dim backdrop, a dark card with the NPC's lines, up to three choice buttons,
-/// an optional free-text line and a close button. Purely presentational: the owning
-/// conversation feeds it turns and listens for choices.
+/// The Merchant's conversation sheet: a parchment page (the game's own sub-menu panel) with the
+/// merchant's words in a cream speech bubble, up to three teal event-style choice buttons, an
+/// optional line to type your own, and a small ledger line at the bottom. Purely presentational:
+/// the owning conversation feeds it turns and listens for choices.
 /// </summary>
 public sealed partial class TalkPanel : Control
 {
-    private RichTextLabel _body = null!;
-    private Label _title = null!;
-    private Label _footer = null!;
+    private const float SheetWidth = 1060f;
+
+    private MegaRichTextLabel _body = null!;
+    private MegaRichTextLabel _title = null!;
+    private MegaRichTextLabel _footer = null!;
     private VBoxContainer _choices = null!;
+    private TextureRect _tail = null!;
     private TalkInputBox? _input;
-    private VBoxContainer _card = null!;
 
     private Action<string>? _onChoice;
     private Action? _onClose;
@@ -35,76 +38,72 @@ public sealed partial class TalkPanel : Control
         MouseFilter = MouseFilterEnum.Stop;
         ZIndex = 200;
 
-        var dim = new ColorRect { Color = new Color(0f, 0f, 0f, 0.55f), MouseFilter = MouseFilterEnum.Stop };
+        var dim = new ColorRect { Color = new Color(0f, 0f, 0f, 0.5f), MouseFilter = MouseFilterEnum.Stop };
         dim.SetAnchorsPreset(LayoutPreset.FullRect);
         dim.GuiInput += OnDimInput;
         AddChild(dim);
 
         var center = new CenterContainer();
         center.SetAnchorsPreset(LayoutPreset.FullRect);
+        center.MouseFilter = MouseFilterEnum.Ignore;
         AddChild(center);
 
-        var frame = new PanelContainer { CustomMinimumSize = new Vector2(980, 0) };
-        var style = new StyleBoxFlat
-        {
-            BgColor = new Color(0.07f, 0.06f, 0.08f, 0.96f),
-            BorderColor = new Color(1f, 0.85f, 0.45f, 0.55f),
-            CornerRadiusTopLeft = 14,
-            CornerRadiusTopRight = 14,
-            CornerRadiusBottomLeft = 14,
-            CornerRadiusBottomRight = 14,
-            ContentMarginLeft = 34,
-            ContentMarginRight = 34,
-            ContentMarginTop = 26,
-            ContentMarginBottom = 26,
-            ShadowColor = new Color(0f, 0f, 0f, 0.6f),
-            ShadowSize = 24,
-        };
-        style.SetBorderWidthAll(2);
-        frame.AddThemeStyleboxOverride("panel", style);
-        center.AddChild(frame);
+        var sheet = new PanelContainer { CustomMinimumSize = new Vector2(SheetWidth, 0) };
+        sheet.AddThemeStyleboxOverride("panel", GameArt.Parchment(60, 40, 60));
+        center.AddChild(sheet);
 
-        _card = new VBoxContainer();
-        _card.AddThemeConstantOverride("separation", 16);
-        frame.AddChild(_card);
+        var page = new VBoxContainer();
+        page.AddThemeConstantOverride("separation", 14);
+        sheet.AddChild(page);
 
+        // Header: name in ink, a quiet ✕ on the right.
         var header = new HBoxContainer();
-        _title = new Label { Text = title, SizeFlagsHorizontal = SizeFlags.ExpandFill };
-        _title.AddThemeFontSizeOverride("font_size", 34);
-        _title.AddThemeColorOverride("font_color", new Color(1f, 0.85f, 0.45f));
+        _title = GameArt.Label("[b]" + Loc.Sanitize(title) + "[/b]", 36, GameArt.Ink, wrap: false);
+        _title.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         header.AddChild(_title);
-        var close = new Button { Text = "✕", CustomMinimumSize = new Vector2(56, 56), Flat = true };
-        close.AddThemeFontSizeOverride("font_size", 30);
+        var close = GameArt.LinkButton("✕", GameArt.Ink, 30);
         close.Pressed += () => _onClose?.Invoke();
         header.AddChild(close);
-        _card.AddChild(header);
+        page.AddChild(header);
 
-        _body = new RichTextLabel
+        // Speech bubble with its tail hanging off the bottom-left, as the shop's own bubbles do.
+        var bubbleWrap = new VBoxContainer();
+        bubbleWrap.AddThemeConstantOverride("separation", 0);
+        var bubble = new PanelContainer();
+        bubble.AddThemeStyleboxOverride("panel", GameArt.Bubble(GameArt.Paper));
+        _body = GameArt.Label("", 27, GameArt.Ink);
+        _body.CustomMinimumSize = new Vector2(0, 90);
+        bubble.AddChild(_body);
+        bubbleWrap.AddChild(bubble);
+        _tail = new TextureRect
         {
-            BbcodeEnabled = false,
-            FitContent = true,
-            ScrollActive = false,
-            CustomMinimumSize = new Vector2(0, 120),
-            SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            Texture = GameArt.Tex(GameArt.BubbleTailPath),
+            Modulate = GameArt.Paper,
+            CustomMinimumSize = new Vector2(36, 40),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspect,
+            SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
+            MouseFilter = MouseFilterEnum.Ignore,
         };
-        _body.AddThemeFontSizeOverride("normal_font_size", 28);
-        _body.AddThemeColorOverride("default_color", new Color(0.96f, 0.94f, 0.9f));
-        _card.AddChild(_body);
+        var tailRow = new MarginContainer();
+        tailRow.AddThemeConstantOverride("margin_left", 48);
+        tailRow.AddThemeConstantOverride("margin_top", -6);
+        tailRow.AddChild(_tail);
+        bubbleWrap.AddChild(tailRow);
+        page.AddChild(bubbleWrap);
 
         _choices = new VBoxContainer();
-        _choices.AddThemeConstantOverride("separation", 10);
-        _card.AddChild(_choices);
+        _choices.AddThemeConstantOverride("separation", 8);
+        page.AddChild(_choices);
 
-        _footer = new Label { HorizontalAlignment = HorizontalAlignment.Right };
-        _footer.AddThemeFontSizeOverride("font_size", 22);
-        _footer.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f, 0.55f));
-        _card.AddChild(_footer);
+        _footer = GameArt.Label("", 21, GameArt.InkSoft, wrap: false);
+        _footer.HorizontalAlignment = HorizontalAlignment.Right;
+        page.AddChild(_footer);
     }
 
     public void SetTitle(string title)
     {
-        _title.Text = title;
+        _title.Text = "[b]" + Loc.Sanitize(title) + "[/b]";
     }
 
     public void SetThinking()
@@ -123,63 +122,32 @@ public sealed partial class TalkPanel : Control
             foreach (var choice in choices.Take(3))
             {
                 var text = choice;
-                var b = MakeChoiceButton(text);
+                var b = GameArt.HexButton(text, 26, 66);
+                b.Alignment = HorizontalAlignment.Left;
                 b.Pressed += () => _onChoice?.Invoke(text);
                 _choices.AddChild(b);
             }
             if (showInput)
             {
-                _input = TalkInputBox.Create(string.Format(Loc.EventText("typePlaceholder"), linesLeft), t => _onChoice?.Invoke(t));
+                _input = TalkInputBox.Create(string.Format(Loc.EventText("typePlaceholder"), linesLeft), t => _onChoice?.Invoke(t), TalkInputBox.Look.Parchment);
                 _choices.AddChild(_input);
             }
         }
-        var leave = MakeChoiceButton(Loc.EventText(linesLeft > 0 ? "leaveShop" : "leaveShopDone"));
+        var leave = GameArt.LinkButton(Loc.EventText(linesLeft > 0 ? "leaveShop" : "leaveShopDone"), GameArt.InkSoft, 24);
+        leave.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
         leave.Pressed += () => _onClose?.Invoke();
         _choices.AddChild(leave);
-        _footer.Text = footer;
+        _footer.Text = Loc.Sanitize(footer);
     }
 
     public void SetError(string message)
     {
         ClearChoices();
         _body.Text = Loc.Sanitize(message);
-        var leave = MakeChoiceButton(Loc.EventText("leaveShopDone"));
+        var leave = GameArt.LinkButton(Loc.EventText("leaveShopDone"), GameArt.InkSoft, 24);
+        leave.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
         leave.Pressed += () => _onClose?.Invoke();
         _choices.AddChild(leave);
-    }
-
-    private static Button MakeChoiceButton(string text)
-    {
-        var b = new Button
-        {
-            Text = Loc.Sanitize(text),
-            CustomMinimumSize = new Vector2(0, 62),
-            SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            Alignment = HorizontalAlignment.Left,
-            ClipText = true,
-        };
-        b.AddThemeFontSizeOverride("font_size", 26);
-        var normal = new StyleBoxFlat
-        {
-            BgColor = new Color(1f, 1f, 1f, 0.06f),
-            BorderColor = new Color(1f, 0.85f, 0.45f, 0.35f),
-            CornerRadiusTopLeft = 8,
-            CornerRadiusTopRight = 8,
-            CornerRadiusBottomLeft = 8,
-            CornerRadiusBottomRight = 8,
-            ContentMarginLeft = 18,
-            ContentMarginRight = 18,
-        };
-        normal.SetBorderWidthAll(2);
-        var hover = (StyleBoxFlat)normal.Duplicate();
-        hover.BgColor = new Color(1f, 0.85f, 0.45f, 0.18f);
-        hover.BorderColor = new Color(1f, 0.85f, 0.45f, 0.9f);
-        b.AddThemeStyleboxOverride("normal", normal);
-        b.AddThemeStyleboxOverride("hover", hover);
-        b.AddThemeStyleboxOverride("pressed", hover);
-        b.AddThemeStyleboxOverride("focus", hover);
-        b.AddThemeColorOverride("font_color", new Color(0.96f, 0.94f, 0.9f));
-        return b;
     }
 
     private void ClearChoices()
@@ -199,12 +167,34 @@ public sealed partial class TalkPanel : Control
         }
     }
 
-    public override void _UnhandledInput(InputEvent e)
+    // Esc: the press is swallowed and the panel closes on the RELEASE, so neither half of the key
+    // stroke reaches the shop's own hotkeys (which would also close the inventory underneath).
+    private bool _escArmed;
+
+    public override void _Input(InputEvent e)
     {
-        if (e.IsActionPressed("ui_cancel"))
+        if (e.IsActionPressed("ui_cancel") && !e.IsEcho())
         {
+            _escArmed = true;
             GetViewport().SetInputAsHandled();
-            _onClose?.Invoke();
+        }
+        else if (e.IsActionReleased("ui_cancel") && _escArmed)
+        {
+            _escArmed = false;
+            GetViewport().SetInputAsHandled();
+            CallDeferred(nameof(RequestClose));
         }
     }
+
+    public override void _EnterTree()
+    {
+        try { MegaCrit.Sts2.Core.Nodes.CommonUi.NHotkeyManager.Instance?.AddBlockingScreen(this); } catch { /* optional */ }
+    }
+
+    public override void _ExitTree()
+    {
+        try { MegaCrit.Sts2.Core.Nodes.CommonUi.NHotkeyManager.Instance?.RemoveBlockingScreen(this); } catch { /* optional */ }
+    }
+
+    private void RequestClose() => _onClose?.Invoke();
 }

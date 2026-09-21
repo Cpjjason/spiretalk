@@ -318,6 +318,8 @@ internal sealed class MerchantConversation
         {
             MainFile.Logger.Warn($"[Merchant] greeting skipped: {ex.GetType().Name}: {ex.Message}", 1);
             _ctx = null;
+            // A player already staring at the "…" panel gets the reason and a way out.
+            if (_panel != null && GodotObject.IsInstanceValid(_panel)) _panel.SetError(Loc.DescribeError(ex));
         }
     }
 

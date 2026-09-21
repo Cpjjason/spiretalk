@@ -1,19 +1,37 @@
 using Godot;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 
 namespace SpireTalk.Yumina;
 
 /// <summary>
 /// Device-code login: the mod asks the server for a short code, opens the browser on the
 /// approval page, and polls until the player clicks "Allow". No password ever enters the game.
+/// Progress is reported to whoever started it (the settings screen shows it inline).
 /// </summary>
 public static class DeviceLogin
 {
+    public enum Phase
+    {
+        Waiting,   // browser opened, code shown, polling
+        Done,      // token stored
+        Failed,    // error or timeout; text carries the reason
+        Cancelled,
+    }
+
+    public sealed record Update(Phase Phase, string Text, string UserCode = "", string Url = "");
+
     private static CancellationTokenSource? _current;
+    private static string _lastUrl = "";
 
     public static bool InProgress => _current != null && !_current.IsCancellationRequested;
 
-    public static async Task StartAsync()
+    /// <summary>Re-open the approval page from the last attempt (in case the first browser tab was lost).</summary>
+    public static void ReopenBrowser()
+    {
+        if (string.IsNullOrEmpty(_lastUrl)) return;
+        try { OS.ShellOpen(_lastUrl); } catch { /* best effort */ }
+    }
+
+    public static async Task StartAsync(Action<Update> report)
     {
         _current?.Cancel();
         var cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
@@ -21,29 +39,19 @@ public static class DeviceLogin
         SpireTalkConfig.ApplyToClient();
         var client = MainFile.Client;
 
-        NErrorPopup? popup = null;
         try
         {
             var start = await client.StartDeviceLoginAsync("Slay the Spire 2 · SpireTalk", cts.Token);
             var url = start.VerificationUrl.Contains('?')
                 ? start.VerificationUrl + "&code=" + Uri.EscapeDataString(start.UserCode)
                 : start.VerificationUrl + "?code=" + Uri.EscapeDataString(start.UserCode);
+            _lastUrl = url;
 
-            try
-            {
-                DisplayServer.ClipboardSet(url);
-            }
-            catch { /* clipboard is optional */ }
-            try
-            {
-                OS.ShellOpen(url);
-            }
-            catch (Exception ex)
-            {
-                MainFile.Logger.Warn($"[Login] could not open browser: {ex.Message}", 1);
-            }
+            try { DisplayServer.ClipboardSet(url); } catch { /* clipboard is optional */ }
+            try { OS.ShellOpen(url); }
+            catch (Exception ex) { MainFile.Logger.Warn($"[Login] could not open browser: {ex.Message}", 1); }
 
-            popup = ShowPopup(Loc.Ui("LoginTitle"), string.Format(Loc.Ui("LoginBody"), start.UserCode, url));
+            report(new Update(Phase.Waiting, string.Format(Loc.Ui("LoginWaiting"), start.UserCode), start.UserCode, url));
 
             var interval = TimeSpan.FromSeconds(Math.Max(2, start.Interval));
             while (!cts.IsCancellationRequested)
@@ -53,28 +61,26 @@ public static class DeviceLogin
                 if (token != null)
                 {
                     SpireTalkConfig.ApiToken = token;
+                    SpireTalkConfig.Instance?.Changed();
+                    SpireTalkConfig.Instance?.SaveDebounced();
                     SpireTalkConfig.ApplyToClient();
-                    ClosePopup(popup);
-                    popup = null;
                     var me = await client.WhoAmIAsync(cts.Token);
                     AccountPanel.Refresh();
-                    ShowPopup(Loc.Ui("LoginDone"), string.Format(Loc.Ui("LoginDoneBody"), me.Name));
+                    report(new Update(Phase.Done, string.Format(Loc.Ui("LoginDoneBody"), me.Name)));
                     return;
                 }
             }
+            report(new Update(Phase.Cancelled, ""));
         }
         catch (OperationCanceledException)
         {
-            ClosePopup(popup);
-            if (_current == cts)
-            {
-                ShowPopup(Loc.Ui("LoginFailed"), Loc.Ui("ErrTimeout"));
-            }
+            report(_current == cts
+                ? new Update(Phase.Failed, Loc.Ui("ErrTimeout"))
+                : new Update(Phase.Cancelled, ""));
         }
         catch (Exception ex)
         {
-            ClosePopup(popup);
-            ShowPopup(Loc.Ui("LoginFailed"), Loc.DescribeError(ex));
+            report(new Update(Phase.Failed, Loc.DescribeError(ex)));
         }
         finally
         {
@@ -86,35 +92,5 @@ public static class DeviceLogin
     {
         _current?.Cancel();
         _current = null;
-    }
-
-    private static NErrorPopup? ShowPopup(string title, string body)
-    {
-        try
-        {
-            var popup = NErrorPopup.Create(title, body, false);
-            if (popup != null && NModalContainer.Instance != null)
-            {
-                NModalContainer.Instance.Add(popup, true);
-            }
-            return popup;
-        }
-        catch (Exception ex)
-        {
-            MainFile.Logger.Warn($"[Login] popup failed: {ex.Message}", 1);
-            return null;
-        }
-    }
-
-    private static void ClosePopup(NErrorPopup? popup)
-    {
-        try
-        {
-            if (popup != null && GodotObject.IsInstanceValid(popup))
-            {
-                popup.QueueFree();
-            }
-        }
-        catch { /* ignore */ }
     }
 }

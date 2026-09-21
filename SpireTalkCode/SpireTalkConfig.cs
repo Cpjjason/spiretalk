@@ -1,8 +1,12 @@
+using System.Reflection;
 using BaseLib.Config;
+using BaseLib.Config.UI;
 using Godot;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 using SpireTalk.Backend;
 using SpireTalk.Store;
+using SpireTalk.Ui;
 using SpireTalk.Yumina;
 
 namespace SpireTalk;
@@ -25,84 +29,50 @@ public enum ReplyLanguage
 }
 
 /// <summary>
-/// Mod settings, rendered by BaseLib inside the vanilla mod-settings screen, plus a custom
-/// account panel (see <see cref="SetupConfigUI"/>). Labels live in localization/&lt;lang&gt;/settings_ui.json
-/// under the SPIRETALK- prefix.
+/// Mod settings. BaseLib owns persistence (mod_configs/SpireTalk.cfg) and the themed controls;
+/// the screen the player actually sees is <see cref="SpireTalkScreen"/>, opened from the mushie
+/// on the main menu or from the one button this class puts on the vanilla mod list.
+/// Labels live in localization/&lt;lang&gt;/settings_ui.json under the SPIRETALK- prefix.
 /// </summary>
 public sealed class SpireTalkConfig : SimpleModConfig
 {
+    public static SpireTalkConfig? Instance { get; private set; }
+
+    public SpireTalkConfig()
+    {
+        Instance = this;
+    }
+
     // ── Mode ─────────────────────────────────────────────────────────────
 
-    [ConfigSection("Mode")]
     public static BackendMode Mode { get; set; } = BackendMode.OwnKey;
 
     // ── Own key (OpenRouter / OpenAI / Ollama / any OpenAI-compatible) ──
 
-    [ConfigSection("OwnKeySetup")]
-    [ConfigVisibleIf(nameof(Mode), BackendMode.OwnKey)]
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 200)]
     public static string OwnBaseUrl { get; set; } = "https://openrouter.ai/api/v1";
 
-    [ConfigVisibleIf(nameof(Mode), BackendMode.OwnKey)]
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 300)]
     public static string OwnKey { get; set; } = "";
 
-    [ConfigVisibleIf(nameof(Mode), BackendMode.OwnKey)]
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 120)]
     public static string OwnModel { get; set; } = "google/gemini-2.5-flash-lite";
 
-    [ConfigVisibleIf(nameof(Mode), BackendMode.OwnKey)]
     public static bool OwnJsonMode { get; set; } = true;
-
-    [ConfigVisibleIf(nameof(Mode), BackendMode.OwnKey)]
-    [ConfigButton("TestOwnKeyBtn", Color = "#4a9d7a")]
-    public static void TestOwnKey(ModConfig config)
-    {
-        _ = TestOwnKeyAsync();
-    }
 
     // ── Yumina account ───────────────────────────────────────────────────
 
-    [ConfigSection("Yumina")]
-    [ConfigVisibleIf(nameof(Mode), BackendMode.Yumina)]
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 200)]
     public static string ServerUrl { get; set; } = "https://yumina.io";
 
-    [ConfigVisibleIf(nameof(Mode), BackendMode.Yumina)]
-    [ConfigButton("LoginBtn", Color = "#c9a227")]
-    public static void Login(ModConfig config)
-    {
-        _ = DeviceLogin.StartAsync();
-    }
-
-    [ConfigVisibleIf(nameof(Mode), BackendMode.Yumina)]
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 200)]
     public static string ApiToken { get; set; } = "";
 
-    [ConfigVisibleIf(nameof(Mode), BackendMode.Yumina)]
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 120)]
     public static string YuminaModel { get; set; } = "";
 
-    [ConfigVisibleIf(nameof(Mode), BackendMode.Yumina)]
-    [ConfigButton("TestConnectionBtn", Color = "#4a9d7a")]
-    public static void TestConnection(ModConfig config)
-    {
-        _ = TestConnectionAsync();
-    }
-
-    [ConfigVisibleIf(nameof(Mode), BackendMode.Yumina)]
-    [ConfigButton("LogoutBtn", Color = "#b03f3f")]
-    public static void Logout(ModConfig config)
-    {
-        ApiToken = "";
-        ApplyToClient();
-        AccountPanel.Refresh();
-        ShowPopup(Loc.Ui("LoggedOut"), Loc.Ui("LoggedOutBody"));
-    }
-
     // ── Conversation ─────────────────────────────────────────────────────
 
-    [ConfigSection("Conversation")]
     public static bool EnableAncients { get; set; } = true;
 
     public static bool EnableMerchant { get; set; } = true;
@@ -117,69 +87,84 @@ public sealed class SpireTalkConfig : SimpleModConfig
 
     // ── Data ─────────────────────────────────────────────────────────────
 
-    [ConfigSection("Data")]
     public static bool DebugLogging { get; set; } = false;
 
-    [ConfigButton("ResetMemoriesBtn", Color = "#b03f3f")]
-    public static void ResetMemories(ModConfig config)
-    {
-        TalkStore.Instance.ResetAll();
-        ShowPopup(Loc.Ui("ResetDone"), Loc.Ui("ResetDoneBody"));
-    }
-
-    // ── Custom UI: account panel under the Yumina section ────────────────
+    // ── Vanilla mod list: one button that opens our screen ───────────────
 
     public override void SetupConfigUI(Control optionContainer)
     {
-        base.SetupConfigUI(optionContainer);
+        // Deliberately not calling base: the auto-generated rows are replaced by SpireTalkScreen.
         try
         {
-            // Secrets render as dots. BaseLib has no "password" preset, so flip Godot's own flag.
-            MaskLineEdit(optionContainer, nameof(OwnKey));
-            MaskLineEdit(optionContainer, nameof(ApiToken));
+            var box = new VBoxContainer();
+            box.AddThemeConstantOverride("separation", 18);
+            var margin = new MarginContainer();
+            margin.AddThemeConstantOverride("margin_top", 24);
+            margin.AddThemeConstantOverride("margin_left", 8);
+            margin.AddThemeConstantOverride("margin_right", 8);
+            margin.AddChild(box);
 
-            // The live account block belongs inside the Yumina section so it collapses and hides
-            // with it; the bare container is the fallback if BaseLib ever renames its sections.
-            var yuminaSection = FindNode(optionContainer, n => n is BaseLib.Config.UI.NConfigCollapsibleSection && n.Name.ToString().EndsWith("Yumina", StringComparison.Ordinal));
-            var host = (yuminaSection as BaseLib.Config.UI.NConfigCollapsibleSection)?.ContentContainer ?? optionContainer;
-            AccountPanel.Install(this, host);
+            var row = new HBoxContainer();
+            row.AddThemeConstantOverride("separation", 20);
+            row.AddChild(GameArt.Icon(GameArt.MushieSitPath, 72));
+            var text = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
+            text.AddChild(GameArt.Label("[b]" + Loc.Ui("ScreenTitle") + "[/b]", 32, GameArt.Cream));
+            text.AddChild(GameArt.Label(Loc.Ui("ModListBlurb"), 24, GameArt.Muted));
+            row.AddChild(text);
+            box.AddChild(row);
+
+            var open = MakeButton(Loc.Ui("OpenSettingsBtn"), () => SpireTalkScreen.Open());
+            open.CustomMinimumSize = new Vector2(420f, open.CustomMinimumSize.Y);
+            var center = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Begin };
+            center.AddChild(open);
+            box.AddChild(center);
+
+            optionContainer.AddChild(margin);
+            SimpleModConfig.SetupFocusNeighbors(optionContainer);
         }
         catch (Exception ex)
         {
-            MainFile.Logger.Warn($"[Config] account panel failed: {ex.Message}", 1);
+            MainFile.Logger.Warn($"[Config] mod-list page failed: {ex.Message}", 1);
         }
     }
 
-    private static void MaskLineEdit(Control container, string rowName)
+    // ── Control factories for the custom screen (BaseLib's themed widgets, bound to our props) ──
+
+    private static PropertyInfo Prop(string name) =>
+        typeof(SpireTalkConfig).GetProperty(name, BindingFlags.Public | BindingFlags.Static)
+        ?? throw new ArgumentException("no config property " + name);
+
+    internal NConfigLineEdit MakeLineEdit(string property, bool secret = false, float width = 560f)
     {
-        var row = FindNode(container, n => n is BaseLib.Config.UI.NConfigOptionRow && n.Name == rowName);
-        if (row == null) return;
-        if (FindNode(row, n => n is LineEdit) is LineEdit edit)
-        {
-            edit.Secret = true;
-        }
+        var edit = CreateRawLineEditControl(Prop(property));
+        edit.Secret = secret;
+        edit.CustomMinimumSize = new Vector2(width, 56f);
+        edit.AddThemeFontSizeOverride("font_size", 22);
+        return edit;
     }
 
-    private static Node? FindNode(Node root, Func<Node, bool> match)
+    internal NConfigTickbox MakeTickbox(string property)
     {
-        foreach (var child in root.GetChildren())
-        {
-            if (match(child)) return child;
-            var deeper = FindNode(child, match);
-            if (deeper != null) return deeper;
-        }
-        return null;
+        var tick = CreateRawTickboxControl(Prop(property));
+        // BaseLib reserves a dropdown-wide 324px slot for its tickbox rows; the visuals are
+        // centred in it, so a 64px slot shows exactly the box.
+        tick.CustomMinimumSize = new Vector2(64f, 64f);
+        tick.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+        tick.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
+        return tick;
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────
+    internal NDropdownPositioner MakeDropdown(string property) => CreateRawDropdownControl(Prop(property));
 
-    /// <summary>Expose BaseLib's themed button factory to the account panel.</summary>
-    internal Control MakeButton(string label, Action onPressed)
+    internal NConfigButton MakeButton(string label, Action onPressed, string? color = null)
     {
         var button = CreateRawButtonControl(label, onPressed);
         button.CustomMinimumSize = new Vector2(220f, button.CustomMinimumSize.Y);
+        if (!string.IsNullOrEmpty(color)) button.SetColor(Color.FromHtml(color));
         return button;
     }
+
+    // ── Actions used by the screen ───────────────────────────────────────
 
     /// <summary>Push the current URL/token into the shared client. Called on load and on every change.</summary>
     public static void ApplyToClient()
@@ -187,7 +172,31 @@ public sealed class SpireTalkConfig : SimpleModConfig
         MainFile.Client.Configure(Mode == BackendMode.Offline ? MockYumina.Marker : ServerUrl, ApiToken);
     }
 
-    private static async Task TestConnectionAsync()
+    public static void SetMode(BackendMode mode)
+    {
+        if (Mode == mode) return;
+        Mode = mode;
+        Instance?.Changed();
+        Instance?.SaveDebounced();
+        ApplyToClient();
+    }
+
+    public static void Logout()
+    {
+        ApiToken = "";
+        Instance?.Changed();
+        Instance?.SaveDebounced();
+        ApplyToClient();
+        AccountPanel.Refresh();
+    }
+
+    public static void ResetMemories()
+    {
+        TalkStore.Instance.ResetAll();
+    }
+
+    /// <summary>Probe the Yumina server with the current token. Returns (ok, one-line status).</summary>
+    public static async Task<(bool ok, string text)> TestConnectionAsync()
     {
         ApplyToClient();
         try
@@ -196,27 +205,28 @@ public sealed class SpireTalkConfig : SimpleModConfig
             var me = await MainFile.Client.WhoAmIAsync(cts.Token);
             var manifest = await MainFile.Client.GetManifestAsync(cts.Token);
             MainFile.Manifest = manifest;
-            var credits = me.Credits.HasValue ? me.Credits.Value.ToString() : "?";
+            var credits = me.Credits.HasValue ? me.Credits.Value.ToString("N0") : "?";
             AccountPanel.Refresh();
-            ShowPopup(Loc.Ui("TestOk"), string.Format(Loc.Ui("TestOkBody"), me.Name, credits, manifest.Worlds.Count));
+            return (true, string.Format(Loc.Ui("TestOkBody"), me.Name, credits, manifest.Worlds.Count));
         }
         catch (Exception ex)
         {
-            ShowPopup(Loc.Ui("TestFailed"), Loc.DescribeError(ex));
+            return (false, Loc.DescribeError(ex));
         }
     }
 
-    private static async Task TestOwnKeyAsync()
+    /// <summary>Probe the player's own endpoint. Returns (ok, one-line status).</summary>
+    public static async Task<(bool ok, string text)> TestOwnKeyAsync()
     {
         try
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
             var probe = await MainFile.Direct.ProbeAsync(cts.Token);
-            ShowPopup(Loc.Ui("TestOk"), string.Format(Loc.Ui("TestOwnOkBody"), OwnBaseUrl, OwnModel, probe));
+            return (true, string.Format(Loc.Ui("TestOwnOkBody"), OwnBaseUrl, OwnModel, probe));
         }
         catch (Exception ex)
         {
-            ShowPopup(Loc.Ui("TestFailed"), Loc.DescribeError(ex));
+            return (false, Loc.DescribeError(ex));
         }
     }
 

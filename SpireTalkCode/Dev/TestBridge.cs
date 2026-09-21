@@ -156,6 +156,45 @@ public sealed partial class TestBridge : Node
             case "state":
                 WriteResult(true, State());
                 break;
+            case "ls":
+            {
+                // List a res:// (pck) directory, one level; used to find the game's own UI art.
+                var dir = cmd["path"]?.GetValue<string>() ?? "res://";
+                var da = DirAccess.Open(dir);
+                if (da == null) { WriteResult(false, "cannot open " + dir); break; }
+                var sb = new StringBuilder();
+                foreach (var d in da.GetDirectories()) sb.Append(d).AppendLine("/");
+                foreach (var f in da.GetFiles()) sb.AppendLine(f);
+                WriteResult(true, sb.ToString());
+                break;
+            }
+            case "tex":
+            {
+                // Save a texture resource as PNG so it can be looked at outside the game.
+                var res = cmd["path"]?.GetValue<string>() ?? "";
+                var outPath = cmd["out"]?.GetValue<string>() ?? Path.Combine(Dir, "tex.png");
+                var t = ResourceLoader.Load<Texture2D>(res);
+                if (t == null) { WriteResult(false, "not a texture: " + res); break; }
+                var img = t.GetImage();
+                if (img.IsCompressed()) img.Decompress();
+                img.SavePng(outPath);
+                WriteResult(true, $"{t.GetWidth()}x{t.GetHeight()} {outPath}");
+                break;
+            }
+            case "inspect":
+            {
+                // Dump every descendant of a node with the visual facts needed to imitate it:
+                // type, rect, texture/stylebox/font resource paths, text.
+                var needle = cmd["name"]?.GetValue<string>() ?? "";
+                var target = FindNode(GetTree().Root, needle);
+                if (target == null) { WriteResult(false, "no node named " + needle); break; }
+                var sb = new StringBuilder();
+                Inspect(target, 0, sb);
+                var outPath = cmd["path"]?.GetValue<string>() ?? Path.Combine(Dir, "inspect.txt");
+                File.WriteAllText(outPath, sb.ToString());
+                WriteResult(true, outPath);
+                break;
+            }
             case "find":
             {
                 var needle = cmd["name"]?.GetValue<string>() ?? "";
@@ -334,6 +373,48 @@ public sealed partial class TestBridge : Node
         var success = result?.GetType().GetField("success")?.GetValue(result) as bool? ?? true;
         var message = result?.GetType().GetField("message")?.GetValue(result)?.ToString() ?? result?.ToString() ?? "";
         WriteResult(success, message);
+    }
+
+    private static Node? FindNode(Node root, string name)
+    {
+        if (root.Name.ToString().Equals(name, StringComparison.OrdinalIgnoreCase)) return root;
+        foreach (var c in root.GetChildren())
+        {
+            var hit = FindNode(c, name);
+            if (hit != null) return hit;
+        }
+        return null;
+    }
+
+    private static string ResName(Resource? r) => r == null ? "-" : (string.IsNullOrEmpty(r.ResourcePath) ? r.GetType().Name + "(inline)" : r.ResourcePath);
+
+    private static void Inspect(Node node, int depth, StringBuilder sb)
+    {
+        if (depth > 12) return;
+        sb.Append(' ', depth * 2).Append(node.GetType().Name).Append(" \"").Append(node.Name).Append('"');
+        if (node is Control c)
+        {
+            sb.Append($" pos={c.GlobalPosition.X:0},{c.GlobalPosition.Y:0} size={c.Size.X:0}x{c.Size.Y:0} vis={c.IsVisibleInTree()}");
+            if (c.Theme != null) sb.Append(" theme=").Append(ResName(c.Theme));
+            switch (c)
+            {
+                case TextureRect tr: sb.Append(" tex=").Append(ResName(tr.Texture)); break;
+                case NinePatchRect np: sb.Append(" ninepatch=").Append(ResName(np.Texture)).Append($" margins={np.PatchMarginLeft},{np.PatchMarginTop},{np.PatchMarginRight},{np.PatchMarginBottom}"); break;
+                case TextureButton tb: sb.Append(" normal=").Append(ResName(tb.TextureNormal)).Append(" hover=").Append(ResName(tb.TextureHover)); break;
+                case Label l: sb.Append(" text=\"").Append(l.Text.Replace("\n", "\\n")).Append('"').Append(" font=").Append(ResName(l.GetThemeFont("font"))).Append(" size=").Append(l.GetThemeFontSize("font_size")); break;
+                case RichTextLabel rl: sb.Append(" text=\"").Append(rl.Text.Replace("\n", "\\n")).Append('"').Append(" font=").Append(ResName(rl.GetThemeFont("normal_font"))).Append(" size=").Append(rl.GetThemeFontSize("normal_font_size")); break;
+                case Button b: sb.Append(" text=\"").Append(b.Text).Append('"').Append(" normal=").Append(ResName(b.GetThemeStylebox("normal"))); break;
+                case PanelContainer pc: sb.Append(" panel=").Append(ResName(pc.GetThemeStylebox("panel"))); break;
+                case Panel pn: sb.Append(" panel=").Append(ResName(pn.GetThemeStylebox("panel"))); break;
+            }
+            if (c.Modulate != Colors.White) sb.Append($" modulate={c.Modulate.ToHtml()}");
+        }
+        else if (node is Sprite2D sp)
+        {
+            sb.Append(" sprite=").Append(ResName(sp.Texture)).Append($" pos={sp.GlobalPosition.X:0},{sp.GlobalPosition.Y:0}");
+        }
+        sb.AppendLine();
+        foreach (var child in node.GetChildren()) Inspect(child, depth + 1, sb);
     }
 
     private void DumpTree(string path, bool all)

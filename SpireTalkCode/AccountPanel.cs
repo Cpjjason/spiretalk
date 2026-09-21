@@ -20,18 +20,23 @@ public static class AccountPanel
     private static List<ModelInfo> _models = new();
     private static bool _refreshing;
 
-    public static void Install(SpireTalkConfig config, Control container)
+    /// <param name="compact">Inside the mod's own screen: no header, no outer margins.</param>
+    public static void Install(SpireTalkConfig config, Control container, bool compact = false)
     {
         _root = new VBoxContainer { Name = "SpireTalkAccountPanel" };
         _root.AddThemeConstantOverride("separation", 10);
 
-        var header = Label("[b]" + Loc.Ui("AccountHeader") + "[/b]", 30);
-        _root.AddChild(header);
+        if (!compact)
+        {
+            var header = Label("[b]" + Loc.Ui("AccountHeader") + "[/b]", 30);
+            _root.AddChild(header);
+        }
 
         _status = Label(Loc.Ui("AccountNotSignedIn"), 26);
         _root.AddChild(_status);
 
         _modelLine = Label("", 26);
+        _modelLine.Visible = !compact; // the picker below already names the model
         _root.AddChild(_modelLine);
 
         var row = new HBoxContainer();
@@ -45,9 +50,9 @@ public static class AccountPanel
         _root.AddChild(row);
 
         var margin = new MarginContainer();
-        margin.AddThemeConstantOverride("margin_top", 24);
-        margin.AddThemeConstantOverride("margin_bottom", 24);
-        margin.AddThemeConstantOverride("margin_left", 48);
+        margin.AddThemeConstantOverride("margin_top", compact ? 4 : 24);
+        margin.AddThemeConstantOverride("margin_bottom", compact ? 4 : 24);
+        margin.AddThemeConstantOverride("margin_left", compact ? 0 : 48);
         margin.AddChild(_root);
         container.AddChild(margin);
 
