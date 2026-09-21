@@ -107,6 +107,20 @@ public sealed class AncientConversation
         return convo.StartAsync();
     }
 
+    /// <summary>
+    /// Called from the layout patch on every dialogue page. The typed-input box only makes sense
+    /// once the options are on screen (last page); before that the bubble sits where the box is.
+    /// </summary>
+    internal static void OnDialoguePage(NAncientEventLayout layout, bool lastPage)
+    {
+        foreach (var conversation in Active.Values)
+        {
+            if (!ReferenceEquals(conversation.Layout, layout)) continue;
+            var box = conversation._inputBox;
+            if (box != null && GodotObject.IsInstanceValid(box)) box.Visible = lastPage;
+        }
+    }
+
     public static void Forget(AncientEventModel ancient)
     {
         if (Active.Remove(ancient, out var convo))
@@ -162,6 +176,10 @@ public sealed class AncientConversation
         {
             _linesUsed++;
             _ctx.LinesLeft = ConversationRules.LinesPerVisit - _linesUsed;
+            // Re-read: Ancient Affection's own options (or a console) may have moved the number since the last line.
+            var (currentAffection, married) = AffectionService.Read(_key);
+            _ctx.Affection = currentAffection;
+            _ctx.Married = married;
             _ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Ancient, _ctx.Tier, RewardState());
             _ctx.SyncRelationshipVariables();
 
@@ -216,7 +234,7 @@ public sealed class AncientConversation
                     _rewardsThisVisit++;
                     _rerollUsed = true;
                     rewardSummary = "reroll";
-                    RewardExecutor.Toast(string.Format(Loc.EventText("rewardReroll"), _npc.Name));
+                    RewardExecutor.Toast(string.Format(Loc.EventText("rewardReroll"), _npc.DisplayName));
                 }
             }
             else
@@ -340,8 +358,11 @@ public sealed class AncientConversation
         }
     }
 
+    private int _lastLineCount;
+
     private void ShowLines(NAncientEventLayout layout, IReadOnlyList<LocString> texts)
     {
+        _lastLineCount = texts.Count;
         var lines = new List<AncientDialogueLine>(texts.Count);
         for (var i = 0; i < texts.Count; i++)
         {
@@ -361,14 +382,24 @@ public sealed class AncientConversation
     {
         try
         {
-            if (OptionsContainerField.GetValue(layout) is not Control container) return;
+            // Anchored to the bottom of the layout rather than inside the options list: the
+            // list scrolls with the dialogue and can push its last row below the screen edge.
             var placeholder = string.Format(Loc.EventText("typePlaceholder"), linesLeft);
             _inputBox = TalkInputBox.Create(placeholder, text =>
             {
                 if (_busy || _ended) return;
                 _ = TurnAsync(text);
             });
-            container.AddChild(_inputBox);
+            _inputBox.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
+            _inputBox.OffsetLeft = 460;
+            _inputBox.OffsetRight = -460;
+            _inputBox.OffsetTop = -80;
+            _inputBox.OffsetBottom = -8;
+            _inputBox.ZIndex = 20;
+            // Hidden until the last dialogue page is up (see OnDialoguePage); single-line replies
+            // are already on their last page.
+            _inputBox.Visible = _lastLineCount <= 1;
+            layout.AddChild(_inputBox);
         }
         catch (Exception ex)
         {

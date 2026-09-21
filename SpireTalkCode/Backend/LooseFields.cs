@@ -11,7 +11,8 @@ namespace SpireTalk.Backend;
 /// </summary>
 public static class LooseFields
 {
-    private static readonly Regex ChoicesRe = new(@"(?im)^\s*[\[\(]?\s*choices\s*[:=]\s*(\[[^\]]*\])\s*[\]\)]?\s*$", RegexOptions.Compiled);
+    // Accepts both `choices: ["a", "b"]` and the bare `[choices: "a", "b", "c"]` small models like to write.
+    private static readonly Regex ChoicesRe = new(@"(?im)^\s*[\[\(]?\s*choices\s*[:=]\s*(\[[^\]]*\]|""[^""\r\n]*""(?:\s*,\s*""[^""\r\n]*"")*)\s*[\]\)]?\s*$", RegexOptions.Compiled);
     private static readonly Regex DeltaRe = new(@"(?im)^\s*[\[\(]?\s*affection_delta\s*[:=]\s*([+-]?\d)\s*[\]\)]?\s*$", RegexOptions.Compiled);
     private static readonly Regex ActionRe = new(@"(?im)^\s*[\[\(]?\s*action\s*[:=]\s*(\{[^}]*\})\s*[\]\)]?\s*$", RegexOptions.Compiled);
     private static readonly Regex StageRe = new(@"\[\s*stage direction\s*:\s*([^\]]+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -34,7 +35,9 @@ public static class LooseFields
             {
                 try
                 {
-                    if (JsonNode.Parse(m.Groups[1].Value) is JsonArray arr)
+                    var list = m.Groups[1].Value.Trim();
+                    if (!list.StartsWith('[')) list = "[" + list + "]";
+                    if (JsonNode.Parse(list) is JsonArray arr)
                     {
                         foreach (var n in arr)
                         {

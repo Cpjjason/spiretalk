@@ -1,6 +1,8 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Events;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 
 namespace SpireTalk.Ancients;
@@ -12,7 +14,11 @@ namespace SpireTalk.Ancients;
 [HarmonyPatch(typeof(AncientEventModel), "GenerateInitialOptionsWrapper")]
 internal static class AncientInitialOptionsPatch
 {
+    // Run after the option frameworks (RitsuLib / Ancient Affection) so our option is appended to
+    // whatever list they produce instead of being rebuilt away by a later postfix.
     [HarmonyPostfix]
+    [HarmonyPriority(Priority.Last)]
+    [HarmonyAfter("com.ritsukage.sts2-RitsuLib.framework-core", "AncientAffection.harmony")]
     private static void AppendTalkOption(AncientEventModel __instance, ref IReadOnlyList<EventOption> __result)
     {
         try
@@ -34,6 +40,24 @@ internal static class AncientInitialOptionsPatch
         catch (Exception ex)
         {
             MainFile.Logger.Error($"[Talk] could not append talk option: {ex}", 1);
+        }
+    }
+}
+
+/// <summary>Tell the conversation which dialogue page is showing so the input box can follow the options.</summary>
+[HarmonyPatch(typeof(NAncientEventLayout), "SetDialogueLineAndAnimate")]
+internal static class AncientDialoguePagePatch
+{
+    [HarmonyPostfix]
+    private static void AfterPage(NAncientEventLayout __instance, int ____currentDialogueLine, List<AncientDialogueLine> ____dialogue)
+    {
+        try
+        {
+            AncientConversation.OnDialoguePage(__instance, ____currentDialogueLine >= ____dialogue.Count - 1);
+        }
+        catch
+        {
+            // cosmetic only
         }
     }
 }

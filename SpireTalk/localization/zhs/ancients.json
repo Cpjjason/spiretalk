@@ -1,5 +1,6 @@
 {
   "SPIRETALK.dynamic": "{text}",
+  "SPIRETALK.name.MERCHANT": "商人",
   "SPIRETALK.empty": "",
   "SPIRETALK.talk.title": "交谈",
   "SPIRETALK.talk.description": "和{AncientName}说说话。每次最多三句。",

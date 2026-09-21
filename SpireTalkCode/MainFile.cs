@@ -62,6 +62,9 @@ public partial class MainFile : Node
         var harmony = new Harmony("io.yumina.spiretalk");
         harmony.PatchAll(typeof(MainFile).Assembly);
 
+        // Developer automation bridge — only when the flag file exists (see Dev/TestBridge.cs).
+        Dev.TestBridge.Install();
+
         Logger.Info($"[Init] SpireTalk {Version} ready. mode={SpireTalkConfig.Mode} backend={Backend.DisplayName} configured={Backend.IsConfigured}", 1);
     }
 

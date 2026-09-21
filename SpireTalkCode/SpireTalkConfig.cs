@@ -134,12 +134,41 @@ public sealed class SpireTalkConfig : SimpleModConfig
         base.SetupConfigUI(optionContainer);
         try
         {
-            AccountPanel.Install(this, optionContainer);
+            // Secrets render as dots. BaseLib has no "password" preset, so flip Godot's own flag.
+            MaskLineEdit(optionContainer, nameof(OwnKey));
+            MaskLineEdit(optionContainer, nameof(ApiToken));
+
+            // The live account block belongs inside the Yumina section so it collapses and hides
+            // with it; the bare container is the fallback if BaseLib ever renames its sections.
+            var yuminaSection = FindNode(optionContainer, n => n is BaseLib.Config.UI.NConfigCollapsibleSection && n.Name.ToString().EndsWith("Yumina", StringComparison.Ordinal));
+            var host = (yuminaSection as BaseLib.Config.UI.NConfigCollapsibleSection)?.ContentContainer ?? optionContainer;
+            AccountPanel.Install(this, host);
         }
         catch (Exception ex)
         {
             MainFile.Logger.Warn($"[Config] account panel failed: {ex.Message}", 1);
         }
+    }
+
+    private static void MaskLineEdit(Control container, string rowName)
+    {
+        var row = FindNode(container, n => n is BaseLib.Config.UI.NConfigOptionRow && n.Name == rowName);
+        if (row == null) return;
+        if (FindNode(row, n => n is LineEdit) is LineEdit edit)
+        {
+            edit.Secret = true;
+        }
+    }
+
+    private static Node? FindNode(Node root, Func<Node, bool> match)
+    {
+        foreach (var child in root.GetChildren())
+        {
+            if (match(child)) return child;
+            var deeper = FindNode(child, match);
+            if (deeper != null) return deeper;
+        }
+        return null;
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────

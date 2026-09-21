@@ -112,7 +112,11 @@ public sealed class YuminaClient
         using var res = await SendAsync(HttpMethod.Get, "/api/models", null, ct);
         var json = await ReadJsonAsync(res, ct);
         var list = new List<ModelInfo>();
-        var arr = (json["data"] as JsonObject)?["curated"] as JsonArray ?? (json["data"] as JsonObject)?["all"] as JsonArray;
+        // "curated" is the platform's short list; it comes back as [] for private-provider (BYOK)
+        // accounts, so fall back to the full list whenever it is empty rather than only when absent.
+        var data = json["data"] as JsonObject;
+        var arr = data?["curated"] as JsonArray;
+        if (arr == null || arr.Count == 0) arr = data?["all"] as JsonArray;
         if (arr == null) return list;
         foreach (var n in arr)
         {

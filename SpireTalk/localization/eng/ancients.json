@@ -1,5 +1,6 @@
 {
   "SPIRETALK.dynamic": "{text}",
+  "SPIRETALK.name.MERCHANT": "The Merchant",
   "SPIRETALK.empty": "",
   "SPIRETALK.talk.title": "Talk",
   "SPIRETALK.talk.description": "Speak with {AncientName}. Up to three lines per visit.",

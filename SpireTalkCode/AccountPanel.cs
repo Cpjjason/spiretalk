@@ -25,19 +25,20 @@ public static class AccountPanel
         _root = new VBoxContainer { Name = "SpireTalkAccountPanel" };
         _root.AddThemeConstantOverride("separation", 10);
 
-        var header = ModConfig.CreateRawLabelControl("[b]" + Loc.Ui("AccountHeader") + "[/b]", 30);
+        var header = Label("[b]" + Loc.Ui("AccountHeader") + "[/b]", 30);
         _root.AddChild(header);
 
-        _status = ModConfig.CreateRawLabelControl(Loc.Ui("AccountNotSignedIn"), 26);
+        _status = Label(Loc.Ui("AccountNotSignedIn"), 26);
         _root.AddChild(_status);
 
-        _modelLine = ModConfig.CreateRawLabelControl("", 26);
+        _modelLine = Label("", 26);
         _root.AddChild(_modelLine);
 
         var row = new HBoxContainer();
         row.AddThemeConstantOverride("separation", 16);
         _picker = new OptionButton { CustomMinimumSize = new Vector2(520, 56), FocusMode = Control.FocusModeEnum.All };
         _picker.AddThemeFontSizeOverride("font_size", 24);
+        StylePicker(_picker);
         _picker.ItemSelected += OnModelPicked;
         row.AddChild(_picker);
         row.AddChild(config.MakeButton(Loc.Ui("RefreshBtn"), () => Refresh()));
@@ -52,6 +53,49 @@ public static class AccountPanel
 
         UpdateVisibility();
         Refresh();
+    }
+
+    /// <summary>Godot's stock grey OptionButton looks alien next to BaseLib's dark rows; dress it to match.</summary>
+    private static void StylePicker(OptionButton picker)
+    {
+        StyleBoxFlat Box(Color bg, Color border)
+        {
+            var box = new StyleBoxFlat
+            {
+                BgColor = bg,
+                BorderColor = border,
+                ContentMarginLeft = 18,
+                ContentMarginRight = 18,
+                ContentMarginTop = 8,
+                ContentMarginBottom = 8,
+            };
+            box.SetBorderWidthAll(1);
+            box.SetCornerRadiusAll(4);
+            return box;
+        }
+        var dark = new Color(0.10f, 0.11f, 0.13f, 0.95f);
+        var edge = new Color(1f, 1f, 1f, 0.18f);
+        var gold = new Color(1f, 0.85f, 0.45f, 0.8f);
+        picker.AddThemeStyleboxOverride("normal", Box(dark, edge));
+        picker.AddThemeStyleboxOverride("hover", Box(new Color(0.16f, 0.17f, 0.20f, 0.95f), gold));
+        picker.AddThemeStyleboxOverride("pressed", Box(dark, gold));
+        picker.AddThemeStyleboxOverride("focus", Box(dark, gold));
+        picker.AddThemeColorOverride("font_color", new Color(0.93f, 0.91f, 0.86f));
+        picker.AddThemeColorOverride("font_hover_color", new Color(1f, 0.85f, 0.45f));
+        var popup = picker.GetPopup();
+        popup.AddThemeFontSizeOverride("font_size", 24);
+        popup.AddThemeStyleboxOverride("panel", Box(new Color(0.08f, 0.08f, 0.10f, 0.98f), gold));
+    }
+
+    /// <summary>BaseLib's raw label has no height of its own inside a VBox; size it like its section headers.</summary>
+    private static MegaRichTextLabel Label(string text, int fontSize)
+    {
+        var label = ModConfig.CreateRawLabelControl(text, fontSize);
+        label.FitContent = true;
+        label.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+        label.CustomMinimumSize = new Vector2(0f, fontSize + 16f);
+        label.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        return label;
     }
 
     public static void UpdateVisibility()

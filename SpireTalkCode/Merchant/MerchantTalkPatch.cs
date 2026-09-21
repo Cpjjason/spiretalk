@@ -44,20 +44,19 @@ internal static class MerchantTalk
     {
         try
         {
-            if (RunStateProperty?.GetValue(RunManager.Instance) is RunState run)
-            {
-                return LocalContext.GetMe(run);
-            }
+            var run = RunManager.Instance.DebugOnlyGetState()
+                ?? RunStateProperty?.GetValue(RunManager.Instance) as RunState;
+            if (run != null) return LocalContext.GetMe(run);
         }
-        catch
+        catch (Exception ex)
         {
-            // no run in progress
+            MainFile.Logger.Warn($"[Merchant] no local player: {ex.Message}", 1);
         }
         return null;
     }
 
     /// <summary>New shop visit: reset the per-visit state and start the greeting.</summary>
-    public static void OnShopEntered(NMerchantDialogue node)
+    public static void OnShopEntered(NMerchantDialogue? node)
     {
         _dialogueNode = node;
         DiscountPercent = 0;
@@ -66,15 +65,37 @@ internal static class MerchantTalk
         _conversation = null;
         if (!SpireTalkConfig.EnableMerchant) return;
         var owner = ResolveLocalPlayer();
-        if (owner == null || owner.RunState.Players.Count > 1) return;
+        if (owner == null || owner.RunState.Players.Count > 1)
+        {
+            if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered but no solo local player; skipping", 1);
+            return;
+        }
+        if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered; greeting via " + MainFile.Backend.DisplayName, 1);
         _conversation = new MerchantConversation(owner);
         _ = _conversation.GreetAsync(node);
     }
 
+    /// <summary>Vanilla path: the dialogue node is initialised on room entry. Just remember it; Open starts the visit.</summary>
+    public static void OnDialogueInitialized(NMerchantDialogue node)
+    {
+        _dialogueNode = node;
+        _conversation?.Dispose();
+        _conversation = null;
+        _inventoryNode = null;
+    }
+
     public static void OnInventoryOpened(NMerchantInventory inventory)
     {
-        _inventoryNode = inventory;
-        if (!SpireTalkConfig.EnableMerchant || _conversation == null) return;
+        if (!SpireTalkConfig.EnableMerchant) return;
+        // A new inventory node means a new shop visit. Some skin mods replace the vanilla
+        // Initialize path (so NMerchantDialogue.Initialize never fires); Open is the reliable hook.
+        if (!ReferenceEquals(_inventoryNode, inventory) || _conversation == null)
+        {
+            _inventoryNode = inventory;
+            var dialogue = inventory.GetNodeOrNull<NMerchantDialogue>("%Dialogue") ?? inventory.GetNodeOrNull<NMerchantDialogue>("Dialogue");
+            OnShopEntered(dialogue);
+        }
+        if (_conversation == null) return;
         Callable.From(() => InstallTalkButton(inventory)).CallDeferred();
     }
 
@@ -176,7 +197,7 @@ internal static class MerchantDialogueInitPatch
     {
         try
         {
-            MerchantTalk.OnShopEntered(__instance);
+            MerchantTalk.OnDialogueInitialized(__instance);
         }
         catch (Exception ex)
         {
@@ -259,7 +280,7 @@ internal sealed class MerchantConversation
     }
 
     /// <summary>Greeting bubble on entering the shop; also primes the conversation context.</summary>
-    public async Task GreetAsync(NMerchantDialogue node)
+    public async Task GreetAsync(NMerchantDialogue? node)
     {
         if (_greeted) return;
         _greeted = true;
@@ -289,6 +310,7 @@ internal sealed class MerchantConversation
             var first = turn.Lines.FirstOrDefault() ?? "";
             if (first.Length > 160) first = first[..160].TrimEnd() + "…";
             if (first.Length > 0) MerchantTalk.ShowBubble(first);
+            if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Merchant] greeting shown: {first}", 1);
             // If the panel is already open (fast player), fill it.
             if (_panel != null && GodotObject.IsInstanceValid(_panel)) Present(turn);
         }
@@ -306,7 +328,7 @@ internal sealed class MerchantConversation
             _panel.Visible = true;
             return;
         }
-        var title = _npc.Name;
+        var title = _npc.DisplayName;
         _panel = TalkPanel.Create(title, line => _ = TurnAsync(line), ClosePanel);
         var host = (Node?)NGame.Instance;
         if (host == null) return;
@@ -376,7 +398,7 @@ internal sealed class MerchantConversation
                 }
                 else
                 {
-                    var outcome = await RewardExecutor.ApplyAsync(reward, _owner, MerchantTalk.NpcKey, _npc.Name, _runKey);
+                    var outcome = await RewardExecutor.ApplyAsync(reward, _owner, MerchantTalk.NpcKey, _npc.DisplayName, _runKey);
                     if (outcome.Applied) _rewardsThisVisit++;
                     summary = outcome.Summary;
                 }

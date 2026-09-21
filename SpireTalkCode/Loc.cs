@@ -29,17 +29,25 @@ public static class Loc
         return new LocString(AncientsTable, "SPIRETALK." + key);
     }
 
+    /// <summary>
+    /// Plain string for code that formats with string.Format. Uses the RAW table text: the game's
+    /// SmartFormat would otherwise expand "{0}" into its variables dictionary.
+    /// </summary>
     public static string EventText(string key)
     {
         var loc = Event(key);
-        return loc.Exists() ? loc.GetFormattedText() : key;
+        if (!loc.Exists()) return key;
+        var raw = loc.GetRawText();
+        return raw.Contains('{') ? raw : loc.GetFormattedText();
     }
 
-    /// <summary>UI string from settings_ui.json: SPIRETALK-MSG.&lt;key&gt;</summary>
+    /// <summary>UI string from settings_ui.json: SPIRETALK-MSG.&lt;key&gt; (raw text, see EventText).</summary>
     public static string Ui(string key)
     {
         var loc = LocString.GetIfExists(UiTable, "SPIRETALK-MSG." + key);
-        return loc?.GetFormattedText() ?? key;
+        if (loc == null) return key;
+        var raw = loc.GetRawText();
+        return raw.Contains('{') ? raw : loc.GetFormattedText();
     }
 
     /// <summary>
@@ -62,6 +70,22 @@ public static class Loc
             });
         }
         return sb.ToString().Trim();
+    }
+
+    /// <summary>
+    /// The name the player sees: the game's own localized title for an Ancient (ancients table,
+    /// "NEOW.title" → 涅奥), our SPIRETALK.name.&lt;KEY&gt; entry otherwise, then the roster's English name.
+    /// </summary>
+    public static string NpcName(SpireTalk.Npc.NpcDefinition npc)
+    {
+        var key = npc.Key.ToUpperInvariant();
+        if (npc.Kind == SpireTalk.Npc.NpcKind.Ancient)
+        {
+            var vanilla = LocString.GetIfExists(AncientsTable, key + ".title");
+            if (vanilla != null) return vanilla.GetFormattedText();
+        }
+        var own = LocString.GetIfExists(AncientsTable, "SPIRETALK.name." + key);
+        return own != null ? own.GetFormattedText() : npc.Name;
     }
 
     /// <summary>Human-readable language name the AI should answer in.</summary>

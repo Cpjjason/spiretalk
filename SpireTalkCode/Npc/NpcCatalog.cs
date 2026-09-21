@@ -16,6 +16,8 @@ public sealed class NpcDefinition
     [JsonPropertyName("greeting")] public string Greeting { get; set; } = "";
 
     [JsonIgnore] public NpcKind Kind => KindName == "merchant" ? NpcKind.Merchant : NpcKind.Ancient;
+    /// <summary>Localized, player-facing name (see <see cref="Loc.NpcName"/>). <see cref="Name"/> is for prompts.</summary>
+    [JsonIgnore] public string DisplayName => Loc.NpcName(this);
 }
 
 /// <summary>
