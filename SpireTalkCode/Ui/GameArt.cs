@@ -54,6 +54,12 @@ public static class GameArt
         return tex;
     }
 
+    public static Font? Font(string path)
+    {
+        try { return ResourceLoader.Exists(path) ? ResourceLoader.Load<Font>(path) : null; }
+        catch { return null; }
+    }
+
     /// <summary>Nine-slice stylebox from a vanilla texture; flat fallback keeps layouts alive without it.</summary>
     public static StyleBox Slice(string path, int margin, int padX, int padY, Color? fallback = null, Color? modulate = null)
         => Slice(path, margin, padX, padY, padY, fallback, modulate);
@@ -103,6 +109,14 @@ public static class GameArt
         label.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
         label.CustomMinimumSize = new Vector2(0, size + 14);
         label.AddThemeColorOverride("default_color", color);
+        // The settings-screen theme carries a hard shadow that doubles dark ink on paper. Use the
+        // game's dialogue shadow instead (soft, 3/2 px) for light text, and none for ink.
+        var ink = color.R * 0.3f + color.G * 0.59f + color.B * 0.11f < 0.5f;
+        label.AddThemeColorOverride("font_shadow_color", ink ? new Color(0, 0, 0, 0) : new Color(0, 0, 0, 0.251f));
+        label.AddThemeConstantOverride("shadow_offset_x", 3);
+        label.AddThemeConstantOverride("shadow_offset_y", 2);
+        label.AddThemeConstantOverride("shadow_outline_size", 0);
+        label.AddThemeConstantOverride("outline_size", 0);
         return label;
     }
 

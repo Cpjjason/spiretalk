@@ -1,91 +1,100 @@
 using Godot;
+using MegaCrit.Sts2.Core.Helpers;
+using SpireTalk.Ui;
 
 namespace SpireTalk.Ancients;
 
 /// <summary>
-/// Free-text line for keyboard players, appended below the choice buttons. Controller users can
-/// ignore it — the choices cover the conversation on their own. Enter submits; the box clears and
-/// disables itself until the next turn is presented (the conversation replaces it).
+/// Free-text line for keyboard players, shown as one more Ancient option button (the game's own
+/// scene, see <see cref="NativeScene"/>) with the text field where the option text would be.
+/// Controller users can ignore it — the choices cover the conversation on their own. Enter
+/// submits; the box disables itself until the next turn is presented (the conversation replaces it).
 /// </summary>
-public sealed partial class TalkInputBox : MarginContainer
+public sealed partial class TalkInputBox : Control
 {
+    private static readonly Color Cream = new(1f, 0.9647f, 0.8863f, 1f);
+
     private LineEdit _edit = null!;
+    private NinePatchRect? _outline;
+    private Tween? _tween;
     private Action<string>? _onSubmit;
 
-    public enum Look
-    {
-        /// <summary>Translucent dark box for the Ancients' dark event layout.</summary>
-        Dark,
-        /// <summary>Navy tooltip slab, for sitting on the Merchant's parchment sheet.</summary>
-        Parchment,
-    }
-
-    public static TalkInputBox Create(string placeholder, Action<string> onSubmit, Look look = Look.Dark)
+    public static TalkInputBox Create(string placeholder, Action<string> onSubmit, Color buttonColor)
     {
         var box = new TalkInputBox { _onSubmit = onSubmit };
-        box.Build(placeholder, look);
+        box.Build(placeholder, buttonColor);
         return box;
     }
 
-    private void Build(string placeholder, Look look)
+    private void Build(string placeholder, Color buttonColor)
     {
         Name = "SpireTalkInput";
-        SizeFlagsHorizontal = SizeFlags.ExpandFill;
-        AddThemeConstantOverride("margin_top", 10);
-        AddThemeConstantOverride("margin_left", 6);
-        AddThemeConstantOverride("margin_right", 6);
+        CustomMinimumSize = new Vector2(0, 84);
+        SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
+        MouseFilter = MouseFilterEnum.Ignore;
+
+        var art = NativeScene.Build(NativeScene.AncientOptionButton);
+        if (art != null)
+        {
+            art.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+            art.CustomMinimumSize = Vector2.Zero;
+            NativeOption.IgnoreMouse(art);
+            if (art.GetNodeOrNull<NinePatchRect>("Image") is { } image) image.Modulate = buttonColor;
+            _outline = art.GetNodeOrNull<NinePatchRect>("Outline");
+            if (art.GetNodeOrNull("HBoxContainer") is CanvasItem row) row.Visible = false;
+            if (art.GetNodeOrNull("PlayerVoteContainer") is Node votes) votes.QueueFree();
+            AddChild(art);
+        }
 
         _edit = new LineEdit
         {
             PlaceholderText = placeholder,
             MaxLength = 400,
-            ClearButtonEnabled = true,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            CustomMinimumSize = new Vector2(0, 64),
             ContextMenuEnabled = false,
             CaretBlink = true,
             FocusMode = FocusModeEnum.All,
+            Flat = true,
         };
-        _edit.AddThemeFontSizeOverride("font_size", 30);
+        _edit.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        // Same inset and type as the option buttons' text so the line reads as one of them.
+        _edit.OffsetLeft = 38;
+        _edit.OffsetRight = -38;
+        var empty = new StyleBoxEmpty();
+        _edit.AddThemeStyleboxOverride("normal", empty);
+        _edit.AddThemeStyleboxOverride("focus", empty);
+        _edit.AddThemeStyleboxOverride("read_only", empty);
+        var font = GameArt.Font("res://themes/kreon_regular_shared.tres");
+        if (font != null) _edit.AddThemeFontOverride("font", font);
+        _edit.AddThemeFontSizeOverride("font_size", 24);
+        _edit.AddThemeColorOverride("font_color", Cream);
+        _edit.AddThemeColorOverride("font_uneditable_color", new Color(Cream, 0.5f));
+        _edit.AddThemeColorOverride("font_placeholder_color", new Color(Cream, 0.5f));
+        _edit.AddThemeColorOverride("caret_color", Cream);
+        _edit.AddThemeColorOverride("selection_color", new Color(StsColors.blueGlow, 0.35f));
 
-        // Match the translucent event-button look instead of Godot's default light box.
-        var normal = new StyleBoxFlat
+        _edit.MouseEntered += () => Glow(true);
+        _edit.MouseExited += () => { if (!_edit.HasFocus()) Glow(false); };
+        _edit.FocusEntered += () => Glow(true);
+        _edit.FocusExited += () => Glow(false);
+        _edit.TextSubmitted += OnSubmitted;
+        AddChild(_edit);
+    }
+
+    // The option buttons' hover: a blue outline fades in.
+    private void Glow(bool on)
+    {
+        if (_outline == null) return;
+        _tween?.Kill();
+        _tween = CreateTween();
+        if (on)
         {
-            BgColor = new Color(0f, 0f, 0f, 0.45f),
-            BorderColor = new Color(1f, 0.85f, 0.45f, 0.35f),
-            CornerRadiusTopLeft = 8,
-            CornerRadiusTopRight = 8,
-            CornerRadiusBottomLeft = 8,
-            CornerRadiusBottomRight = 8,
-            ContentMarginLeft = 18,
-            ContentMarginRight = 18,
-            ContentMarginTop = 10,
-            ContentMarginBottom = 10,
-        };
-        normal.SetBorderWidthAll(2);
-        var focus = (StyleBoxFlat)normal.Duplicate();
-        focus.BorderColor = new Color(1f, 0.85f, 0.45f, 0.9f);
-        focus.BgColor = new Color(0f, 0f, 0f, 0.6f);
-        if (look == Look.Parchment)
-        {
-            // The game's navy tooltip slab reads as "a field" on tan paper; brighten it on focus.
-            var navy = SpireTalk.Ui.GameArt.Navy(20, 10);
-            var navyFocus = SpireTalk.Ui.GameArt.Slice(SpireTalk.Ui.GameArt.NavyPath, 22, 20, 10, null, new Color(1.3f, 1.3f, 1.25f));
-            _edit.AddThemeStyleboxOverride("normal", navy);
-            _edit.AddThemeStyleboxOverride("focus", navyFocus);
-            _edit.AddThemeFontSizeOverride("font_size", 26);
+            NativeOption.Play(NativeOption.HoverSfx);
+            _tween.TweenProperty(_outline, "modulate", StsColors.blueGlow, 0.05);
         }
         else
         {
-            _edit.AddThemeStyleboxOverride("normal", normal);
-            _edit.AddThemeStyleboxOverride("focus", focus);
+            _tween.TweenProperty(_outline, "modulate:a", 0f, 0.3);
         }
-        _edit.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f, 0.95f));
-        _edit.AddThemeColorOverride("font_placeholder_color", new Color(1f, 1f, 1f, 0.45f));
-        _edit.AddThemeColorOverride("caret_color", new Color(1f, 0.85f, 0.45f, 1f));
-
-        _edit.TextSubmitted += OnSubmitted;
-        AddChild(_edit);
     }
 
     private void OnSubmitted(string text)
@@ -96,6 +105,7 @@ public sealed partial class TalkInputBox : MarginContainer
         _edit.ReleaseFocus();
         var cb = _onSubmit;
         _onSubmit = null;
+        NativeOption.Play(NativeOption.ClickSfx);
         cb?.Invoke(trimmed);
     }
 

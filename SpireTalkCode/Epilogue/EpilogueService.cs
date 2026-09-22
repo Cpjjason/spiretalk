@@ -48,7 +48,7 @@ internal static class EpilogueService
             run.EpilogueDone = true;
             TalkStore.Instance.Save();
 
-            var panel = EpiloguePanel.Attach(__instance, npc.DisplayName);
+            var panel = EpiloguePanel.Attach(__instance, npc);
             _ = WriteAsync(npc, player, runState, win, runKey, panel);
         }
         catch (Exception ex)
@@ -187,18 +187,20 @@ internal static class EpilogueService
     }
 }
 
-/// <summary>A parchment strip on the game-over screen that fills in when the NPC's words arrive.</summary>
-internal sealed partial class EpiloguePanel : PanelContainer
+/// <summary>
+/// The narrator's words on the game-over screen, in the game's own Ancient dialogue bubble (their
+/// icon, their bubble colour; see <see cref="NativeDialogue"/>). Shows "…" until the reply lands.
+/// </summary>
+internal sealed partial class EpiloguePanel : Control
 {
-    private MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel _body = null!;
-    private MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel _title = null!;
+    private Control? _line;
 
-    public static EpiloguePanel? Attach(Control screen, string npcName)
+    public static EpiloguePanel? Attach(Control screen, NpcDefinition npc)
     {
         try
         {
             var panel = new EpiloguePanel();
-            panel.Build(npcName);
+            panel.Build(npc);
             screen.AddChild(panel);
             return panel;
         }
@@ -209,28 +211,25 @@ internal sealed partial class EpiloguePanel : PanelContainer
         }
     }
 
-    private void Build(string npcName)
+    private void Build(NpcDefinition npc)
     {
         Name = "SpireTalkEpilogue";
         MouseFilter = MouseFilterEnum.Ignore;
         ZIndex = 50;
-        // Right of the fallen character, above the buttons' row; wide enough for six sentences.
+        // Right of the fallen character, above the buttons' row; the bubble grows downwards.
         SetAnchorsPreset(LayoutPreset.CenterBottom);
-        CustomMinimumSize = new Vector2(1000, 0);
         OffsetLeft = -230;
         OffsetRight = 790;
         OffsetTop = -600;
         OffsetBottom = -360;
-        AddThemeStyleboxOverride("panel", GameArt.Parchment(48, 26, 44));
         Modulate = new Color(1, 1, 1, 0);
 
-        var column = new VBoxContainer();
-        column.AddThemeConstantOverride("separation", 8);
-        AddChild(column);
-        _title = GameArt.Label("[b]" + Loc.Sanitize(string.Format(Loc.EventText("epilogueTitle"), npcName)) + "[/b]", 26, GameArt.Ink, wrap: false);
-        column.AddChild(_title);
-        _body = GameArt.Label(Loc.EventText("epilogueWaiting"), 23, GameArt.Ink);
-        column.AddChild(_body);
+        _line = NativeDialogue.ForNpc(npc, Loc.EventText("epilogueWaiting"));
+        if (_line != null)
+        {
+            _line.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide);
+            AddChild(_line);
+        }
 
         var tween = CreateTween();
         tween.TweenProperty(this, "modulate:a", 1f, 0.6).SetDelay(1.2);
@@ -241,7 +240,7 @@ internal sealed partial class EpiloguePanel : PanelContainer
         Callable.From(() =>
         {
             if (!GodotObject.IsInstanceValid(this)) return;
-            _body.Text = Loc.Sanitize(text);
+            NativeDialogue.SetText(_line, Loc.Sanitize(text));
         }).CallDeferred();
     }
 

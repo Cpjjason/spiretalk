@@ -23,9 +23,6 @@ public enum ReplyLanguage
     FollowGame,
     English,
     ChineseSimplified,
-    ChineseTraditional,
-    Japanese,
-    Korean,
 }
 
 /// <summary>

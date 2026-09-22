@@ -88,42 +88,18 @@ public static class Loc
         return own != null ? own.GetFormattedText() : npc.Name;
     }
 
-    /// <summary>Human-readable language name the AI should answer in.</summary>
+    /// <summary>
+    /// Language the AI should answer in. Only English and Simplified Chinese are supported;
+    /// following the game means Chinese for zhs and English for everything else.
+    /// </summary>
     public static string ReplyLanguageName()
     {
         var pick = SpireTalkConfig.Language;
         if (pick == ReplyLanguage.FollowGame)
         {
-            var code = LocManager.Instance?.Language ?? "eng";
-            return code switch
-            {
-                "zhs" => "Simplified Chinese (简体中文)",
-                "zht" => "Traditional Chinese (繁體中文)",
-                "jpn" => "Japanese (日本語)",
-                "kor" => "Korean (한국어)",
-                "fra" => "French",
-                "deu" => "German",
-                "spa" => "Spanish",
-                "ita" => "Italian",
-                "por" => "Portuguese",
-                "rus" => "Russian",
-                "pol" => "Polish",
-                "ukr" => "Ukrainian",
-                "tur" => "Turkish",
-                "vie" => "Vietnamese",
-                "tha" => "Thai",
-                "ind" => "Indonesian",
-                _ => "English",
-            };
+            pick = LocManager.Instance?.Language == "zhs" ? ReplyLanguage.ChineseSimplified : ReplyLanguage.English;
         }
-        return pick switch
-        {
-            ReplyLanguage.ChineseSimplified => "Simplified Chinese (简体中文)",
-            ReplyLanguage.ChineseTraditional => "Traditional Chinese (繁體中文)",
-            ReplyLanguage.Japanese => "Japanese (日本語)",
-            ReplyLanguage.Korean => "Korean (한국어)",
-            _ => "English",
-        };
+        return pick == ReplyLanguage.ChineseSimplified ? "Simplified Chinese (简体中文)" : "English";
     }
 
     public static string DescribeError(Exception ex)

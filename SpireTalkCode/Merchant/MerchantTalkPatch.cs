@@ -155,37 +155,13 @@ internal static class MerchantTalk
             existing.Visible = true;
             return;
         }
-        var button = new Button
-        {
-            Name = "SpireTalkMerchantButton",
-            Text = Loc.EventText("merchantTalkButton"),
-            CustomMinimumSize = new Vector2(220, 64),
-            ZIndex = 50,
-        };
-        button.AddThemeFontSizeOverride("font_size", 26);
-        var normal = new StyleBoxFlat
-        {
-            BgColor = new Color(0.07f, 0.06f, 0.08f, 0.85f),
-            BorderColor = new Color(1f, 0.85f, 0.45f, 0.7f),
-            CornerRadiusTopLeft = 10,
-            CornerRadiusTopRight = 10,
-            CornerRadiusBottomLeft = 10,
-            CornerRadiusBottomRight = 10,
-            ContentMarginLeft = 18,
-            ContentMarginRight = 18,
-        };
-        normal.SetBorderWidthAll(2);
-        var hover = (StyleBoxFlat)normal.Duplicate();
-        hover.BgColor = new Color(1f, 0.85f, 0.45f, 0.25f);
-        button.AddThemeStyleboxOverride("normal", normal);
-        button.AddThemeStyleboxOverride("hover", hover);
-        button.AddThemeStyleboxOverride("pressed", hover);
-        button.AddThemeStyleboxOverride("focus", hover);
-        button.AddThemeColorOverride("font_color", new Color(1f, 0.92f, 0.7f));
-        // Top-right of the shop screen, clear of the shelves and the top bar.
+        // The game's own Continue/Skip button, top-right of the shop screen, clear of the
+        // shelves and the top bar.
+        var button = NativeSmallButton.Create(Loc.EventText("merchantTalkButton"), () => _conversation?.OpenPanel());
+        button.Name = "SpireTalkMerchantButton";
+        button.ZIndex = 50;
         button.SetAnchorsPreset(Control.LayoutPreset.TopRight);
-        button.Position = new Vector2(-260, 130);
-        button.Pressed += () => _conversation?.OpenPanel();
+        button.Position = new Vector2(-300, 128);
         inventory.AddChild(button);
     }
 }
@@ -340,8 +316,7 @@ internal sealed class MerchantConversation
             _panel.Visible = true;
             return;
         }
-        var title = _npc.DisplayName;
-        _panel = TalkPanel.Create(title, line => _ = TurnAsync(line), ClosePanel);
+        _panel = TalkPanel.Create(_npc, line => _ = TurnAsync(line), ClosePanel);
         var host = (Node?)NGame.Instance;
         if (host == null) return;
         host.AddChild(_panel);

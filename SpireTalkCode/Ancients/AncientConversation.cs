@@ -385,11 +385,12 @@ public sealed class AncientConversation
         }
         if (!offerPending)
         {
-            var endLabel = Loc.Event(outOfLines ? "endNoLines" : "end");
-            endLabel.Add("Affection", (decimal)_ctx.Affection);
-            endLabel.Add("Tier", Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)));
-            endLabel.Add("LinesLeft", (decimal)Math.Max(0, ConversationRules.LinesPerVisit - _linesUsed));
-            options.Add(new EventOption(_ancient, () => { EndConversation(); return Task.CompletedTask; }, Loc.Event("empty"), endLabel, "SPIRETALK_END", Array.Empty<IHoverTip>())
+            // Vanilla option shape: gold title, the relationship on the line under it.
+            var endInfo = Loc.Event(outOfLines ? "endInfoNoLines" : "endInfo");
+            endInfo.Add("Affection", (decimal)_ctx.Affection);
+            endInfo.Add("Tier", Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)));
+            endInfo.Add("LinesLeft", (decimal)Math.Max(0, ConversationRules.LinesPerVisit - _linesUsed));
+            options.Add(new EventOption(_ancient, () => { EndConversation(); return Task.CompletedTask; }, Loc.Event(outOfLines ? "endNoLines" : "end"), endInfo, "SPIRETALK_END", Array.Empty<IHoverTip>())
                 .ThatWontSaveToChoiceHistory());
         }
 
@@ -474,29 +475,47 @@ public sealed class AncientConversation
     {
         try
         {
-            // Anchored to the bottom of the layout rather than inside the options list: the
-            // list scrolls with the dialogue and can push its last row below the screen edge.
             var placeholder = string.Format(Loc.EventText("typePlaceholder"), linesLeft);
             _inputBox = TalkInputBox.Create(placeholder, text =>
             {
                 if (_busy || _ended) return;
                 _ = TurnAsync(text);
-            });
-            _inputBox.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
-            _inputBox.OffsetLeft = 460;
-            _inputBox.OffsetRight = -460;
-            _inputBox.OffsetTop = -80;
-            _inputBox.OffsetBottom = -8;
-            _inputBox.ZIndex = 20;
-            // Hidden until the last dialogue page is up (see OnDialoguePage); single-line replies
-            // are already on their last page.
-            _inputBox.Visible = _lastLineCount <= 1;
-            layout.AddChild(_inputBox);
+            }, _ancient.ButtonColor);
+            var box = _inputBox;
+            // Joins the game's own option list, just above the closing option, so the layout
+            // sizes, spaces and reveals it like any other option.
+            Callable.From(() => PlaceInOptions(layout, box, 10)).CallDeferred();
         }
         catch (Exception ex)
         {
             MainFile.Logger.Warn($"[Talk] input box failed: {ex.Message}", 1);
         }
+    }
+
+    /// <summary>
+    /// Insert the box into NEventLayout's option container once the page's option buttons exist
+    /// (they are created by the layout after SetEventState). Retries a few frames.
+    /// </summary>
+    private static void PlaceInOptions(NAncientEventLayout layout, TalkInputBox box, int triesLeft)
+    {
+        if (!GodotObject.IsInstanceValid(layout) || !GodotObject.IsInstanceValid(box) || box.GetParent() != null) return;
+        if (OptionsContainerField.GetValue(layout) is not VBoxContainer container) return;
+        var buttons = container.GetChildren().OfType<NEventOptionButton>().ToList();
+        if (buttons.Count == 0)
+        {
+            if (triesLeft > 0) Callable.From(() => PlaceInOptions(layout, box, triesLeft - 1)).CallDeferred();
+            return;
+        }
+        var width = buttons[0].CustomMinimumSize.X > 0 ? buttons[0].CustomMinimumSize.X : buttons[0].Size.X;
+        box.CustomMinimumSize = new Vector2(width, 84);
+        box.SizeFlagsHorizontal = buttons[0].SizeFlagsHorizontal;
+        container.AddChild(box);
+        container.MoveChild(box, buttons[^1].GetIndex());
+        // NEventOptionButton.AnimateIn's fade, after the buttons above it.
+        box.Modulate = new Color(1, 1, 1, 0);
+        var tween = box.CreateTween();
+        tween.TweenInterval(0.5 + 0.2 * buttons.Count);
+        tween.TweenProperty(box, "modulate", Colors.White, 0.5);
     }
 
     private void DisposeInput()

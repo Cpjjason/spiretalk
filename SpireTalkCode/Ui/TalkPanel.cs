@@ -1,176 +1,149 @@
 using Godot;
-using MegaCrit.Sts2.addons.mega_text;
 using SpireTalk.Ancients;
+using SpireTalk.Npc;
 
 namespace SpireTalk.Ui;
 
 /// <summary>
-/// The Merchant's conversation sheet: a parchment page (the game's own sub-menu panel) with the
-/// merchant's words in a cream speech bubble, up to three teal event-style choice buttons, an
-/// optional line to type your own, and a small ledger line at the bottom. Purely presentational:
-/// the owning conversation feeds it turns and listens for choices.
+/// The Merchant's conversation, laid out the way the game lays out an Ancient's: the screen dims,
+/// his lines come up as the game's own dialogue bubbles (shop icon, tail), and the replies are
+/// the game's own Ancient option buttons, with the typed line as one more of them. Everything is
+/// built from vanilla scenes (<see cref="NativeScene"/>), so fonts, colours and shadows match.
+/// Purely presentational: the owning conversation feeds it turns and listens for choices.
 /// </summary>
 public sealed partial class TalkPanel : Control
 {
-    private const float SheetWidth = 1060f;
+    private const float ColumnWidth = 1000f;
+    private static readonly Color ButtonColor = new(0f, 0f, 0f, 0.45f);
 
-    private MegaRichTextLabel _body = null!;
-    private MegaRichTextLabel _title = null!;
-    private MegaRichTextLabel _footer = null!;
+    private NpcDefinition _npc = null!;
+    private VBoxContainer _lines = null!;
     private VBoxContainer _choices = null!;
-    private TextureRect _tail = null!;
-    private TalkInputBox? _input;
 
     private Action<string>? _onChoice;
     private Action? _onClose;
 
-    public static TalkPanel Create(string title, Action<string> onChoice, Action onClose)
+    public static TalkPanel Create(NpcDefinition npc, Action<string> onChoice, Action onClose)
     {
-        var panel = new TalkPanel { _onChoice = onChoice, _onClose = onClose };
-        panel.Build(title);
+        var panel = new TalkPanel { _npc = npc, _onChoice = onChoice, _onClose = onClose };
+        panel.Build();
         return panel;
     }
 
-    private void Build(string title)
+    private void Build()
     {
         Name = "SpireTalkPanel";
         SetAnchorsPreset(LayoutPreset.FullRect);
         MouseFilter = MouseFilterEnum.Stop;
         ZIndex = 200;
 
-        var dim = new ColorRect { Color = new Color(0f, 0f, 0f, 0.5f), MouseFilter = MouseFilterEnum.Stop };
+        var dim = new ColorRect { Color = new Color(0f, 0f, 0f, 0.6f), MouseFilter = MouseFilterEnum.Stop };
         dim.SetAnchorsPreset(LayoutPreset.FullRect);
         dim.GuiInput += OnDimInput;
         AddChild(dim);
 
-        var center = new CenterContainer();
+        var center = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
         center.SetAnchorsPreset(LayoutPreset.FullRect);
-        center.MouseFilter = MouseFilterEnum.Ignore;
         AddChild(center);
 
-        var sheet = new PanelContainer { CustomMinimumSize = new Vector2(SheetWidth, 0) };
-        sheet.AddThemeStyleboxOverride("panel", GameArt.Parchment(60, 40, 60));
-        center.AddChild(sheet);
+        var column = new VBoxContainer { CustomMinimumSize = new Vector2(ColumnWidth, 0), MouseFilter = MouseFilterEnum.Ignore };
+        column.AddThemeConstantOverride("separation", 28);
+        center.AddChild(column);
 
-        var page = new VBoxContainer();
-        page.AddThemeConstantOverride("separation", 14);
-        sheet.AddChild(page);
+        _lines = new VBoxContainer { MouseFilter = MouseFilterEnum.Ignore };
+        _lines.AddThemeConstantOverride("separation", 10);
+        column.AddChild(_lines);
 
-        // Header: name in ink, a quiet ✕ on the right.
-        var header = new HBoxContainer();
-        _title = GameArt.Label("[b]" + Loc.Sanitize(title) + "[/b]", 36, GameArt.Ink, wrap: false);
-        _title.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        header.AddChild(_title);
-        var close = GameArt.LinkButton("✕", GameArt.Ink, 30);
-        close.Pressed += () => _onClose?.Invoke();
-        header.AddChild(close);
-        page.AddChild(header);
-
-        // Speech bubble with its tail hanging off the bottom-left, as the shop's own bubbles do.
-        var bubbleWrap = new VBoxContainer();
-        bubbleWrap.AddThemeConstantOverride("separation", 0);
-        var bubble = new PanelContainer();
-        bubble.AddThemeStyleboxOverride("panel", GameArt.Bubble(GameArt.Paper));
-        _body = GameArt.Label("", 27, GameArt.Ink);
-        _body.CustomMinimumSize = new Vector2(0, 90);
-        bubble.AddChild(_body);
-        bubbleWrap.AddChild(bubble);
-        _tail = new TextureRect
-        {
-            Texture = GameArt.Tex(GameArt.BubbleTailPath),
-            Modulate = GameArt.Paper,
-            CustomMinimumSize = new Vector2(36, 40),
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-            StretchMode = TextureRect.StretchModeEnum.KeepAspect,
-            SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-        var tailRow = new MarginContainer();
-        tailRow.AddThemeConstantOverride("margin_left", 48);
-        tailRow.AddThemeConstantOverride("margin_top", -6);
-        tailRow.AddChild(_tail);
-        bubbleWrap.AddChild(tailRow);
-        page.AddChild(bubbleWrap);
-
-        _choices = new VBoxContainer();
-        _choices.AddThemeConstantOverride("separation", 8);
-        page.AddChild(_choices);
-
-        _footer = GameArt.Label("", 21, GameArt.InkSoft, wrap: false);
-        _footer.HorizontalAlignment = HorizontalAlignment.Right;
-        page.AddChild(_footer);
-    }
-
-    public void SetTitle(string title)
-    {
-        _title.Text = "[b]" + Loc.Sanitize(title) + "[/b]";
+        _choices = new VBoxContainer { MouseFilter = MouseFilterEnum.Ignore };
+        _choices.AddThemeConstantOverride("separation", 4);
+        column.AddChild(_choices);
     }
 
     public void SetThinking()
     {
         ClearChoices();
-        _body.Text = Loc.EventText("thinking");
-        _footer.Text = "";
+        ShowLines(new[] { Loc.EventText("thinking") });
     }
 
     public void SetTurn(IReadOnlyList<string> lines, IReadOnlyList<string> choices, int linesLeft, bool showInput, string footer)
     {
-        _body.Text = string.Join("\n\n", lines.Select(Loc.Sanitize));
+        ShowLines(lines);
         ClearChoices();
         if (linesLeft > 0)
         {
             foreach (var choice in choices.Take(3))
             {
                 var text = choice;
-                var b = GameArt.HexButton(text, 26, 66);
-                b.Alignment = HorizontalAlignment.Left;
-                b.Pressed += () => _onChoice?.Invoke(text);
-                _choices.AddChild(b);
+                AddOption("", Loc.Sanitize(text), () => _onChoice?.Invoke(text));
             }
             if (showInput)
             {
-                _input = TalkInputBox.Create(string.Format(Loc.EventText("typePlaceholder"), linesLeft), t => _onChoice?.Invoke(t), TalkInputBox.Look.Parchment);
-                _choices.AddChild(_input);
+                var input = TalkInputBox.Create(string.Format(Loc.EventText("typePlaceholder"), linesLeft), t => _onChoice?.Invoke(t), ButtonColor);
+                input.CustomMinimumSize = new Vector2(ColumnWidth, 84);
+                AddAnimated(input);
             }
         }
-        var leave = GameArt.LinkButton(Loc.EventText(linesLeft > 0 ? "leaveShop" : "leaveShopDone"), GameArt.InkSoft, 24);
-        leave.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
-        leave.Pressed += () => _onClose?.Invoke();
-        _choices.AddChild(leave);
-        _footer.Text = Loc.Sanitize(footer);
+        AddOption(Loc.EventText(linesLeft > 0 ? "leaveShop" : "leaveShopDone"), Loc.Sanitize(footer), () => _onClose?.Invoke());
     }
 
     /// <summary>The merchant proposed a deal: the answer comes before the usual choices.</summary>
     public void SetDeal(IReadOnlyList<string> lines, string dealText, string acceptLabel, string declineLabel, Action<bool> onAnswer, string footer)
     {
-        _body.Text = string.Join("\n\n", lines.Select(Loc.Sanitize)) + "\n\n" + "[color=#7a5a1e][b]" + Loc.Sanitize(dealText) + "[/b][/color]";
+        ShowLines(lines);
         ClearChoices();
-        var yes = GameArt.HexButton(acceptLabel, 26, 66);
-        yes.Alignment = HorizontalAlignment.Left;
-        yes.Pressed += () => onAnswer(true);
-        _choices.AddChild(yes);
-        var no = GameArt.HexButton(declineLabel, 26, 66);
-        no.Alignment = HorizontalAlignment.Left;
-        no.Pressed += () => onAnswer(false);
-        _choices.AddChild(no);
-        _footer.Text = Loc.Sanitize(footer);
+        AddOption(Loc.Sanitize(dealText), Loc.Sanitize(acceptLabel), () => onAnswer(true));
+        AddOption("", Loc.Sanitize(declineLabel), () => onAnswer(false));
     }
 
     public void SetError(string message)
     {
+        ShowLines(new[] { message });
         ClearChoices();
-        _body.Text = Loc.Sanitize(message);
-        var leave = GameArt.LinkButton(Loc.EventText("leaveShopDone"), GameArt.InkSoft, 24);
-        leave.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
-        leave.Pressed += () => _onClose?.Invoke();
-        _choices.AddChild(leave);
+        AddOption(Loc.EventText("leaveShopDone"), null, () => _onClose?.Invoke());
+    }
+
+    private void ShowLines(IEnumerable<string> lines)
+    {
+        foreach (var child in _lines.GetChildren())
+        {
+            _lines.RemoveChild(child);
+            child.QueueFree();
+        }
+        var i = 0;
+        foreach (var text in lines)
+        {
+            var line = NativeDialogue.ForNpc(_npc, Loc.Sanitize(text));
+            if (line == null) continue;
+            line.Modulate = new Color(1, 1, 1, 0);
+            _lines.AddChild(line);
+            // NAncientDialogueLine.OnAnimInSetVisible: a 0.1s fade, one line after another.
+            var tween = line.CreateTween();
+            tween.TweenInterval(0.15 * i++);
+            tween.TweenProperty(line, "modulate:a", 1f, 0.1);
+        }
+    }
+
+    private void AddOption(string title, string? description, Action onPressed)
+    {
+        AddAnimated(NativeOption.Create(title, description, ButtonColor, onPressed));
+    }
+
+    // NEventOptionButton.AnimateIn: fade in, staggered by index.
+    private void AddAnimated(Control option)
+    {
+        var index = _choices.GetChildCount();
+        option.Modulate = new Color(1, 1, 1, 0);
+        _choices.AddChild(option);
+        var tween = option.CreateTween();
+        tween.TweenInterval(0.25 + 0.1 * index);
+        tween.TweenProperty(option, "modulate", Colors.White, 0.25);
     }
 
     private void ClearChoices()
     {
-        _input = null;
         foreach (var child in _choices.GetChildren())
         {
+            _choices.RemoveChild(child);
             child.QueueFree();
         }
     }
