@@ -21,6 +21,11 @@
   | a potion on the house | Merchant | devoted, needs a free slot | once per run |
 
   One reward per visit, never on the greeting, and the AI only *narrates* — the mod validates every reward against these rules and applies it through the game's own commands.
+- **Deals** — an NPC may ask something of you on arrival: *reach act 2 alive*, *no potions until the next act*, *spend 150 gold at the shop this act*… You answer with a button; the terms come from the mod, never from the AI, so they are always something the game can check. Kept: affection +6 and 50 gold. Broken: nothing but a disappointed line next time and no more deals from that NPC this run. One per NPC at a time, three per run; open ones are listed under the top bar.
+- **Gossip** — what you say about one NPC reaches the others. Praise Neow to Pael and Neow is warmer next time (+2); insult Orobas' eyes and she has heard about it (−3). The Merchant hears everything. A broken deal is talked about too.
+- **Epilogue** — when a run ends, the NPC who knew you best says a few words about it on the game-over screen: the deals, the gossip, where you fell or how you won. Kept in the profile.
+- **Ancient relics on the shelf** — once an Ancient likes you (friendly or better), they may leave one of *their own* relics with the Merchant for you — relics otherwise only found in their halls — priced like a rare. Chance rises with the tier; once per run.
+- **Temperament** — a setting: lenient / normal / strict. Strict caps each line at ±2, a visit at ±5, hands rewards out only from *close*, and sizes the deals harder.
 - **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile, and showing up to talk earns +2 by itself.
 - **Single player only.** In multiplayer the Talk option is not offered.
 
@@ -74,6 +79,11 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
   | 免费药水 | 商人 | 挚爱，需有空位 | 每局一次 |
 
   每次拜访最多一个奖励，开场白不给奖励；AI 只负责「说」，每个奖励都由模组按上面的规则校验后，用游戏自己的指令发放。
+- **约定** — NPC 见面时可能向你提个要求：「活着走到第 2 章」「到下一章之前不喝药水」「这一章在商店花掉 150 金币」……你按按钮答应或拒绝；题目全部由模组出、不是 AI 编的，所以一定是游戏能核验的事。做到了：好感 +6，另有 50 金币。没做到：只有下次见面一句失望的话，这局这位不再派活。每位同时一条，每局最多三条；进行中的约定挂在顶栏下面。
+- **流言** — 你对一位 NPC 说的话会传到别人耳朵里。在佩尔那儿夸涅奥，涅奥下次更热络（+2）；骂欧洛巴斯的眼睛，她已经听说了（−3）。商人什么都知道。毁约也会被传开。
+- **旅途回顾** — 一局结束时，和你关系最深的那位 NPC 会在结算画面上写几句：立过的约、传过的话、倒在哪一层或怎么赢的。存在档案里。
+- **先民遗物上架** — 某位先民对你到了友好以上，就可能把**自己的**遗物托给商人留给你——平时只在先民殿堂里才有的那种——按稀有遗物的价格卖。档位越高几率越大；每局一次。
+- **先民脾气** — 一个设置：宽容 / 正常 / 严苛。严苛档每句最多 ±2、每次拜访最多 ±5、只有亲近以上才给奖励、约定也出得更狠。
 - **和 Ancient Affection 联动** — 装了那个模组时，SpireTalk 直接读写它的好感度，聊天推动的就是它解锁好感遗物和结婚的那个数字。没装时，SpireTalk 自己按档案记好感度，来聊一次本身就 +2。
 - **仅单人模式。** 多人局不提供交谈选项。
 

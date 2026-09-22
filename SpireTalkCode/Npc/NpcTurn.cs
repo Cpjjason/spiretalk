@@ -14,7 +14,9 @@ public sealed record NpcTurn(
     int AffectionDelta,
     string? Reason,
     NpcAction Action,
-    string? ModelUsed)
+    string? ModelUsed,
+    string? Rumor = null,
+    string? RumorSentiment = null)
 {
     public string JoinedText => string.Join("\n\n", Lines);
 

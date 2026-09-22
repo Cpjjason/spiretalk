@@ -12,9 +12,33 @@ namespace SpireTalk.Npc;
 public static class ConversationRules
 {
     public const int LinesPerVisit = 3;
-    public const int MaxDeltaPerLine = 3;
-    public const int MaxNetDeltaPerVisit = 8;
     public const int MaxRewardsPerVisit = 1;
+
+    // ── Temperament: the one knob the player turns ──────────────────────
+    // Tiers stay where Ancient Affection put them; what changes is how fast the number moves,
+    // how much a visit can swing it, what it takes to earn a reward, and how hard the deals are.
+
+    private static Temperament Mood => SpireTalkConfig.Temperament;
+
+    public static int MaxDeltaPerLine => Mood == Temperament.Strict ? 2 : 3;
+
+    public static int MaxNetDeltaPerVisit => Mood switch
+    {
+        Temperament.Lenient => 10,
+        Temperament.Strict => 5,
+        _ => 8,
+    };
+
+    /// <summary>Lowest tier at which an NPC hands anything out.</summary>
+    public static Tier RewardFloor => Mood == Temperament.Strict ? Tier.Close : Tier.Friendly;
+
+    /// <summary>"You came to see me" gain when the mod keeps its own ledger.</summary>
+    public static int VisitBonus => Mood switch
+    {
+        Temperament.Lenient => 3,
+        Temperament.Strict => 1,
+        _ => 2,
+    };
 
     public const int MinAffection = -100;
     public const int MaxAncientAffection = 100;
@@ -90,17 +114,19 @@ public static class ConversationRules
     {
         var allowed = new List<string>();
         if (s.RewardsThisVisit >= MaxRewardsPerVisit) return allowed;
+        var floor = RewardFloor;
+        var closeFloor = (Tier)Math.Max((int)Tier.Close, (int)floor);
         if (kind == NpcKind.Ancient)
         {
-            if (tier >= Tier.Friendly && !s.RerollUsedThisVisit) allowed.Add("reroll_relics");
-            if (tier >= Tier.Friendly && !s.GoldGivenThisRun) allowed.Add("gold");
-            if (tier >= Tier.Friendly && !s.HealGivenThisRun && s.PlayerHurt) allowed.Add("heal");
-            if (tier >= Tier.Close && !s.PotionGivenThisRun && s.PotionSlotFree) allowed.Add("potion");
-            if (tier >= Tier.Close && s.AffectionRelicsAvailable && !s.AffectionRelicGivenThisRun) allowed.Add("affection_relic");
+            if (tier >= floor && !s.RerollUsedThisVisit) allowed.Add("reroll_relics");
+            if (tier >= floor && !s.GoldGivenThisRun) allowed.Add("gold");
+            if (tier >= floor && !s.HealGivenThisRun && s.PlayerHurt) allowed.Add("heal");
+            if (tier >= closeFloor && !s.PotionGivenThisRun && s.PotionSlotFree) allowed.Add("potion");
+            if (tier >= closeFloor && s.AffectionRelicsAvailable && !s.AffectionRelicGivenThisRun) allowed.Add("affection_relic");
         }
         else
         {
-            if (tier >= Tier.Friendly && !s.DiscountUsedThisVisit) allowed.Add("discount");
+            if (tier >= floor && !s.DiscountUsedThisVisit) allowed.Add("discount");
             if (tier >= Tier.Devoted && !s.GiftGivenThisRun && s.PotionSlotFree) allowed.Add("gift_potion");
         }
         return allowed;

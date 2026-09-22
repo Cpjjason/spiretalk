@@ -47,9 +47,9 @@ public sealed class EngineBackend : INpcBackend
             record.EngineCard = card.Source;
         }
 
-        // Full run snapshot on the opener, relationship numbers every turn; last turn's proposals
-        // are cleared so a silent model can't replay them.
-        var vars = isOpener ? (JsonObject)ctx.Variables.DeepClone() : new JsonObject();
+        // The whole visit context every turn (gold and the deal/rumor lines move mid-visit), plus
+        // the relationship numbers; last turn's proposals are cleared so a silent model can't replay them.
+        var vars = (JsonObject)ctx.Variables.DeepClone();
         vars["affection"] = ctx.Affection;
         vars["affection_tier"] = ConversationRules.TierName(ctx.Tier);
         vars["married"] = ctx.Married;
@@ -59,6 +59,8 @@ public sealed class EngineBackend : INpcBackend
         vars["affection_delta"] = 0;
         vars["action"] = new JsonObject { ["type"] = "none", ["amount"] = 0 };
         vars["choices"] = new JsonArray();
+        vars["rumor"] = "";
+        vars["rumor_sentiment"] = "0";
         stateJson = runtime.ApplyVariables(card.Json, stateJson!, vars);
 
         var history = new JsonArray();
@@ -122,10 +124,13 @@ public sealed class EngineBackend : INpcBackend
             }
         }
 
+        var rumor = vars["rumor"] is JsonValue rv && rv.TryGetValue<string>(out var rs) ? rs : null;
+        string? rumorMood = vars["rumor_sentiment"] is JsonValue mv && mv.TryGetValue<string>(out var ms) ? ms : "0";
+
         // Models that ignore the directive syntax often still write the fields as loose
         // "key: value" lines. Recover them from the raw output and keep them off screen.
-        var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action);
+        var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action, ref rumor, ref rumorMood);
         var lines = Ancients.AncientConversation.SplitIntoLines(text);
-        return new NpcTurn(lines, choices, delta, null, action, OpenAiClient.Model);
+        return new NpcTurn(lines, choices, delta, null, action, OpenAiClient.Model, rumor, rumorMood);
     }
 }

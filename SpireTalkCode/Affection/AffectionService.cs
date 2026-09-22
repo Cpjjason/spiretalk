@@ -32,12 +32,10 @@ public static class AffectionService
     /// A small "you came to see me" gain, only when the mod keeps its own ledger. Ancient
     /// Affection has its own sources of affection, so its number is left alone here.
     /// </summary>
-    public const int VisitBonusAmount = 2;
-
     public static void VisitBonus(string npcKey, NpcKind kind)
     {
         if (UsingAncientAffection) return;
-        Apply(npcKey, kind, VisitBonusAmount);
+        Apply(npcKey, kind, ConversationRules.VisitBonus);
     }
 
     /// <summary>Apply an already-clamped delta. Returns the new value.</summary>

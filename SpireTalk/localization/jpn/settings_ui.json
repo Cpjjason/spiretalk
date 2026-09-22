@@ -53,5 +53,10 @@
   "SPIRETALK-MSG.DebugLogging": "詳細ログ",
   "SPIRETALK-MSG.Language": "返答の言語",
   "SPIRETALK-MSG.ResetMemoriesBtn": "会話の記憶をすべて消す",
-  "SPIRETALK-MSG.ThanksYumina": "オープンソースの Yumina の上に作られています —"
+  "SPIRETALK-MSG.ThanksYumina": "オープンソースの Yumina の上に作られています —",
+  "SPIRETALK-TEMPERAMENT.title": "気難しさ",
+  "SPIRETALK-TEMPERAMENT.Lenient": "寛容",
+  "SPIRETALK-TEMPERAMENT.Normal": "普通",
+  "SPIRETALK-TEMPERAMENT.Strict": "厳格",
+  "SPIRETALK-MSG.Temperament": "気難しさ"
 }

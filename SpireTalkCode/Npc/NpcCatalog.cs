@@ -14,6 +14,10 @@ public sealed class NpcDefinition
     [JsonPropertyName("persona")] public string Persona { get; set; } = "";
     [JsonPropertyName("moves_you")] public string MovesYou { get; set; } = "";
     [JsonPropertyName("greeting")] public string Greeting { get; set; } = "";
+    /// <summary>Other names the climber might use for this NPC, any language — how gossip finds its subject.</summary>
+    [JsonPropertyName("aliases")] public List<string> Aliases { get; set; } = new();
+    /// <summary>Deal templates this NPC may propose (see DealService.ParseType).</summary>
+    [JsonPropertyName("deals")] public List<string> Deals { get; set; } = new();
 
     [JsonIgnore] public NpcKind Kind => KindName == "merchant" ? NpcKind.Merchant : NpcKind.Ancient;
     /// <summary>Localized, player-facing name (see <see cref="Loc.NpcName"/>). <see cref="Name"/> is for prompts.</summary>

@@ -140,6 +140,22 @@ public sealed partial class TalkPanel : Control
         _footer.Text = Loc.Sanitize(footer);
     }
 
+    /// <summary>The merchant proposed a deal: the answer comes before the usual choices.</summary>
+    public void SetDeal(IReadOnlyList<string> lines, string dealText, string acceptLabel, string declineLabel, Action<bool> onAnswer, string footer)
+    {
+        _body.Text = string.Join("\n\n", lines.Select(Loc.Sanitize)) + "\n\n" + "[color=#7a5a1e][b]" + Loc.Sanitize(dealText) + "[/b][/color]";
+        ClearChoices();
+        var yes = GameArt.HexButton(acceptLabel, 26, 66);
+        yes.Alignment = HorizontalAlignment.Left;
+        yes.Pressed += () => onAnswer(true);
+        _choices.AddChild(yes);
+        var no = GameArt.HexButton(declineLabel, 26, 66);
+        no.Alignment = HorizontalAlignment.Left;
+        no.Pressed += () => onAnswer(false);
+        _choices.AddChild(no);
+        _footer.Text = Loc.Sanitize(footer);
+    }
+
     public void SetError(string message)
     {
         ClearChoices();

@@ -183,6 +183,14 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var dropdown = _config.MakeDropdown(nameof(SpireTalkConfig.Language));
         dropdown.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         bottom.AddChild(dropdown);
+        bottom.AddChild(GameArt.Spacer(0));
+        var moodLabel = GameArt.Label(Loc.Ui("Temperament"), 24, GameArt.Cream, wrap: false);
+        moodLabel.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
+        moodLabel.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        bottom.AddChild(moodLabel);
+        var mood = _config.MakeDropdown(nameof(SpireTalkConfig.Temperament));
+        mood.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        bottom.AddChild(mood);
         bottom.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
         var reset = _config.MakeButton(Loc.Ui("ResetMemoriesBtn"), () =>
         {

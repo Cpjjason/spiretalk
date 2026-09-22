@@ -58,6 +58,18 @@ function contextVariables(npc) {
     { id: "allowed_actions", name: "Allowed actions", type: "string", defaultValue: "none", aiAccess: "read",
       behaviorRules: "Comma-separated rewards you may offer right now, or 'none'. Never offer anything else." },
 
+    // Deals and gossip — the mod writes these, the AI reads them (see deal_rules / rumor_rules).
+    { id: "deal_offer", name: "Deal to propose", type: "string", defaultValue: "none", aiAccess: "read",
+      behaviorRules: "A deal the game wants you to propose this visit, or the climber's answer to it, or 'none'. Follow the DEALS rules." },
+    { id: "deals", name: "Deals with this climber", type: "string", defaultValue: "none", aiAccess: "read",
+      behaviorRules: "Open or settled deals between you and this climber, judged by the game. Follow the DEALS rules." },
+    { id: "rumors", name: "What you have heard", type: "string", defaultValue: "none", aiAccess: "read",
+      behaviorRules: "Things other NPCs heard the climber say about you (the Merchant hears everything). Follow the GOSSIP rules." },
+    ...(merchant ? [
+      { id: "shop_special", name: "Special on the shelf", type: "string", defaultValue: "none", aiAccess: "read",
+        behaviorRules: "When an Ancient left one of their relics with you for this climber, this says which; mention it once when they arrive, as a favour being passed along. 'none' otherwise." },
+    ] : []),
+
     // Proposals — written by the AI at the end of every reply, applied by the mod.
     { id: "affection_delta", name: "Affection delta", type: "number", defaultValue: 0, min: -3, max: 3, aiAccess: "write",
       behaviorRules: "Set at the END of every reply: an integer from -3 to 3 judging the climber's last line by your 'what moves you' list. 0 is normal; ±3 is rare. Always set it (0 counts)." },
@@ -65,6 +77,10 @@ function contextVariables(npc) {
       behaviorRules: "At the END of every reply set this to exactly 3 short things the climber could say next, in the climber's first-person voice, in the reply language, each ≤ 40 characters, no numbering. Make them genuinely different: one that leans in, one that pushes back or asks something pointed, one that is playful or wants to leave. When lines_left is 0 set a single farewell instead. Never leave it empty." },
     { id: "action", name: "Action", type: "json", defaultValue: { type: "none", amount: 0 }, aiAccess: "write",
       behaviorRules: "Set at the END of every reply: {\"type\": \"none\"} normally, or {\"type\": \"<one of allowed_actions>\", \"amount\": 0} when you decide to grant that reward this visit. The game validates and applies it; you only narrate." },
+    { id: "rumor", name: "Rumor", type: "string", defaultValue: "", aiAccess: "write",
+      behaviorRules: "Only when the climber talked about ANOTHER NPC by name: one third-person sentence of what they said. Otherwise leave empty. See GOSSIP." },
+    { id: "rumor_sentiment", name: "Rumor sentiment", type: "string", defaultValue: "0", aiAccess: "write",
+      behaviorRules: "With rumor: '+', '-' or '0' for how the named NPC would take it." },
   ];
 }
 
@@ -73,11 +89,14 @@ function contextVariables(npc) {
 // inventing one ([choices: "a","b"] without `set` parses as nothing).
 const OUTPUT = `OUTPUT
 Write your lines as plain text: 1-3 short paragraphs, each paragraph is one speech bubble. No stage directions in brackets, no labels.
-Then END the reply with exactly these three directive lines, in this form and nothing else on those lines:
+Then END the reply with these directive lines, in this form and nothing else on those lines:
 [affection_delta: set 0]
 [choices: set ["first thing to say", "second thing to say", "third thing to say"]]
 [action: set {"type": "none", "amount": 0}]
-Replace the values (an integer -3..3; three strings in the reply language; a type from allowed_actions or "none"). Keep the brackets, the colon, the word set, and the JSON exactly as shown.`;
+Replace the values (an integer -3..3; three strings in the reply language; a type from allowed_actions or "none"). Keep the brackets, the colon, the word set, and the JSON exactly as shown.
+Only when the climber talked about another NPC by name, add two more lines:
+[rumor: set "one third-person sentence of what they said"]
+[rumor_sentiment: set "+"]`;
 
 function entriesFor(npc) {
   const scale = npc.kind === "merchant" ? "-100 to 500" : "-100 to 100";
@@ -90,8 +109,10 @@ function entriesFor(npc) {
     { id: `sts2-${k}-persona`, name: `${npc.name} — persona`, content: persona, role: "character", position: 0, ...base },
     { id: "sts2-scene-rules", name: "Rules of the scene", content: scene, role: "system", position: 1, ...base },
     { id: "sts2-affection-rules", name: "Affection & rewards", content: rules, role: "system", position: 2, ...base },
-    { id: "sts2-output", name: "Output", content: OUTPUT, role: "system", position: 3, ...base },
-    { id: `sts2-${k}-greeting`, name: "Greeting", content: npc.greeting, role: "greeting", position: 4, ...base, alwaysSend: false },
+    { id: "sts2-deal-rules", name: "Deals", content: catalog.deal_rules.trim(), role: "system", position: 3, ...base },
+    { id: "sts2-rumor-rules", name: "Gossip", content: catalog.rumor_rules.trim(), role: "system", position: 4, ...base },
+    { id: "sts2-output", name: "Output", content: OUTPUT, role: "system", position: 5, ...base },
+    { id: `sts2-${k}-greeting`, name: "Greeting", content: npc.greeting, role: "greeting", position: 6, ...base, alwaysSend: false },
   ];
 }
 

@@ -46,11 +46,37 @@
       "section": "system-presets"
     },
     {
-      "id": "sts2-output",
-      "name": "Output",
-      "content": "OUTPUT\nWrite your lines as plain text: 1-3 short paragraphs, each paragraph is one speech bubble. No stage directions in brackets, no labels.\nThen END the reply with exactly these three directive lines, in this form and nothing else on those lines:\n[affection_delta: set 0]\n[choices: set [\"first thing to say\", \"second thing to say\", \"third thing to say\"]]\n[action: set {\"type\": \"none\", \"amount\": 0}]\nReplace the values (an integer -3..3; three strings in the reply language; a type from allowed_actions or \"none\"). Keep the brackets, the colon, the word set, and the JSON exactly as shown.",
+      "id": "sts2-deal-rules",
+      "name": "Deals",
+      "content": "DEALS\n- Sometimes the game hands you a proposal in deal_offer: something concrete the climber should do before you next hear of them. Put it in your own words in your FIRST reply of the visit, in character - a request, a dare, a bargain, whatever fits you. Never change the terms and never invent deals of your own; when deal_offer is \"none\", propose nothing.\n- The climber answers with a button, not with words; deal_offer then tells you ACCEPTED or DECLINED. Do not nag after a refusal.\n- deals tells you about open or settled deals. The GAME judges them, never you: on KEPT be pleased in your own way; on BROKEN let the disappointment show once - words only, no punishment, no grudge beyond this visit.",
       "role": "system",
       "position": 3,
+      "alwaysSend": true,
+      "keywords": [],
+      "conditions": [],
+      "conditionLogic": "all",
+      "enabled": true,
+      "section": "system-presets"
+    },
+    {
+      "id": "sts2-rumor-rules",
+      "name": "Gossip",
+      "content": "GOSSIP\n- The Ancients and the Merchant talk about the climbers. rumors lists what you have heard; one marked [new] is fresh - you may bring it up once, in character, then let it go.\n- At the END of your reply, if the climber said something about ANOTHER NPC by name (Neow, Orobas, Nonupeipe, Pael, Darv, Tanx, Tezcatara, Vakuu, the Merchant), set rumor to one third-person sentence (under 30 words) of what they said - e.g. \"The climber said Orobas' eyes look sick\" - and rumor_sentiment to \"+\", \"-\" or \"0\" for how that NPC would take it. Otherwise leave rumor empty. Never make a rumor out of talk about yourself.",
+      "role": "system",
+      "position": 4,
+      "alwaysSend": true,
+      "keywords": [],
+      "conditions": [],
+      "conditionLogic": "all",
+      "enabled": true,
+      "section": "system-presets"
+    },
+    {
+      "id": "sts2-output",
+      "name": "Output",
+      "content": "OUTPUT\nWrite your lines as plain text: 1-3 short paragraphs, each paragraph is one speech bubble. No stage directions in brackets, no labels.\nThen END the reply with these directive lines, in this form and nothing else on those lines:\n[affection_delta: set 0]\n[choices: set [\"first thing to say\", \"second thing to say\", \"third thing to say\"]]\n[action: set {\"type\": \"none\", \"amount\": 0}]\nReplace the values (an integer -3..3; three strings in the reply language; a type from allowed_actions or \"none\"). Keep the brackets, the colon, the word set, and the JSON exactly as shown.\nOnly when the climber talked about another NPC by name, add two more lines:\n[rumor: set \"one third-person sentence of what they said\"]\n[rumor_sentiment: set \"+\"]",
+      "role": "system",
+      "position": 5,
       "alwaysSend": true,
       "keywords": [],
       "conditions": [],
@@ -63,7 +89,7 @@
       "name": "Greeting",
       "content": "Oh ho, a customer! Come in, come in - look all you like. Touching is extra. Heh heh.",
       "role": "greeting",
-      "position": 4,
+      "position": 6,
       "alwaysSend": false,
       "keywords": [],
       "conditions": [],
@@ -300,6 +326,38 @@
       "behaviorRules": "Comma-separated rewards you may offer right now, or 'none'. Never offer anything else."
     },
     {
+      "id": "deal_offer",
+      "name": "Deal to propose",
+      "type": "string",
+      "defaultValue": "none",
+      "aiAccess": "read",
+      "behaviorRules": "A deal the game wants you to propose this visit, or the climber's answer to it, or 'none'. Follow the DEALS rules."
+    },
+    {
+      "id": "deals",
+      "name": "Deals with this climber",
+      "type": "string",
+      "defaultValue": "none",
+      "aiAccess": "read",
+      "behaviorRules": "Open or settled deals between you and this climber, judged by the game. Follow the DEALS rules."
+    },
+    {
+      "id": "rumors",
+      "name": "What you have heard",
+      "type": "string",
+      "defaultValue": "none",
+      "aiAccess": "read",
+      "behaviorRules": "Things other NPCs heard the climber say about you (the Merchant hears everything). Follow the GOSSIP rules."
+    },
+    {
+      "id": "shop_special",
+      "name": "Special on the shelf",
+      "type": "string",
+      "defaultValue": "none",
+      "aiAccess": "read",
+      "behaviorRules": "When an Ancient left one of their relics with you for this climber, this says which; mention it once when they arrive, as a favour being passed along. 'none' otherwise."
+    },
+    {
       "id": "affection_delta",
       "name": "Affection delta",
       "type": "number",
@@ -327,6 +385,22 @@
       },
       "aiAccess": "write",
       "behaviorRules": "Set at the END of every reply: {\"type\": \"none\"} normally, or {\"type\": \"<one of allowed_actions>\", \"amount\": 0} when you decide to grant that reward this visit. The game validates and applies it; you only narrate."
+    },
+    {
+      "id": "rumor",
+      "name": "Rumor",
+      "type": "string",
+      "defaultValue": "",
+      "aiAccess": "write",
+      "behaviorRules": "Only when the climber talked about ANOTHER NPC by name: one third-person sentence of what they said. Otherwise leave empty. See GOSSIP."
+    },
+    {
+      "id": "rumor_sentiment",
+      "name": "Rumor sentiment",
+      "type": "string",
+      "defaultValue": "0",
+      "aiAccess": "write",
+      "behaviorRules": "With rumor: '+', '-' or '0' for how the named NPC would take it."
     }
   ],
   "rules": [],

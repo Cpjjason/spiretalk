@@ -10,6 +10,14 @@ using SpireTalk.Ui;
 
 namespace SpireTalk;
 
+/// <summary>How hard the NPCs are to please. One knob; the rules, rewards and deals all read it.</summary>
+public enum Temperament
+{
+    Lenient,
+    Normal,
+    Strict,
+}
+
 public enum ReplyLanguage
 {
     FollowGame,
@@ -61,6 +69,8 @@ public sealed class SpireTalkConfig : SimpleModConfig
     public static bool UseAncientAffection { get; set; } = true;
 
     public static ReplyLanguage Language { get; set; } = ReplyLanguage.FollowGame;
+
+    public static Temperament Temperament { get; set; } = Temperament.Normal;
 
     // ── Data ─────────────────────────────────────────────────────────────
 

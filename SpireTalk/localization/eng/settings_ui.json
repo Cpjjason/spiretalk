@@ -53,5 +53,10 @@
   "SPIRETALK-MSG.DebugLogging": "Verbose log",
   "SPIRETALK-MSG.Language": "Reply language",
   "SPIRETALK-MSG.ResetMemoriesBtn": "Forget every conversation",
-  "SPIRETALK-MSG.ThanksYumina": "Built on Yumina, which is open source —"
+  "SPIRETALK-MSG.ThanksYumina": "Built on Yumina, which is open source —",
+  "SPIRETALK-TEMPERAMENT.title": "Temperament",
+  "SPIRETALK-TEMPERAMENT.Lenient": "Lenient",
+  "SPIRETALK-TEMPERAMENT.Normal": "Normal",
+  "SPIRETALK-TEMPERAMENT.Strict": "Strict",
+  "SPIRETALK-MSG.Temperament": "Temperament"
 }

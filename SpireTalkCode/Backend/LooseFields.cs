@@ -16,7 +16,9 @@ public static class LooseFields
     private static readonly Regex DeltaRe = new(@"(?im)^\s*[\[\(]?\s*affection_delta\s*[:=]\s*([+-]?\d)\s*[\]\)]?\s*$", RegexOptions.Compiled);
     private static readonly Regex ActionRe = new(@"(?im)^\s*[\[\(]?\s*action\s*[:=]\s*(\{[^}]*\})\s*[\]\)]?\s*$", RegexOptions.Compiled);
     private static readonly Regex StageRe = new(@"\[\s*stage direction\s*:\s*([^\]]+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-    private static readonly Regex LeftoverDirectiveRe = new(@"(?m)^\s*\[(?:affection_delta|choices|action)\s*:[^\]]*\]\s*$", RegexOptions.Compiled);
+    private static readonly Regex RumorRe = new(@"(?im)^\s*[\[\(]?\s*rumor\s*[:=]\s*(?:set\s+)?""([^""\r\n]*)""\s*[\]\)]?\s*$", RegexOptions.Compiled);
+    private static readonly Regex RumorMoodRe = new(@"(?im)^\s*[\[\(]?\s*rumor_sentiment\s*[:=]\s*(?:set\s+)?""?([+\-0])""?\s*[\]\)]?\s*$", RegexOptions.Compiled);
+    private static readonly Regex LeftoverDirectiveRe = new(@"(?m)^\s*\[(?:affection_delta|choices|action|rumor|rumor_sentiment)\s*:[^\]]*\]\s*$", RegexOptions.Compiled);
 
     /// <summary>
     /// Returns the display text (cleaned) and fills in any field that the structured path left empty.
@@ -25,8 +27,26 @@ public static class LooseFields
     /// </summary>
     public static string Extract(string raw, string clean, ref List<string> choices, ref int delta, ref NpcAction action)
     {
+        string? rumor = null;
+        string? mood = null;
+        return Extract(raw, clean, ref choices, ref delta, ref action, ref rumor, ref mood);
+    }
+
+    public static string Extract(string raw, string clean, ref List<string> choices, ref int delta, ref NpcAction action, ref string? rumor, ref string? rumorMood)
+    {
         var text = string.IsNullOrWhiteSpace(raw) ? clean : raw;
         if (string.IsNullOrWhiteSpace(text)) return clean;
+
+        if (string.IsNullOrWhiteSpace(rumor))
+        {
+            var m = RumorRe.Match(text);
+            if (m.Success) rumor = m.Groups[1].Value.Trim();
+        }
+        if (string.IsNullOrWhiteSpace(rumorMood) || rumorMood == "0")
+        {
+            var m = RumorMoodRe.Match(text);
+            if (m.Success) rumorMood = m.Groups[1].Value;
+        }
 
         if (choices.Count == 0)
         {
@@ -86,6 +106,8 @@ public static class LooseFields
         visible = ChoicesRe.Replace(visible, "");
         visible = DeltaRe.Replace(visible, "");
         visible = ActionRe.Replace(visible, "");
+        visible = RumorRe.Replace(visible, "");
+        visible = RumorMoodRe.Replace(visible, "");
         visible = LeftoverDirectiveRe.Replace(visible, "");
         visible = StageRe.Replace(visible, m => "(" + m.Groups[1].Value.Trim() + ")");
         return visible.Trim();

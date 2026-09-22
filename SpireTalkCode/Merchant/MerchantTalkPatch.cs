@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using MegaCrit.Sts2.Core.Runs;
 using SpireTalk.Affection;
+using SpireTalk.Deals;
 using SpireTalk.Ancients;
 using SpireTalk.Npc;
 using SpireTalk.Rewards;
@@ -272,6 +273,8 @@ internal sealed class MerchantConversation
     private int _rewardsThisVisit;
     private string? _previousPlayerLine;
     private NpcTurn? _lastTurn;
+    private DealService.Offer? _offer;
+    private bool _offerAnswered;
 
     public MerchantConversation(Player owner)
     {
@@ -299,10 +302,12 @@ internal sealed class MerchantConversation
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
             _ctx.Talks = _record.Talks;
+            _offer = VisitExtras.Prepare(_ctx, _npc, _owner, _runKey);
+            _offerAnswered = false;
             _ctx.SyncRelationshipVariables();
             TalkStore.Instance.Save();
 
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
             var opener = BuildOpener();
             var turn = await backend.ExchangeAsync(_ctx, opener, true, cts.Token);
             _lastTurn = turn;
@@ -312,6 +317,8 @@ internal sealed class MerchantConversation
                 TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.ToTranscript(), _runKey);
                 _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
             }
+            VisitExtras.AfterTurn(turn, _npc, _runKey, isOpener: true);
+            VisitExtras.AfterOpener(_ctx, _npc, _runKey);
             TalkStore.Instance.Save();
 
             if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Merchant] greeting shown: {turn.Lines.FirstOrDefault() ?? ""}", 1);
@@ -396,6 +403,7 @@ internal sealed class MerchantConversation
                 TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.ToTranscript(), _runKey);
                 _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
             }
+            VisitExtras.AfterTurn(turn, _npc, _runKey, isOpener: false);
 
             var delta = ConversationRules.ClampDelta(turn.AffectionDelta, _netDeltaThisVisit, playerLine, _previousPlayerLine);
             _netDeltaThisVisit += delta;
@@ -446,9 +454,23 @@ internal sealed class MerchantConversation
         if (_panel == null || !GodotObject.IsInstanceValid(_panel) || _ctx == null) return;
         var linesLeft = ConversationRules.LinesPerVisit - _linesUsed;
         var lines = turn.Lines.Count > 0 ? turn.Lines : new[] { Loc.EventText("silence") };
-        var choices = turn.Choices.Count > 0 ? turn.Choices : new[] { Loc.EventText("defaultChoice1"), Loc.EventText("defaultChoice2"), Loc.EventText("defaultChoice3") };
         var footer = string.Format(Loc.EventText("merchantFooter"), _ctx.Affection, Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)), linesLeft,
             MerchantTalk.DiscountPercent > 0 ? string.Format(Loc.EventText("merchantDiscountNote"), MerchantTalk.DiscountPercent) : "");
+        if (_offer != null && !_offerAnswered)
+        {
+            var offer = _offer;
+            var accept = string.Format(Loc.EventText("dealAcceptShort"), DealService.KeptAffection, DealService.KeptGold);
+            _panel.SetDeal(lines, string.Format(Loc.EventText("dealQuestion"), offer.Describe()), accept, Loc.EventText("dealDeclineShort"), accepted =>
+            {
+                if (_ctx == null || _offerAnswered) return;
+                _offerAnswered = true;
+                VisitExtras.OnOfferAnswered(_ctx, _npc, offer, accepted, _runKey);
+                if (accepted) RewardExecutor.Toast(string.Format(Loc.EventText("dealAccepted"), _npc.DisplayName, offer.Describe()));
+                Present(turn);
+            }, footer);
+            return;
+        }
+        var choices = turn.Choices.Count > 0 ? turn.Choices : new[] { Loc.EventText("defaultChoice1"), Loc.EventText("defaultChoice2"), Loc.EventText("defaultChoice3") };
         _panel.SetTurn(lines, choices, linesLeft, SpireTalkConfig.FreeTextInput, footer);
     }
 
@@ -471,6 +493,7 @@ internal sealed class MerchantConversation
         ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Merchant, ctx.Tier, RewardState());
         ctx.History.AddRange(TalkStore.Instance.HistoryOf(MerchantTalk.NpcKey, _runKey));
         ctx.Variables["affection_source"] = AffectionService.UsingAncientAffection ? "Ancient Affection mod" : "SpireTalk";
+        ctx.Variables["shop_special"] = AncientRelicShelf.PromptFor(_owner);
         return ctx;
     }
 

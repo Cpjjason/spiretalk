@@ -53,5 +53,10 @@
   "SPIRETALK-MSG.DebugLogging": "상세 로그",
   "SPIRETALK-MSG.Language": "답변 언어",
   "SPIRETALK-MSG.ResetMemoriesBtn": "모든 대화 기억 지우기",
-  "SPIRETALK-MSG.ThanksYumina": "오픈소스 Yumina 위에 만들어졌습니다 —"
+  "SPIRETALK-MSG.ThanksYumina": "오픈소스 Yumina 위에 만들어졌습니다 —",
+  "SPIRETALK-TEMPERAMENT.title": "성미",
+  "SPIRETALK-TEMPERAMENT.Lenient": "너그러움",
+  "SPIRETALK-TEMPERAMENT.Normal": "보통",
+  "SPIRETALK-TEMPERAMENT.Strict": "엄격",
+  "SPIRETALK-MSG.Temperament": "성미"
 }

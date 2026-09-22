@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using SpireTalk.Affection;
+using SpireTalk.Deals;
 using SpireTalk.Npc;
 using SpireTalk.Rewards;
 using SpireTalk.Store;
@@ -66,6 +67,9 @@ public sealed class AncientConversation
     private TalkInputBox? _inputBox;
     private NpcTurn? _lastTurn;
     private bool _visitBonusGiven;
+    /// <summary>The deal this NPC proposes on this visit, until the climber has answered it.</summary>
+    private DealService.Offer? _offer;
+    private bool _offerAnswered;
     /// <summary>Cancelled when the room goes away, so a late reply never touches a dead layout.</summary>
     private readonly CancellationTokenSource _lifetime = new();
 
@@ -185,6 +189,8 @@ public sealed class AncientConversation
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
             _ctx.Talks = _record.Talks;
+            _offer = _ancient.Owner != null ? VisitExtras.Prepare(_ctx, _npc, _ancient.Owner, _runKey) : null;
+            _offerAnswered = false;
             _ctx.SyncRelationshipVariables();
             TalkStore.Instance.Save();
 
@@ -259,6 +265,8 @@ public sealed class AncientConversation
             TalkStore.Instance.AppendHistory(_key, "npc", turn.ToTranscript(), _runKey);
             _record.LastLine = Truncate(npcText, 300);
         }
+        VisitExtras.AfterTurn(turn, _npc, _runKey, isOpener);
+        if (isOpener) VisitExtras.AfterOpener(_ctx, _npc, _runKey);
 
         // 2. Affection — clamp what the NPC proposed, then write it where it lives.
         var appliedDelta = 0;
@@ -344,13 +352,28 @@ public sealed class AncientConversation
         }
     }
 
-    private void Present(NpcTurn turn)
+    private void Present(NpcTurn turn, bool relines = true)
     {
         if (_ctx == null) return;
         var outOfLines = _linesUsed >= ConversationRules.LinesPerVisit;
+        var offerPending = _offer != null && !_offerAnswered;
 
         var options = new List<EventOption>();
-        if (!outOfLines)
+        if (offerPending)
+        {
+            // The NPC has just proposed a deal: the answer comes before anything else.
+            var offer = _offer!;
+            var accept = Loc.Event("dealAccept");
+            accept.Add("Deal", Loc.Sanitize(offer.Describe()));
+            var acceptDesc = Loc.Event("dealAcceptDesc");
+            acceptDesc.Add("Affection", (decimal)DealService.KeptAffection);
+            acceptDesc.Add("Gold", (decimal)DealService.KeptGold);
+            options.Add(new EventOption(_ancient, () => AnswerOffer(true), accept, acceptDesc, "SPIRETALK_DEAL_YES", Array.Empty<IHoverTip>())
+                .ThatWontSaveToChoiceHistory());
+            options.Add(new EventOption(_ancient, () => AnswerOffer(false), Loc.Event("empty"), Loc.Event("dealDecline"), "SPIRETALK_DEAL_NO", Array.Empty<IHoverTip>())
+                .ThatWontSaveToChoiceHistory());
+        }
+        else if (!outOfLines)
         {
             var choices = turn.Choices.Count > 0 ? turn.Choices : DefaultChoices();
             foreach (var choice in choices.Take(3))
@@ -360,26 +383,45 @@ public sealed class AncientConversation
                     .ThatWontSaveToChoiceHistory());
             }
         }
-        var endLabel = Loc.Event(outOfLines ? "endNoLines" : "end");
-        endLabel.Add("Affection", (decimal)_ctx.Affection);
-        endLabel.Add("Tier", Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)));
-        endLabel.Add("LinesLeft", (decimal)Math.Max(0, ConversationRules.LinesPerVisit - _linesUsed));
-        options.Add(new EventOption(_ancient, () => { EndConversation(); return Task.CompletedTask; }, Loc.Event("empty"), endLabel, "SPIRETALK_END", Array.Empty<IHoverTip>())
-            .ThatWontSaveToChoiceHistory());
+        if (!offerPending)
+        {
+            var endLabel = Loc.Event(outOfLines ? "endNoLines" : "end");
+            endLabel.Add("Affection", (decimal)_ctx.Affection);
+            endLabel.Add("Tier", Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)));
+            endLabel.Add("LinesLeft", (decimal)Math.Max(0, ConversationRules.LinesPerVisit - _linesUsed));
+            options.Add(new EventOption(_ancient, () => { EndConversation(); return Task.CompletedTask; }, Loc.Event("empty"), endLabel, "SPIRETALK_END", Array.Empty<IHoverTip>())
+                .ThatWontSaveToChoiceHistory());
+        }
 
         SetEventState(_vanillaDescription, options);
 
         var layout = Layout;
         if (layout == null) return;
 
-        var lines = turn.Lines.Count > 0 ? NormalizeLines(turn.Lines) : new List<string>();
-        if (lines.Count == 0) lines.Add(Loc.EventText("silence"));
-        ShowLines(layout, lines.Select(Loc.Dynamic).ToList());
+        if (relines)
+        {
+            var lines = turn.Lines.Count > 0 ? NormalizeLines(turn.Lines) : new List<string>();
+            if (lines.Count == 0) lines.Add(Loc.EventText("silence"));
+            ShowLines(layout, lines.Select(Loc.Dynamic).ToList());
+        }
 
-        if (SpireTalkConfig.FreeTextInput && !outOfLines)
+        if (SpireTalkConfig.FreeTextInput && !outOfLines && !offerPending)
         {
             AttachInputBox(layout, ConversationRules.LinesPerVisit - _linesUsed);
         }
+    }
+
+    private Task AnswerOffer(bool accepted)
+    {
+        if (_ctx == null || _offer == null || _offerAnswered) return Task.CompletedTask;
+        _offerAnswered = true;
+        VisitExtras.OnOfferAnswered(_ctx, _npc, _offer, accepted, _runKey);
+        if (accepted) RewardExecutor.Toast(string.Format(Loc.EventText("dealAccepted"), _npc.DisplayName, _offer.Describe()));
+        // Back to the reply that carried the proposal, now with the normal choices under it.
+        if (_lastTurn != null) Present(_lastTurn, relines: false);
+        // The dialogue is already on its last page (the options were visible), so the box may show now.
+        if (_inputBox != null && GodotObject.IsInstanceValid(_inputBox)) _inputBox.Visible = true;
+        return Task.CompletedTask;
     }
 
     private void Fail(Exception ex)

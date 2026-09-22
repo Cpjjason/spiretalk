@@ -53,5 +53,10 @@
   "SPIRETALK-MSG.DebugLogging": "詳細日誌",
   "SPIRETALK-MSG.Language": "回覆語言",
   "SPIRETALK-MSG.ResetMemoriesBtn": "清空全部對話記憶",
-  "SPIRETALK-MSG.ThanksYumina": "基於開源的 Yumina 構建，謝謝 ——"
+  "SPIRETALK-MSG.ThanksYumina": "基於開源的 Yumina 構建，謝謝 ——",
+  "SPIRETALK-TEMPERAMENT.title": "先民脾氣",
+  "SPIRETALK-TEMPERAMENT.Lenient": "寬容",
+  "SPIRETALK-TEMPERAMENT.Normal": "正常",
+  "SPIRETALK-TEMPERAMENT.Strict": "嚴苛",
+  "SPIRETALK-MSG.Temperament": "先民脾氣"
 }
