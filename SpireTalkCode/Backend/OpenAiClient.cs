@@ -69,9 +69,14 @@ public sealed class OpenAiClient
         };
         if (LooksLikeOllama)
         {
-            // Ollama's thinking models spend the whole budget on reasoning and return no
-            // content unless thinking is switched off. Other servers reject unknown fields.
+            // Ollama ignores `think` on its OpenAI-compatible route, so thinking models (qwen3,
+            // deepseek-r1) burn the whole budget on reasoning and return nothing. Its native
+            // /api/chat honours it; same messages, different envelope.
+            body.Remove("max_tokens");
+            body.Remove("temperature");
+            body["stream"] = false;
             body["think"] = false;
+            body["options"] = new JsonObject { ["num_predict"] = maxTokens, ["temperature"] = temperature };
         }
         else if (LooksLikeOpenRouter)
         {
@@ -116,9 +121,20 @@ public sealed class OpenAiClient
         }
     }
 
+    /// <summary>Ollama's native chat endpoint lives beside its OpenAI-compatible /v1.</summary>
+    private static string OllamaChatUrl
+    {
+        get
+        {
+            var root = BaseUrl;
+            if (root.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)) root = root[..^3];
+            return root + "/api/chat";
+        }
+    }
+
     private async Task<string> PostAsync(JsonObject body, CancellationToken ct)
     {
-        using var req = new HttpRequestMessage(HttpMethod.Post, BaseUrl + "/chat/completions");
+        using var req = new HttpRequestMessage(HttpMethod.Post, LooksLikeOllama ? OllamaChatUrl : BaseUrl + "/chat/completions");
         AddAuth(req);
         req.Content = new StringContent(body.ToJsonString(JsonOpts), Encoding.UTF8, "application/json");
         HttpResponseMessage res;
@@ -150,7 +166,9 @@ public sealed class OpenAiClient
                 throw new BackendException(msg, (int)res.StatusCode, code);
             }
             var node = JsonNode.Parse(text);
-            var content = node?["choices"]?[0]?["message"]?["content"]?.GetValue<string>();
+            var content = LooksLikeOllama
+                ? node?["message"]?["content"]?.GetValue<string>()
+                : node?["choices"]?[0]?["message"]?["content"]?.GetValue<string>();
             if (string.IsNullOrWhiteSpace(content))
             {
                 throw new BackendException("The model returned an empty reply", null, "EMPTY");
