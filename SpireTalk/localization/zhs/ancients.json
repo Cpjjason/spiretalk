@@ -50,5 +50,8 @@
   "SPIRETALK.deal.spend_at_shop": "这一章在商店花掉 {0} 金币",
   "SPIRETALK.epilogueTitle": "{0}回望这一程",
   "SPIRETALK.epilogueWaiting": "……",
-  "SPIRETALK.shelfToast": "{0}托商人给你留了件东西：{1}"
+  "SPIRETALK.shelfToast": "{0}托商人给你留了件东西：{1}",
+  "SPIRETALK.keepsakeGiven": "{0}把信物交给了你：{1}",
+  "SPIRETALK.keepsakeLevel": "{0}升到了 {1} 级",
+  "SPIRETALK.keepsakeEngraved": "{0}多了一道刻痕（{1}）"
 }

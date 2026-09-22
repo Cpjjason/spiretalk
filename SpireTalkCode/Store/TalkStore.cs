@@ -28,6 +28,8 @@ public sealed class TalkStore
         [JsonPropertyName("lastLine")] public string? LastLine { get; set; }
         /// <summary>Type of the last deal this NPC proposed, so the next one differs.</summary>
         [JsonPropertyName("lastDeal")] public string? LastDealType { get; set; }
+        /// <summary>Deals kept with this NPC, ever — marks on the keepsake relic.</summary>
+        [JsonPropertyName("engravings")] public int Engravings { get; set; }
         [JsonPropertyName("history")] public List<HistoryEntry> History { get; set; } = new();
     }
 

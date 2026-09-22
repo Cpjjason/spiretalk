@@ -302,7 +302,7 @@ internal sealed class MerchantConversation
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
             _ctx.Talks = _record.Talks;
-            _offer = VisitExtras.Prepare(_ctx, _npc, _owner, _runKey);
+            _offer = await VisitExtras.PrepareAsync(_ctx, _npc, _owner, _runKey);
             _offerAnswered = false;
             _ctx.SyncRelationshipVariables();
             TalkStore.Instance.Save();
@@ -407,6 +407,7 @@ internal sealed class MerchantConversation
             _netDeltaThisVisit += delta;
             _ctx.Affection = AffectionService.Apply(MerchantTalk.NpcKey, NpcKind.Merchant, delta);
             _previousPlayerLine = playerLine;
+            if (delta != 0) await VisitExtras.AfterAffectionChangedAsync(_ctx, _npc, _owner);
 
             var reward = ConversationRules.Validate(turn.Action, NpcKind.Merchant, _ctx.Tier, RewardState(), _owner.Creature.MaxHp);
             var summary = "none";

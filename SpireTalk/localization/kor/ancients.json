@@ -50,5 +50,8 @@
   "SPIRETALK.deal.spend_at_shop": "이 막에서 상점에 금화 {0} 쓰기",
   "SPIRETALK.epilogueTitle": "{0}이(가) 여정을 돌아본다",
   "SPIRETALK.epilogueWaiting": "……",
-  "SPIRETALK.shelfToast": "{0}이(가) 상인에게 당신을 위한 물건을 맡겼다: {1}"
+  "SPIRETALK.shelfToast": "{0}이(가) 상인에게 당신을 위한 물건을 맡겼다: {1}",
+  "SPIRETALK.keepsakeGiven": "{0}이(가) 징표를 건넸다: {1}",
+  "SPIRETALK.keepsakeLevel": "{0}이(가) {1}단계로 자랐다",
+  "SPIRETALK.keepsakeEngraved": "{0}에 새김이 늘었다 ({1})"
 }

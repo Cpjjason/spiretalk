@@ -50,5 +50,8 @@
   "SPIRETALK.deal.spend_at_shop": "この章で店に金貨 {0} を使う",
   "SPIRETALK.epilogueTitle": "{0}が旅路を振り返る",
   "SPIRETALK.epilogueWaiting": "……",
-  "SPIRETALK.shelfToast": "{0}が商人にあなたへの品を預けた：{1}"
+  "SPIRETALK.shelfToast": "{0}が商人にあなたへの品を預けた：{1}",
+  "SPIRETALK.keepsakeGiven": "{0}が形見を渡した：{1}",
+  "SPIRETALK.keepsakeLevel": "{0}がレベル{1}に成長した",
+  "SPIRETALK.keepsakeEngraved": "{0}に刻印が増えた（{1}）"
 }

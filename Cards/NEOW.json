@@ -59,11 +59,24 @@
       "section": "system-presets"
     },
     {
+      "id": "sts2-keepsake-rules",
+      "name": "Keepsake",
+      "content": "KEEPSAKE\n- You have one keepsake, a relic of your own that you give to a climber once you trust them. It grows with the relationship (level I, II, III) and every deal they keep with you leaves an engraving on it. The game decides all of that; keepsake tells you what is true right now.\n- When keepsake says you are giving it right now, say so in this reply, in your own way. When it says it has just grown, mention that. Otherwise you may refer to it or not. Never promise a keepsake, a level or an engraving the game did not announce.",
+      "role": "system",
+      "position": 4,
+      "alwaysSend": true,
+      "keywords": [],
+      "conditions": [],
+      "conditionLogic": "all",
+      "enabled": true,
+      "section": "system-presets"
+    },
+    {
       "id": "sts2-output",
       "name": "Output",
       "content": "OUTPUT\nWrite your lines as plain text: 1-3 short paragraphs, each paragraph is one speech bubble. No stage directions in brackets, no labels.\nThen END the reply with exactly these three directive lines, in this form and nothing else on those lines:\n[affection_delta: set 0]\n[choices: set [\"first thing to say\", \"second thing to say\", \"third thing to say\"]]\n[action: set {\"type\": \"none\", \"amount\": 0}]\nReplace the values (an integer -3..3; three strings in the reply language; a type from allowed_actions or \"none\"). Keep the brackets, the colon, the word set, and the JSON exactly as shown.",
       "role": "system",
-      "position": 4,
+      "position": 5,
       "alwaysSend": true,
       "keywords": [],
       "conditions": [],
@@ -76,7 +89,7 @@
       "name": "Greeting",
       "content": "...hello... ..again.....",
       "role": "greeting",
-      "position": 5,
+      "position": 6,
       "alwaysSend": false,
       "keywords": [],
       "conditions": [],
@@ -327,6 +340,14 @@
       "defaultValue": "none",
       "aiAccess": "read",
       "behaviorRules": "Open or settled deals between you and this climber, judged by the game. Follow the DEALS rules."
+    },
+    {
+      "id": "keepsake",
+      "name": "Your keepsake",
+      "type": "string",
+      "defaultValue": "none",
+      "aiAccess": "read",
+      "behaviorRules": "What is happening with the keepsake you give climbers you trust: not yet earned, being given right now, carried at some level, or just grown. Follow the KEEPSAKE rules."
     },
     {
       "id": "affection_delta",

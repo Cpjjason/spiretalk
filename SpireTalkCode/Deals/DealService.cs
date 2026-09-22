@@ -305,6 +305,7 @@ public static class DealService
             {
                 _ = GiveGoldAsync(player);
             }
+            _ = Keepsakes.KeepsakeService.EngraveAsync(deal.Npc, player);
             if (!quiet) RewardExecutor.Toast(string.Format(Loc.EventText("dealKept"), name, Describe(deal), KeptAffection, KeptGold));
         }
         else

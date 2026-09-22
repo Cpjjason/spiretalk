@@ -189,7 +189,7 @@ public sealed class AncientConversation
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
             _ctx.Talks = _record.Talks;
-            _offer = _ancient.Owner != null ? VisitExtras.Prepare(_ctx, _npc, _ancient.Owner, _runKey) : null;
+            _offer = _ancient.Owner != null ? await VisitExtras.PrepareAsync(_ctx, _npc, _ancient.Owner, _runKey) : null;
             _offerAnswered = false;
             _ctx.SyncRelationshipVariables();
             TalkStore.Instance.Save();
@@ -275,6 +275,7 @@ public sealed class AncientConversation
             _netDeltaThisVisit += appliedDelta;
             _ctx.Affection = AffectionService.Apply(_key, NpcKind.Ancient, appliedDelta);
             _previousPlayerLine = playerLine;
+            if (appliedDelta != 0 && _ancient.Owner != null) await VisitExtras.AfterAffectionChangedAsync(_ctx, _npc, _ancient.Owner);
         }
 
         // 3. Reward — validate against the rules, then let the game do it.

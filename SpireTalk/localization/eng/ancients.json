@@ -50,5 +50,8 @@
   "SPIRETALK.deal.spend_at_shop": "spend {0} gold at the shop this act",
   "SPIRETALK.epilogueTitle": "{0} looks back on the climb",
   "SPIRETALK.epilogueWaiting": "…",
-  "SPIRETALK.shelfToast": "{0} left something with the Merchant for you: {1}"
+  "SPIRETALK.shelfToast": "{0} left something with the Merchant for you: {1}",
+  "SPIRETALK.keepsakeGiven": "{0} gave you a keepsake: {1}",
+  "SPIRETALK.keepsakeLevel": "{0} grew to level {1}",
+  "SPIRETALK.keepsakeEngraved": "{0} was engraved ({1})"
 }

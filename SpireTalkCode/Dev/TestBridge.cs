@@ -240,6 +240,21 @@ public sealed partial class TestBridge : Node
                 WriteResult(true, $"{key}: {current} -> {after} (source={(Affection.AffectionService.UsingAncientAffection ? "AA" : "own")})");
                 break;
             }
+            case "relics":
+            {
+                var player = Merchant.MerchantTalk.ResolveLocalPlayer();
+                if (player == null) { WriteResult(false, "no player"); break; }
+                var lines = player.Relics.Select(r =>
+                {
+                    string title, desc;
+                    try { title = r.Title.GetFormattedText(); } catch (Exception ex) { title = "title? " + ex.Message; }
+                    try { desc = r.DynamicDescription.GetFormattedText(); } catch (Exception ex) { desc = "desc? " + ex.Message; }
+                    var extra = r is Keepsakes.KeepsakeRelic k ? $" [level {k.Level}, engravings {k.Engravings}]" : "";
+                    return $"{r.Id.Entry}: {title} — {desc}{extra}";
+                });
+                WriteResult(true, string.Join(" | ", lines));
+                break;
+            }
             case "quit":
                 WriteResult(true, "quitting");
                 _steps.Enqueue(() => GetTree().Quit());

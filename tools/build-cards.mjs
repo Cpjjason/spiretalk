@@ -63,6 +63,8 @@ function contextVariables(npc) {
       behaviorRules: "A deal the game wants you to propose this visit, or the climber's answer to it, or 'none'. Follow the DEALS rules." },
     { id: "deals", name: "Deals with this climber", type: "string", defaultValue: "none", aiAccess: "read",
       behaviorRules: "Open or settled deals between you and this climber, judged by the game. Follow the DEALS rules." },
+    { id: "keepsake", name: "Your keepsake", type: "string", defaultValue: "none", aiAccess: "read",
+      behaviorRules: "What is happening with the keepsake you give climbers you trust: not yet earned, being given right now, carried at some level, or just grown. Follow the KEEPSAKE rules." },
     ...(merchant ? [
       { id: "shop_special", name: "Special on the shelf", type: "string", defaultValue: "none", aiAccess: "read",
         behaviorRules: "When an Ancient left one of their relics with you for this climber, this says which; mention it once when they arrive, as a favour being passed along. 'none' otherwise." },
@@ -101,8 +103,9 @@ function entriesFor(npc) {
     { id: "sts2-scene-rules", name: "Rules of the scene", content: scene, role: "system", position: 1, ...base },
     { id: "sts2-affection-rules", name: "Affection & rewards", content: rules, role: "system", position: 2, ...base },
     { id: "sts2-deal-rules", name: "Deals", content: catalog.deal_rules.trim(), role: "system", position: 3, ...base },
-    { id: "sts2-output", name: "Output", content: OUTPUT, role: "system", position: 4, ...base },
-    { id: `sts2-${k}-greeting`, name: "Greeting", content: npc.greeting, role: "greeting", position: 5, ...base, alwaysSend: false },
+    { id: "sts2-keepsake-rules", name: "Keepsake", content: catalog.keepsake_rules.trim(), role: "system", position: 4, ...base },
+    { id: "sts2-output", name: "Output", content: OUTPUT, role: "system", position: 5, ...base },
+    { id: `sts2-${k}-greeting`, name: "Greeting", content: npc.greeting, role: "greeting", position: 6, ...base, alwaysSend: false },
   ];
 }
 

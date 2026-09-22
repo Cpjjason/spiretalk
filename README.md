@@ -22,6 +22,20 @@
 
   One reward per visit, never on the greeting, and the AI only *narrates* — the mod validates every reward against these rules and applies it through the game's own commands.
 - **Deals** — an NPC may ask something of you on arrival: *reach act 2 alive*, *no potions until the next act*, *spend 150 gold at the shop this act*… You answer with a button; the terms come from the mod, never from the AI, so they are always something the game can check. Kept: affection +6 and 50 gold. Broken: nothing but a disappointed line next time and no more deals from that NPC this run. One per NPC at a time, three per run; open ones are listed under the top bar.
+- **Keepsakes** — once an NPC likes you (friendly), they hand you their keepsake: a relic that grows with the relationship. Level I / II / III follow the tier (friendly / close / devoted) and rise mid-run the moment the number crosses; every deal you keep with that NPC engraves it (up to 5, remembered across runs). Nine of them, one per NPC, each in that NPC's manner:
+  | keepsake | I | II | III | engraving |
+  |---|---|---|---|---|
+  | Neow's | heal 3 after every combat | heal 6 | + once per run, a lethal hit leaves you at 1 HP | +1 heal |
+  | Orobas' | +15 gold after every combat, 20% potion | +25 gold, 35% | + elites drop an extra relic | +5 gold, +5% |
+  | Nonupeipe's | 3 Block at combat start | 5 Block | + 1 Dexterity | +1 Block |
+  | Pael's | +1 Max HP per victory, 10 per act | +2 | +3 | +2 to the cap |
+  | Darv's | +1 card on turn 1 | +2 cards | + 1 energy on turn 1 | — |
+  | Tanx's | first attack each combat +4 | +8 | + 1 Strength vs elites and bosses | +1 damage |
+  | Tezcatara's | rest heals +10 | +20 | + 1 potion slot | +2 heal |
+  | Vakuu's | +1 Strength at combat start, lose 2 HP | +2 Strength | the blood price is waived | — |
+  | the Merchant's ledger | 5% off | 10% off, card removal free | 20% off | +2% |
+
+  Keepsakes are only ever given in conversation; they are never rolled as rewards or sold.
 - **Epilogue** — when a run ends, the NPC who knew you best says a few words about it on the game-over screen: the deals, where you fell or how you won. Kept in the profile.
 - **Ancient relics on the shelf** — once an Ancient likes you (friendly or better), they may leave one of *their own* relics with the Merchant for you — relics otherwise only found in their halls — priced like a rare. Chance rises with the tier; once per run.
 - **Temperament** — a setting: lenient / normal / strict. Strict caps each line at ±2, a visit at ±5, hands rewards out only from *close*, and sizes the deals harder.
@@ -79,6 +93,20 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 
   每次拜访最多一个奖励，开场白不给奖励；AI 只负责「说」，每个奖励都由模组按上面的规则校验后，用游戏自己的指令发放。
 - **约定** — NPC 见面时可能向你提个要求：「活着走到第 2 章」「到下一章之前不喝药水」「这一章在商店花掉 150 金币」……你按按钮答应或拒绝；题目全部由模组出、不是 AI 编的，所以一定是游戏能核验的事。做到了：好感 +6，另有 50 金币。没做到：只有下次见面一句失望的话，这局这位不再派活。每位同时一条，每局最多三条；进行中的约定挂在顶栏下面。
+- **信物** — NPC 对你到了友好，就会把自己的信物交给你：一件跟关系一起长的遗物。Ⅰ / Ⅱ / Ⅲ 级对应友好 / 亲近 / 挚爱，一局里好感跨档的瞬间就原地升级；每守住一次和她的约定，信物上多一道刻痕（最多 5 道，跨局保留）。九件，每位一件，各按各的性子：
+  | 信物 | Ⅰ | Ⅱ | Ⅲ | 刻痕 |
+  |---|---|---|---|---|
+  | 涅奥 | 每场战斗后回 3 | 回 6 | + 每局一次，致命伤留 1 血 | +1 回血 |
+  | 欧洛巴斯 | 每场战斗后 +15 金，20% 一瓶药水 | +25 金，35% | + 精英多掉一件遗物 | +5 金，+5% |
+  | 诺努佩佩 | 开局 3 格挡 | 5 格挡 | + 1 敏捷 | +1 格挡 |
+  | 佩尔 | 每次胜利最大生命 +1，每章封顶 10 | +2 | +3 | 封顶 +2 |
+  | 达弗 | 首回合多抽 1 | 多抽 2 | + 首回合 1 能量 | — |
+  | 坦克斯 | 每场第一次攻击 +4 伤 | +8 | + 精英/Boss 战开局 1 力量 | +1 伤 |
+  | 特兹卡塔拉 | 休息多回 10 | 多回 20 | + 药水栏 +1 | +2 回血 |
+  | 瓦库 | 开局 +1 力量、掉 2 血 | +2 力量 | 免去血的代价 | — |
+  | 商人的账本 | 全店 −5% | −10%，删牌免费 | −20% | −2% |
+
+  信物只在对话里给，永远不会被随机掉落或摆上货架。
 - **旅途回顾** — 一局结束时，和你关系最深的那位 NPC 会在结算画面上写几句：立过的约、倒在哪一层或怎么赢的。存在档案里。
 - **先民遗物上架** — 某位先民对你到了友好以上，就可能把**自己的**遗物托给商人留给你——平时只在先民殿堂里才有的那种——按稀有遗物的价格卖。档位越高几率越大；每局一次。
 - **先民脾气** — 一个设置：宽容 / 正常 / 严苛。严苛档每句最多 ±2、每次拜访最多 ±5、只有亲近以上才给奖励、约定也出得更狠。

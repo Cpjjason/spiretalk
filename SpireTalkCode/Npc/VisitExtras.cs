@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using SpireTalk.Deals;
+using SpireTalk.Keepsakes;
 
 namespace SpireTalk.Npc;
 
@@ -9,9 +10,13 @@ namespace SpireTalk.Npc;
 /// </summary>
 public static class VisitExtras
 {
-    /// <summary>Before the opener: put deal status into the prompt and decide whether the NPC proposes one.</summary>
-    public static DealService.Offer? Prepare(VisitContext ctx, NpcDefinition npc, Player player, string runKey)
+    /// <summary>
+    /// Before the opener: hand over or level the keepsake, put deal status into the prompt and decide
+    /// whether the NPC proposes a deal this visit.
+    /// </summary>
+    public static async Task<DealService.Offer?> PrepareAsync(VisitContext ctx, NpcDefinition npc, Player player, string runKey)
     {
+        ctx.Variables["keepsake"] = await KeepsakeService.OnVisitAsync(npc, player, ctx.Tier);
         ctx.Variables["deals"] = DealService.PromptStatus(npc.Key, runKey);
 
         var offer = DealService.PickOffer(npc, player, ctx.Tier, runKey);
@@ -36,5 +41,16 @@ public static class VisitExtras
             ? "The climber ACCEPTED your proposal. Acknowledge it briefly when it fits; do not propose another."
             : "The climber DECLINED your proposal. Take it in stride; do not propose another this visit.";
         ctx.Variables["deals"] = DealService.PromptStatus(npc.Key, runKey);
+    }
+
+    /// <summary>After affection moved mid-visit: the keepsake may have grown.</summary>
+    public static async Task AfterAffectionChangedAsync(VisitContext ctx, NpcDefinition npc, Player player)
+    {
+        var raised = await KeepsakeService.RefreshAsync(npc, player, quiet: false);
+        if (raised)
+        {
+            var owned = KeepsakeService.Owned(player, npc.Key);
+            ctx.Variables["keepsake"] = $"Your keepsake \"{KeepsakeService.KeepsakeName(npc.Key)}\" just grew to level {owned?.Level ?? 0} because of what they said. Mention it in this reply.";
+        }
     }
 }
