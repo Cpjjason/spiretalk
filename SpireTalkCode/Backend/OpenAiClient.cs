@@ -76,7 +76,15 @@ public sealed class OpenAiClient
             body.Remove("temperature");
             body["stream"] = false;
             body["think"] = false;
-            body["options"] = new JsonObject { ["num_predict"] = maxTokens, ["temperature"] = temperature };
+            body["options"] = new JsonObject
+            {
+                ["num_predict"] = maxTokens,
+                ["temperature"] = temperature,
+                // Size the context to the prompt: Ollama's server default is either too small for our
+                // prompts (silently truncated) or 32k (a KV cache of several GB that pushes a 27B model
+                // out of VRAM on a 24 GB card and makes every call crawl).
+                ["num_ctx"] = OllamaContextFor(messages, maxTokens),
+            };
         }
         else if (LooksLikeOpenRouter)
         {
@@ -94,6 +102,20 @@ public sealed class OpenAiClient
             await Task.Delay(TimeSpan.FromSeconds(2), ct);
             return await PostAsync(body, ct);
         }
+    }
+
+    /// <summary>Prompt characters over 2 is a safe token over-estimate for CJK and English alike.</summary>
+    private static int OllamaContextFor(JsonArray messages, int maxTokens)
+    {
+        long chars = 0;
+        foreach (var m in messages)
+        {
+            chars += m?["content"]?.ToString().Length ?? 0;
+        }
+        var needed = (int)(chars / 2 + maxTokens + 512);
+        var ctx = 8192;
+        while (ctx < needed && ctx < 65536) ctx *= 2;
+        return ctx;
     }
 
     private static bool IsTransient(BackendException ex) =>

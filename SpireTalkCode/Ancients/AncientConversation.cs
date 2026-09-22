@@ -122,16 +122,17 @@ public sealed class AncientConversation
     }
 
     /// <summary>
-    /// Called from the layout patch on every dialogue page. The typed-input box only makes sense
-    /// once the options are on screen (last page); before that the bubble sits where the box is.
+    /// Called from the layout patch before every dialogue page is laid out. On the last page the
+    /// layout scrolls up by the option list's height, measured once; the typed line has to be in
+    /// the list (and visible) by then or the closing option ends up below the screen.
     /// </summary>
-    internal static void OnDialoguePage(NAncientEventLayout layout, bool lastPage)
+    internal static void BeforeDialoguePage(NAncientEventLayout layout)
     {
         foreach (var conversation in Active.Values)
         {
             if (!ReferenceEquals(conversation.Layout, layout)) continue;
             var box = conversation._inputBox;
-            if (box != null && GodotObject.IsInstanceValid(box)) box.Visible = lastPage;
+            if (box != null && GodotObject.IsInstanceValid(box) && box.GetParent() == null) PlaceInOptions(layout, box, 0);
         }
     }
 
@@ -399,16 +400,19 @@ public sealed class AncientConversation
         var layout = Layout;
         if (layout == null) return;
 
+        // The typed line joins the option list BEFORE the dialogue is laid out: on the last page
+        // the layout scrolls up by the list's measured height, once.
+        DisposeInput();
+        if (SpireTalkConfig.FreeTextInput && !outOfLines && !offerPending)
+        {
+            AttachInputBox(layout, ConversationRules.LinesPerVisit - _linesUsed);
+        }
+
         if (relines)
         {
             var lines = turn.Lines.Count > 0 ? NormalizeLines(turn.Lines) : new List<string>();
             if (lines.Count == 0) lines.Add(Loc.EventText("silence"));
             ShowLines(layout, lines.Select(Loc.Dynamic).ToList());
-        }
-
-        if (SpireTalkConfig.FreeTextInput && !outOfLines && !offerPending)
-        {
-            AttachInputBox(layout, ConversationRules.LinesPerVisit - _linesUsed);
         }
     }
 
@@ -420,8 +424,6 @@ public sealed class AncientConversation
         if (accepted) RewardExecutor.Toast(string.Format(Loc.EventText("dealAccepted"), _npc.DisplayName, _offer.Describe()));
         // Back to the reply that carried the proposal, now with the normal choices under it.
         if (_lastTurn != null) Present(_lastTurn, relines: false);
-        // The dialogue is already on its last page (the options were visible), so the box may show now.
-        if (_inputBox != null && GodotObject.IsInstanceValid(_inputBox)) _inputBox.Visible = true;
         return Task.CompletedTask;
     }
 
@@ -481,10 +483,9 @@ public sealed class AncientConversation
                 if (_busy || _ended) return;
                 _ = TurnAsync(text);
             }, _ancient.ButtonColor);
-            var box = _inputBox;
             // Joins the game's own option list, just above the closing option, so the layout
             // sizes, spaces and reveals it like any other option.
-            Callable.From(() => PlaceInOptions(layout, box, 10)).CallDeferred();
+            PlaceInOptions(layout, _inputBox, 10);
         }
         catch (Exception ex)
         {

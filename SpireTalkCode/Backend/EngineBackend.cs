@@ -126,6 +126,25 @@ public sealed class EngineBackend : INpcBackend
         // "key: value" lines. Recover them from the raw output and keep them off screen.
         var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action);
         var lines = Ancients.AncientConversation.SplitIntoLines(text);
+        choices = choices.Select(PlainChoice).Where(c => c.Length > 0).ToList();
         return new NpcTurn(lines, choices, delta, null, action, OpenAiClient.Model);
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex Ellipsis = new(@"\s*(?:\.{2,}|…+)\s*");
+    private static readonly System.Text.RegularExpressions.Regex CjkGap = new(@"(?<=[　-鿿＀-￯])\s+(?=[　-鿿＀-￯])");
+
+    /// <summary>
+    /// The climber's suggested replies are theirs, not the NPC's: small models copy the NPC's
+    /// voice into them (Neow's "我... 会... 等你..."). Ellipsis runs become plain spaces, and the
+    /// spaces left between Chinese characters go ("我会等你"); a trailing one is kept as "…".
+    /// </summary>
+    internal static string PlainChoice(string choice)
+    {
+        var s = choice.Trim();
+        var trailing = s.EndsWith("...") || s.EndsWith("…");
+        s = Ellipsis.Replace(s, " ").Trim();
+        s = CjkGap.Replace(s, "");
+        s = System.Text.RegularExpressions.Regex.Replace(s, @"\s{2,}", " ");
+        return trailing && s.Length > 0 && !char.IsPunctuation(s[^1]) ? s + "…" : s;
     }
 }

@@ -73,16 +73,16 @@ internal static class ConversationPageOptionsPatch
     }
 }
 
-/// <summary>Tell the conversation which dialogue page is showing so the input box can follow the options.</summary>
+/// <summary>Make sure the typed line is in the option list before the layout measures it.</summary>
 [HarmonyPatch(typeof(NAncientEventLayout), "SetDialogueLineAndAnimate")]
 internal static class AncientDialoguePagePatch
 {
-    [HarmonyPostfix]
-    private static void AfterPage(NAncientEventLayout __instance, int ____currentDialogueLine, List<AncientDialogueLine> ____dialogue)
+    [HarmonyPrefix]
+    private static void BeforePage(NAncientEventLayout __instance)
     {
         try
         {
-            AncientConversation.OnDialoguePage(__instance, ____currentDialogueLine >= ____dialogue.Count - 1);
+            AncientConversation.BeforeDialoguePage(__instance);
         }
         catch
         {

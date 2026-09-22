@@ -77,7 +77,7 @@ function contextVariables(npc) {
     { id: "affection_delta", name: "Affection delta", type: "number", defaultValue: 0, min: -3, max: 3, aiAccess: "write",
       behaviorRules: "Set at the END of every reply: an integer from -3 to 3 judging the climber's last line by your 'what moves you' list. 0 is normal; ±3 is rare. Always set it (0 counts)." },
     { id: "choices", name: "Choices", type: "json", defaultValue: [], aiAccess: "write",
-      behaviorRules: "At the END of every reply set this to exactly 3 short things the climber could say next, in the climber's first-person voice, in the reply language, each ≤ 40 characters, no numbering. Make them genuinely different: one that leans in, one that pushes back or asks something pointed, one that is playful or wants to leave. When lines_left is 0 set a single farewell instead. Never leave it empty." },
+      behaviorRules: "At the END of every reply set this to exactly 3 short things the climber could say next, in the climber's first-person voice, in the reply language, each ≤ 40 characters, no numbering. These are the CLIMBER's words, not yours: plain, whole, natural sentences as a person would say them, never in your speech style (no ellipsis fragments, no shouting, no pet names) and never one of your own lines. Make them genuinely different: one that leans in, one that pushes back or asks something pointed, one that is playful or wants to leave. When lines_left is 0 set a single farewell instead. Never leave it empty." },
     { id: "action", name: "Action", type: "json", defaultValue: { type: "none", amount: 0 }, aiAccess: "write",
       behaviorRules: "Set at the END of every reply: {\"type\": \"none\"} normally, or {\"type\": \"<one of allowed_actions>\", \"amount\": 0} when you decide to grant that reward this visit. The game validates and applies it; you only narrate." },
   ];
@@ -129,7 +129,7 @@ function canonBlock(npc, lang) {
   const source = lang === "zh" ? "the game's official Simplified Chinese translation of" : "";
   const out = [
     "YOUR OWN WORDS IN THE GAME",
-    `Every line below is ${source ? source + " " : ""}something ${who} really says in Slay the Spire 2. This is your voice: match its length, rhythm, punctuation and vocabulary. Notice how short the lines are; one bubble is one line like these. They are for rhythm, not a script: answer what the climber actually said with new words in this style. Reuse at most one of these lines in a reply, only when it truly fits, and never one you have already said in this conversation. Lines marked ${HEADINGS[lang].narration} are stage descriptions, not speech.`,
+    `Every line below is ${source ? source + " " : ""}something ${who} really says in Slay the Spire 2. This is your voice: match its length, rhythm, punctuation and vocabulary. Notice how short the lines are; one bubble is one line like these. They are for rhythm, not a script: answer what the climber actually said with new words in this style. Reuse at most one of these lines in a reply, only when it truly fits, and never one you have already said in this conversation. Lines marked ${HEADINGS[lang].narration} are stage descriptions, not speech. This style is yours alone: the climber's suggested replies (choices) are written in the climber's own plain voice, never in yours.`,
   ];
   let last = "";
   for (const scene of scenes) {
@@ -142,7 +142,10 @@ function canonBlock(npc, lang) {
       const names = CLIMBER_NAMES[scene.to] ?? ["Climber", "攀登者"];
       const tag = line.who === "climber" ? `${lang === "zh" ? names[1] + "：" : names[0] + ": "}`
         : line.who === "narration" ? `${HEADINGS[lang].narration} ` : "";
-      out.push(`- ${tag}${lang === "zh" ? line.zh : line.en}`);
+      // A line that is two bubbles in the game ("a / b") is written as two lines; a literal "/"
+      // gets copied into replies.
+      const bubbles = (lang === "zh" ? line.zh : line.en).split(" / ");
+      out.push(`- ${tag}${bubbles[0]}`, ...bubbles.slice(1).map((b) => `  ${b}`));
     }
   }
   return out.join("\n");
