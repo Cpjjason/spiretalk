@@ -661,8 +661,9 @@ public sealed class AncientConversation
         if (string.IsNullOrWhiteSpace(text)) return result;
 
         var normalized = text.Replace("\r\n", "\n").Trim();
+        // Models copy the "- " bullets of the card's example lines; a speech bubble has none.
         var paragraphs = normalized.Split(new[] { "\n\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(p => p.Trim())
+            .Select(p => p.Trim().TrimStart('-', '•', '*').Trim())
             .Where(p => p.Length > 0);
 
         foreach (var paragraph in paragraphs)

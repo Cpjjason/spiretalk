@@ -46,7 +46,7 @@
 
 Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*). Enter an API endpoint, your key and a model id, press **Test**; the result shows right underneath. Works with OpenRouter (default), OpenAI, or a local Ollama (`http://localhost:11434/v1`, leave the key empty) — anything that speaks the OpenAI chat-completions dialect.
 
-That is the whole setup. There is no account: the NPCs run on the Yumina engine *inside the game*, and the only thing the mod ever connects to is the endpoint you configure. No AI-generated art ships with it.
+That is the whole setup. There is no account: the NPCs run on the Yumina engine *inside the game*, and the only thing the mod ever connects to is the endpoint you configure. The Workshop cover is generated art; nothing in the game itself is.
 
 ## Cards
 
@@ -117,7 +117,7 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 
 点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。填接口地址、Key、模型 id，点「测试」，结果就写在下面一行。支持 OpenRouter（默认）、OpenAI、本机 Ollama（地址 `http://localhost:11434/v1`，Key 留空）——凡是 OpenAI 聊天接口那一套都行。
 
-设置就这些，不需要任何账号：NPC 由游戏内置的 Yumina 引擎驱动，模组除了你自己填的接口之外不连任何服务器。模组不含任何 AI 生成的美术。
+设置就这些，不需要任何账号：NPC 由游戏内置的 Yumina 引擎驱动，模组除了你自己填的接口之外不连任何服务器。创意工坊封面是生成图；游戏内没有任何 AI 生成的美术。
 
 ### 卡
 
