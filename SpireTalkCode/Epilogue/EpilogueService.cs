@@ -11,7 +11,6 @@ using SpireTalk.Ancients;
 using SpireTalk.Backend;
 using SpireTalk.Deals;
 using SpireTalk.Engine;
-using SpireTalk.Gossip;
 using SpireTalk.Npc;
 using SpireTalk.Rewards;
 using SpireTalk.Store;
@@ -21,7 +20,7 @@ namespace SpireTalk.Epilogue;
 
 /// <summary>
 /// The run is over; the NPC who knew the climber best says a few words about it on the game-over
-/// screen — the deals, the gossip, where they fell or how they won. One call per run, written to the
+/// screen — the deals, where they fell or how they won. One call per run, written to the
 /// profile store so it can be read again. Also the moment open deals are judged (death breaks them).
 /// </summary>
 [HarmonyPatch(typeof(NGameOverScreen), "_Ready")]
@@ -108,7 +107,6 @@ internal static class EpilogueService
             vars["lines_left"] = 0;
             vars["allowed_actions"] = "none";
             vars["deals"] = DealsOfRun(npc.Key, runKey);
-            vars["rumors"] = RumorService.PromptFor(npc);
             vars["deal_offer"] = "none";
 
             var state = runtime.StartSession(card.Json, vars).StateJson;
@@ -171,7 +169,7 @@ internal static class EpilogueService
         sb.Append(win ? $"{character} reached the top and won." : $"{character} died on floor {floor}, in act {act}.");
         sb.Append(" Speak as yourself, looking back on this climber's whole run: 4 to 6 sentences, one paragraph, in ");
         sb.Append(Loc.ReplyLanguageName());
-        sb.Append(". Draw on what you remember - what they said to you, the deals they kept or broke, what the others told you about them. ");
+        sb.Append(". Draw on what you remember - what they said to you, the deals they kept or broke. ");
         sb.Append("This is a farewell, not a visit: no choices, no offers, no directive lines at all - plain prose only.]");
         return sb.ToString();
     }

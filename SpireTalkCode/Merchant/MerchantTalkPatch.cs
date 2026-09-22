@@ -317,7 +317,6 @@ internal sealed class MerchantConversation
                 TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.ToTranscript(), _runKey);
                 _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
             }
-            VisitExtras.AfterTurn(turn, _npc, _runKey, isOpener: true);
             VisitExtras.AfterOpener(_ctx, _npc, _runKey);
             TalkStore.Instance.Save();
 
@@ -403,7 +402,6 @@ internal sealed class MerchantConversation
                 TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "npc", turn.ToTranscript(), _runKey);
                 _record.LastLine = turn.JoinedText.Length > 300 ? turn.JoinedText[..300] : turn.JoinedText;
             }
-            VisitExtras.AfterTurn(turn, _npc, _runKey, isOpener: false);
 
             var delta = ConversationRules.ClampDelta(turn.AffectionDelta, _netDeltaThisVisit, playerLine, _previousPlayerLine);
             _netDeltaThisVisit += delta;

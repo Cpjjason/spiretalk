@@ -309,16 +309,6 @@ public static class DealService
         }
         else
         {
-            // Everyone hears about a broken word.
-            TalkStore.Instance.AddRumor(new TalkStore.RumorRecord
-            {
-                From = deal.Npc,
-                About = "*",
-                Text = $"The climber promised {name} to {PromptText(ParseType(deal.Type) ?? DealType.ReachNextAct, deal.Param, deal.TargetAct)} and did not.",
-                Sentiment = "-",
-                Run = deal.Run,
-                Utc = DateTime.UtcNow.ToString("o"),
-            });
             if (!quiet) RewardExecutor.Toast(string.Format(Loc.EventText("dealBroken"), name, Describe(deal)));
         }
         TalkStore.Instance.Save();

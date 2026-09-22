@@ -265,7 +265,6 @@ public sealed class AncientConversation
             TalkStore.Instance.AppendHistory(_key, "npc", turn.ToTranscript(), _runKey);
             _record.LastLine = Truncate(npcText, 300);
         }
-        VisitExtras.AfterTurn(turn, _npc, _runKey, isOpener);
         if (isOpener) VisitExtras.AfterOpener(_ctx, _npc, _runKey);
 
         // 2. Affection — clamp what the NPC proposed, then write it where it lives.

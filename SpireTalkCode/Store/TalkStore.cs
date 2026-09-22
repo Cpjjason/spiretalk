@@ -77,21 +77,6 @@ public sealed class TalkStore
         [JsonPropertyName("utc")] public string? Utc { get; set; }
     }
 
-    /// <summary>Something the climber said about another NPC, as the NPC who heard it would repeat it.</summary>
-    public sealed class RumorRecord
-    {
-        [JsonPropertyName("from")] public string From { get; set; } = "";
-        /// <summary>NPC key the rumor is about, or "*" for everyone (broken deals).</summary>
-        [JsonPropertyName("about")] public string About { get; set; } = "";
-        [JsonPropertyName("text")] public string Text { get; set; } = "";
-        /// <summary>"+", "-" or "0"</summary>
-        [JsonPropertyName("sentiment")] public string Sentiment { get; set; } = "0";
-        [JsonPropertyName("run")] public string? Run { get; set; }
-        /// <summary>The NPC it is about has reacted (affection moved once).</summary>
-        [JsonPropertyName("resolved")] public bool Resolved { get; set; }
-        [JsonPropertyName("utc")] public string? Utc { get; set; }
-    }
-
     /// <summary>What an NPC said over a finished run.</summary>
     public sealed class EpilogueRecord
     {
@@ -109,12 +94,10 @@ public sealed class TalkStore
         [JsonPropertyName("npcs")] public Dictionary<string, NpcRecord> Npcs { get; set; } = new(StringComparer.OrdinalIgnoreCase);
         [JsonPropertyName("runs")] public Dictionary<string, RunRecord> Runs { get; set; } = new();
         [JsonPropertyName("deals")] public List<DealRecord> Deals { get; set; } = new();
-        [JsonPropertyName("rumors")] public List<RumorRecord> Rumors { get; set; } = new();
         [JsonPropertyName("epilogues")] public List<EpilogueRecord> Epilogues { get; set; } = new();
     }
 
     private const int MaxDeals = 60;
-    private const int MaxRumors = 30;
     private const int MaxEpilogues = 20;
 
     public List<DealRecord> Deals
@@ -123,15 +106,6 @@ public sealed class TalkStore
         {
             EnsureLoaded();
             return _data.Deals;
-        }
-    }
-
-    public List<RumorRecord> Rumors
-    {
-        get
-        {
-            EnsureLoaded();
-            return _data.Rumors;
         }
     }
 
@@ -148,12 +122,6 @@ public sealed class TalkStore
     {
         Deals.Add(deal);
         if (_data.Deals.Count > MaxDeals) _data.Deals.RemoveRange(0, _data.Deals.Count - MaxDeals);
-    }
-
-    public void AddRumor(RumorRecord rumor)
-    {
-        Rumors.Add(rumor);
-        if (_data.Rumors.Count > MaxRumors) _data.Rumors.RemoveRange(0, _data.Rumors.Count - MaxRumors);
     }
 
     public void AddEpilogue(EpilogueRecord epilogue)
@@ -245,7 +213,6 @@ public sealed class TalkStore
         EnsureLoaded();
         _data.Npcs.Remove(npcKey);
         _data.Deals.RemoveAll(d => string.Equals(d.Npc, npcKey, StringComparison.OrdinalIgnoreCase));
-        _data.Rumors.RemoveAll(r => string.Equals(r.From, npcKey, StringComparison.OrdinalIgnoreCase) || string.Equals(r.About, npcKey, StringComparison.OrdinalIgnoreCase));
         Save();
     }
 
