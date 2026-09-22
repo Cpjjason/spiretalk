@@ -3,32 +3,18 @@
 	"appid"		"2868840"
 	"publishedfileid"		"3806015083"
 	"contentfolder"		"C:\Users\peiji\Downloads\Slay the spire Mod\SpireTalk\workshop\content"
-	"previewfile"		"C:\Users\peiji\Downloads\Slay the spire Mod\SpireTalk\workshop\preview.png"
+	"previewfile"		"C:\Users\peiji\Downloads\Slay the spire Mod\SpireTalk\workshop\preview.jpg"
 	"visibility"		"2"
+	"tags"
+	{
+		"0"		"Ancients"
+		"1"		"English"
+		"2"		"Simplified Chinese"
+		"3"		"Traditional Chinese"
+		"4"		"Japanese"
+		"5"		"Korean"
+	}
 	"title"		"SpireTalk: Living Ancients"
-	"description"		"Talk to the eight Ancients and the Merchant. Every NPC answers in character on your own API key, remembers what you said across runs, strikes deals with you, hands you a keepsake relic that grows with the relationship, and looks back on your run when it ends.
-
-[h2]What it does[/h2]
-[list]
-[*] A new [b]Talk[/b] option on every Ancient's page and a [b]Talk[/b] button in the shop. Three lines per visit: pick a suggested reply or type your own.
-[*] [b]Deals[/b] - an NPC may ask something of you (reach the next act alive, no potions until then, spend 150 gold at the shop...). Answer with a button; the game judges it. Kept: affection and gold. Broken: a disappointed line, nothing more.
-[*] [b]Keepsakes[/b] - once an NPC likes you they give you their keepsake, a relic with levels I/II/III that follow the relationship and engravings from every deal you keep. Nine of them, one per NPC.
-[*] [b]Ancient relics on the shelf[/b] - an Ancient who likes you may leave one of their own relics with the Merchant for you.
-[*] [b]Epilogue[/b] - when a run ends, the NPC who knew you best says a few words about it.
-[*] Every line is judged by that NPC's own values (-3..+3). Tiers: hostile / stranger / friendly / close / devoted. Temperament setting: lenient / normal / strict.
-[*] Rewards (relic reroll, gold, healing, a potion, a shop discount) are validated by the mod and applied through the game's own commands - the AI only narrates.
-[*] With [b]Ancient Affection[/b] installed the same affection number is used; without it the mod keeps its own.
-[*] Single player only.
-[/list]
-
-[h2]Setup[/h2]
-Click the mushie in the top-right corner of the main menu. Enter an API endpoint, your key and a model id, press Test. OpenRouter (default), OpenAI or a local Ollama all work. There is no account: the NPCs run on the Yumina engine inside the game, and the mod connects to nothing but the endpoint you configure.
-
-Each NPC is a Yumina card (a JSON file). Drop your own into %APPDATA%\SlayTheSpire2\spiretalk\cards\ to replace a persona.
-
-Requires BaseLib. No AI-generated art. Engine: https://github.com/lovetimo0421/yumina-oss
-
-[h2]中文[/h2]
-和八位远古先民以及商人聊天。每位 NPC 都有自己的性格和跨局记忆，会向你提约定（活着走到下一章、不喝药水、在商店花够钱……），关系到了会把自己的信物交给你——一件随关系升级、守约就多一道刻痕的遗物；先民还可能把自己的遗物托给商人留给你；一局结束时关系最深的那位会写几句回顾。每次拜访三句，可选可打字。只需要你自己的 API Key（OpenRouter / OpenAI / Ollama），不需要任何账号。装了 Ancient Affection 时直接用它的好感度。仅单人模式。需要 BaseLib。"
-	"changenote"		"0.3.0 - the Yumina engine runs inside the game (own API key only); deals, keepsake relics, Ancient relics on the Merchant's shelf, epilogue, temperament"
+	"description"		"[b]The Ancients talk back.[/b] Every Ancient and the Merchant answers you in their own voice, remembers what you said last run, asks things of you, and hands you a relic that grows with the friendship. Runs on your own API key, inside the game. No account, no server, nothing to sign up for.\n\n[h1]What you get[/h1]\n\n[h3]Talk[/h3]\nA [b]Talk[/b] option on every Ancient's page and a [b]Talk[/b] button in the shop. Three lines per visit: pick a suggested reply or type your own. Neow, Orobas, Nonupeipe, Pael, Darv, Tanx, Tezcatara, Vakuu and the Merchant each have their own persona, their own values, and their own memory.\n\n[h3]They remember[/h3]\nWhat you told Neow stays with Neow, run after run (per save profile; can be switched off). Affection moves with every line you say, judged by that NPC's own values: hostile / stranger / friendly / close / devoted.\n\n[h3]Deals[/h3]\nAn NPC may ask something of you when you arrive: [i]reach the next act alive[/i], [i]no potions until then[/i], [i]spend 150 gold at my shop[/i]... Answer with a button. The terms come from the mod, so the game can always check them. Kept: affection and gold. Broken: a disappointed line, nothing more. Open deals sit under the top bar.\n\n[h3]Keepsakes[/h3]\nOnce an NPC likes you they press their keepsake into your hands: a relic with levels I / II / III that follow the relationship and rise mid-run the moment the number crosses. Every deal you keep engraves it. Nine of them, one per NPC, each in that NPC's manner: Neow heals you after fights and catches you at 1 HP once per run; Tanx sharpens your first attack; Vakuu lends Strength for blood; the Merchant keeps a ledger of discounts.\n\n[h3]Ancient relics on the shelf[/h3]\nAn Ancient who likes you may leave one of [i]their own[/i] relics with the Merchant for you, relics otherwise found only in their halls, priced like a rare.\n\n[h3]Epilogue[/h3]\nWhen a run ends, the NPC who knew you best says a few words about it on the game-over screen: the deals, where you fell, how you won.\n\n[h3]Real rewards, honest rules[/h3]\nRelic reroll, gold, healing, a potion, a shop discount. The mod validates every reward against fixed rules and applies it through the game's own commands. The AI only ever narrates; it never touches your run directly.\n\n[h1]Setup in one minute[/h1]\n[olist]\n[*] Click the mushie in the top-right corner of the main menu.\n[*] Enter an API endpoint, your key and a model id. OpenRouter (default), OpenAI, or a local Ollama all work.\n[*] Press [b]Test[/b]. Start a run. Talk.\n[/olist]\nThe NPCs run on the [url=https://github.com/lovetimo0421/yumina-oss]Yumina engine[/url] inside the game, and the mod connects to nothing but the endpoint you configure. Each NPC is a Yumina card (a JSON file); drop your own into [i]%APPDATA%\\SlayTheSpire2\\spiretalk\\cards\\[/i] to replace a persona.\n\n[h1]Good to know[/h1]\n[list]\n[*] Languages: English, 简体中文, 繁體中文, 日本語, 한국어. The NPCs answer in the language the game runs in.\n[*] Requires [b]BaseLib[/b]. Works with [b]Ancient Affection[/b] (shares its affection number) and with character skin mods (the screenshots use a few).\n[*] Temperament setting: lenient / normal / strict.\n[*] Single player only.\n[*] The cover is generated art; nothing in the game itself is.\n[/list]\n\n[h1]中文[/h1]\n[b]先民会回话了。[/b]八位远古先民和商人各有自己的性格、价值观和跨局记忆：你对涅奥说过的话，下一局涅奥还记得。每次拜访三句，可选可打字。\n[list]\n[*] [b]约定[/b]——先民会向你提要求（活着走到下一章、这章不喝药水、在商店花够钱……），按钮作答，由游戏判定。守住了：好感和金币；没守住：只有一句失望的话。\n[*] [b]信物[/b]——关系到了先民会把自己的信物交给你：一件随关系升级 I / II / III、每守一次约就多一道刻痕的遗物。九件，一人一件，各有各的脾气。\n[*] [b]先民遗物上架[/b]——喜欢你的先民会把自己殿里的遗物托给商人留给你。\n[*] [b]回顾[/b]——一局结束时，和你关系最深的那位会在结算页说几句。\n[*] 奖励（换一套遗物、金币、治疗、药水、商店折扣）全部由模组按固定规则校验，走游戏自己的指令；AI 只负责说话。\n[/list]\n只需要你自己的 API Key（OpenRouter / OpenAI / 本地 Ollama），点主菜单右上角的蘑菇填好按测试即可，不需要任何账号。五种语言，先民用游戏当前语言回答。需要 BaseLib；装了 Ancient Affection 时直接共用它的好感度；和娘化 / 皮肤模组兼容。仅单人模式。封面为生成图，游戏内没有任何生成素材。\n\n[h1]日本語[/h1]\n[b]エンシェントが言葉を返す。[/b]8体のエンシェントと商人がそれぞれの人格・価値観・記憶を持ち、前回のランで話したことを覚えています。1回の訪問で3行、選択肢からでも自由入力でも。\n[list]\n[*] [b]約束[/b]——エンシェントの方から頼みごとをしてきます（次の章まで生き延びる、それまでポーション禁止、店で150ゴールド使う…）。ボタンで答え、ゲームが判定。守れば好感度と金貨、破っても失望の一言だけ。\n[*] [b]形見[/b]——関係が深まると自分の形見を渡してくれます。関係に応じて I / II / III に育ち、約束を守るたびに刻印が増えるレリック。9体分、1体に1つ。\n[*] [b]商人の棚にエンシェントのレリック[/b]——気に入られたエンシェントが、自分の殿にしかないレリックを商人に預けてくれます。\n[*] [b]エピローグ[/b]——ランの終わりに、一番親しかった相手がゲームオーバー画面で一言。\n[*] 報酬（レリック入れ替え、金貨、回復、ポーション、店の割引）はすべてMod側が固定ルールで検証し、ゲーム自身のコマンドで適用。AIは語るだけ。\n[/list]\n必要なのは自分のAPIキーだけ（OpenRouter / OpenAI / ローカルOllama）。メインメニュー右上のキノコから設定し、テストを押すだけ。アカウント不要。5言語対応、エンシェントはゲームの言語で答えます。BaseLib 必須。Ancient Affection と好感度を共有。シングルプレイのみ。\n\n[h1]한국어[/h1]\n[b]고대인이 대답합니다.[/b] 여덟 고대인과 상인이 각자의 성격과 가치관, 기억을 가지고 지난 런에서 한 말을 기억합니다. 방문마다 세 마디, 선택지 또는 직접 입력.\n[list]\n[*] [b]약속[/b] — 고대인이 먼저 부탁합니다(다음 막까지 살아남기, 그때까지 포션 금지, 상점에서 150골드 쓰기…). 버튼으로 답하고 게임이 판정합니다. 지키면 호감도와 금화, 어기면 실망 한마디뿐.\n[*] [b]유품[/b] — 사이가 가까워지면 자신의 유품을 건넵니다. 관계에 따라 I / II / III로 자라고 약속을 지킬 때마다 각인이 새겨지는 유물. 아홉 개, 한 명에 하나.\n[*] [b]상점 선반의 고대인 유물[/b] — 당신을 좋아하는 고대인이 자기 전당에서만 나오는 유물을 상인에게 맡겨 둡니다.\n[*] [b]에필로그[/b] — 런이 끝나면 가장 가까웠던 이가 게임 오버 화면에서 한마디 남깁니다.\n[*] 보상(유물 교체, 금화, 회복, 포션, 상점 할인)은 모두 모드가 고정 규칙으로 검증해 게임 자체 명령으로 적용합니다. AI는 말만 합니다.\n[/list]\n필요한 것은 본인의 API 키뿐(OpenRouter / OpenAI / 로컬 Ollama). 메인 메뉴 우측 상단 버섯에서 입력하고 테스트를 누르면 끝. 계정 불필요. 5개 언어 지원, 고대인은 게임 언어로 대답합니다. BaseLib 필수. Ancient Affection과 호감도 공유. 싱글 플레이 전용."
+	"changenote"		"0.3.0 - new cover and description; the Yumina engine runs inside the game (own API key only); deals, keepsake relics, Ancient relics on the Merchant's shelf, epilogue, temperament"
 }
