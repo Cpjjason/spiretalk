@@ -1,4 +1,4 @@
-# Stage the Workshop item: copies the built mod (dll + manifest + pck) and the README
+# Stage the Workshop item: copies the built mod (dll + Jint/Acornima + manifest + pck) and the README
 # into workshop\content\, ready for `steamcmd +workshop_build_item workshop_item.vdf`.
 #
 #   1. dotnet publish -c Release            (from the repo root)
@@ -21,6 +21,11 @@ New-Item -ItemType Directory -Force $content | Out-Null
 
 Copy-Item (Join-Path $mods "SpireTalk.dll") $content
 Copy-Item (Join-Path $mods "SpireTalk.pck") $content
+# The Yumina engine runs through Jint; both DLLs must travel with the mod (MainFile resolves them from its folder).
+foreach ($dep in "Jint.dll", "Acornima.dll") {
+    if (-not (Test-Path (Join-Path $mods $dep))) { throw "Missing $dep next to SpireTalk.dll - run dotnet publish again" }
+    Copy-Item (Join-Path $mods $dep) $content
+}
 Copy-Item (Join-Path $root "SpireTalk.json") $content
 Copy-Item (Join-Path $root "README.md") $content
 

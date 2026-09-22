@@ -6,6 +6,29 @@
 	"previewfile"		"C:\Users\peiji\Downloads\Slay the spire Mod\SpireTalk\workshop\preview.png"
 	"visibility"		"2"
 	"title"		"SpireTalk: Living Ancients"
-	"description"		"Talk to the eight Ancients and the Merchant. Every NPC answers in character, remembers what you said across runs, and a good relationship can earn a relic reroll, gold, healing, a potion, a shop discount or one of Ancient Affection's keepsake relics.\n\n[h2]How it works[/h2]\n[list]\n[*] A new [b]Talk[/b] option on every Ancient's page and a [b]Talk[/b] button in the shop. Three lines per visit: pick a suggested reply or type your own.\n[*] Each NPC keeps its own memory per save profile.\n[*] Every line is judged by that NPC's own values (-3..+3, at most ±8 per visit). Tiers: hostile / stranger / friendly / close / devoted.\n[*] One reward per visit at most, never on the greeting, validated by the mod and applied through the game's own commands - the AI only narrates.\n[*] With [b]Ancient Affection[/b] installed the same affection number is used; without it the mod keeps its own.\n[*] Single player only.\n[/list]\n\n[h2]Setup (pick one)[/h2]\n[b]Own API key[/b] - Mods → SpireTalk → \"My own API key\". OpenRouter (default), OpenAI or a local Ollama. Enter base URL, key, model id, press Test.\n[b]Yumina account[/b] - press Sign in, allow in the browser, done. The panel shows credits, plan and the model in use. Tokens are revocable at yumina.io → Settings → Connected games.\n\nRequires BaseLib. No AI-generated art. Open source: https://github.com/lovetimo0421/yumina-oss\n\n[h2]中文[/h2]\n和八位远古先民以及商人聊天。每位 NPC 都有自己的性格和跨局记忆；关系够好可以换来一批新遗物、金币、治疗、药水、商店折扣，或 Ancient Affection 的信物遗物。每次拜访三句，可选可打字。支持自己的 API Key（OpenRouter / OpenAI / Ollama）或 Yumina 账号登录。装了 Ancient Affection 时直接用它的好感度。仅单人模式。需要 BaseLib。"
-	"changenote"		"0.2.0 - first public build"
+	"description"		"Talk to the eight Ancients and the Merchant. Every NPC answers in character on your own API key, remembers what you said across runs, strikes deals with you, hands you a keepsake relic that grows with the relationship, and looks back on your run when it ends.
+
+[h2]What it does[/h2]
+[list]
+[*] A new [b]Talk[/b] option on every Ancient's page and a [b]Talk[/b] button in the shop. Three lines per visit: pick a suggested reply or type your own.
+[*] [b]Deals[/b] - an NPC may ask something of you (reach the next act alive, no potions until then, spend 150 gold at the shop...). Answer with a button; the game judges it. Kept: affection and gold. Broken: a disappointed line, nothing more.
+[*] [b]Keepsakes[/b] - once an NPC likes you they give you their keepsake, a relic with levels I/II/III that follow the relationship and engravings from every deal you keep. Nine of them, one per NPC.
+[*] [b]Ancient relics on the shelf[/b] - an Ancient who likes you may leave one of their own relics with the Merchant for you.
+[*] [b]Epilogue[/b] - when a run ends, the NPC who knew you best says a few words about it.
+[*] Every line is judged by that NPC's own values (-3..+3). Tiers: hostile / stranger / friendly / close / devoted. Temperament setting: lenient / normal / strict.
+[*] Rewards (relic reroll, gold, healing, a potion, a shop discount) are validated by the mod and applied through the game's own commands - the AI only narrates.
+[*] With [b]Ancient Affection[/b] installed the same affection number is used; without it the mod keeps its own.
+[*] Single player only.
+[/list]
+
+[h2]Setup[/h2]
+Click the mushie in the top-right corner of the main menu. Enter an API endpoint, your key and a model id, press Test. OpenRouter (default), OpenAI or a local Ollama all work. There is no account: the NPCs run on the Yumina engine inside the game, and the mod connects to nothing but the endpoint you configure.
+
+Each NPC is a Yumina card (a JSON file). Drop your own into %APPDATA%\SlayTheSpire2\spiretalk\cards\ to replace a persona.
+
+Requires BaseLib. No AI-generated art. Engine: https://github.com/lovetimo0421/yumina-oss
+
+[h2]中文[/h2]
+和八位远古先民以及商人聊天。每位 NPC 都有自己的性格和跨局记忆，会向你提约定（活着走到下一章、不喝药水、在商店花够钱……），关系到了会把自己的信物交给你——一件随关系升级、守约就多一道刻痕的遗物；先民还可能把自己的遗物托给商人留给你；一局结束时关系最深的那位会写几句回顾。每次拜访三句，可选可打字。只需要你自己的 API Key（OpenRouter / OpenAI / Ollama），不需要任何账号。装了 Ancient Affection 时直接用它的好感度。仅单人模式。需要 BaseLib。"
+	"changenote"		"0.3.0 - the Yumina engine runs inside the game (own API key only); deals, keepsake relics, Ancient relics on the Merchant's shelf, epilogue, temperament"
 }

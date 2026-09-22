@@ -6,8 +6,8 @@
 
 ## What it does
 
-- **Talk** — a new option on every Ancient's page and a **Talk** button in the shop. Three lines per visit: pick one of three suggested replies or type your own.
-- **They remember** — each NPC keeps its own conversation history per save profile. Neow will bring up what you told her two runs ago.
+- **Talk** — a new option on every Ancient's page and a **Talk** button in the shop. Three lines per visit: pick one of three suggested replies or type your own. The AI is only called when you actually talk (the shop's own greeting stays vanilla).
+- **They remember** — each NPC keeps its own memory, per save profile: what you said to Neow stays with Neow. By default they remember across runs; switch *NPCs remember past runs* off and every run starts fresh.
 - **Affection** — every line you say is judged by that NPC's own values (−3 … +3 per line, at most ±8 per visit). Tiers: hostile / stranger / friendly / close / devoted.
 - **Rewards** — asked nicely at the right tier, an NPC may:
   | reward | who | tier | limit |
@@ -21,33 +21,53 @@
   | a potion on the house | Merchant | devoted, needs a free slot | once per run |
 
   One reward per visit, never on the greeting, and the AI only *narrates* — the mod validates every reward against these rules and applies it through the game's own commands.
-- **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile.
+- **Deals** — an NPC may ask something of you on arrival: *reach act 2 alive*, *no potions until the next act*, *spend 150 gold at the shop this act*… You answer with a button; the terms come from the mod, never from the AI, so they are always something the game can check. Kept: affection +6 and 50 gold. Broken: nothing but a disappointed line next time and no more deals from that NPC this run. One per NPC at a time, three per run; open ones are listed under the top bar.
+- **Keepsakes** — once an NPC likes you (friendly), they hand you their keepsake: a relic that grows with the relationship. Level I / II / III follow the tier (friendly / close / devoted) and rise mid-run the moment the number crosses; every deal you keep with that NPC engraves it (up to 5, remembered across runs). Nine of them, one per NPC, each in that NPC's manner:
+  | keepsake | I | II | III | engraving |
+  |---|---|---|---|---|
+  | Neow's | heal 3 after every combat | heal 6 | + once per run, a lethal hit leaves you at 1 HP | +1 heal |
+  | Orobas' | +15 gold after every combat, 20% potion | +25 gold, 35% | + elites drop an extra relic | +5 gold, +5% |
+  | Nonupeipe's | 3 Block at combat start | 5 Block | + 1 Dexterity | +1 Block |
+  | Pael's | +1 Max HP per victory, 10 per act | +2 | +3 | +2 to the cap |
+  | Darv's | +1 card on turn 1 | +2 cards | + 1 energy on turn 1 | — |
+  | Tanx's | first attack each combat +4 | +8 | + 1 Strength vs elites and bosses | +1 damage |
+  | Tezcatara's | rest heals +10 | +20 | + 1 potion slot | +2 heal |
+  | Vakuu's | +1 Strength at combat start, lose 2 HP | +2 Strength | the blood price is waived | — |
+  | the Merchant's ledger | 5% off | 10% off, card removal free | 20% off | +2% |
+
+  Keepsakes are only ever given in conversation; they are never rolled as rewards or sold.
+- **Epilogue** — when a run ends, the NPC who knew you best says a few words about it on the game-over screen: the deals, where you fell or how you won. Kept in the profile.
+- **Ancient relics on the shelf** — once an Ancient likes you (friendly or better), they may leave one of *their own* relics with the Merchant for you — relics otherwise only found in their halls — priced like a rare. Chance rises with the tier; once per run.
+- **Temperament** — a setting: lenient / normal / strict. Strict caps each line at ±2, a visit at ±5, hands rewards out only from *close*, and sizes the deals harder.
+- **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile, and showing up to talk earns +2 by itself.
 - **Single player only.** In multiplayer the Talk option is not offered.
 
-## Setup (pick one)
+## Setup
 
-**A. Your own API key** — Mods → SpireTalk → *How the NPCs think* → **My own API key**.
-Works with OpenRouter (default), OpenAI, or a local Ollama (`http://localhost:11434/v1`, leave the key empty). Enter the base URL, key and a model id, press **Test**.
+Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*). Enter an API endpoint, your key and a model id, press **Test**; the result shows right underneath. Works with OpenRouter (default), OpenAI, or a local Ollama (`http://localhost:11434/v1`, leave the key empty) — anything that speaks the OpenAI chat-completions dialect.
 
-**B. Yumina account** — choose **Yumina account**, press **Sign in**. Your browser opens a page on yumina.io; press *Allow* and the game receives a token by itself (no password is typed in the game). The account panel shows who is signed in, credits, plan and the model in use; you can pick another model from the list. Tokens can be revoked any time at yumina.io → Settings → Connected games.
+That is the whole setup. There is no account: the NPCs run on the Yumina engine *inside the game*, and the only thing the mod ever connects to is the endpoint you configure. No AI-generated art ships with it.
 
-The mod ships no AI-generated art and phones home to nothing except the endpoint you configure.
+## Cards
+
+Each NPC is a Yumina card — an ordinary Yumina world (persona, rules, variables) as JSON. Nine ship inside the mod. To change how an NPC talks, drop a card into `%APPDATA%\SlayTheSpire2\spiretalk\cards\`: it replaces the built-in one for the NPC it names (`spiretalk.npc`, or an id like `sts2-neow`). Cards can be written in Yumina Studio and exported, or copied from `Cards/` and edited by hand. Sharing a persona means sharing a file.
 
 ## Building
 
 Requirements: .NET 9 SDK, Godot 4.5.1 mono (Mega Crit fork, see `Sts2PathDiscovery.props`), the game installed via Steam.
 
 ```
-dotnet publish -c Release   # builds SpireTalk.dll, copies it to <game>/mods/SpireTalk/, exports SpireTalk.pck
+dotnet publish -c Release                     # builds SpireTalk.dll, copies it to <game>/mods/SpireTalk/, exports SpireTalk.pck
+dotnet build -c Release -p:SpireTalkDev=true   # dev build: compiles in the file-driven test bridge (never ship this one)
 ```
 
 Delete the old `SpireTalk.pck` before publishing if the export step is skipped as up-to-date.
 
-NPC personas and the affection rules live in `SpireTalk/npcs.json`; the Yumina worlds are generated from the same file, so both backends speak with one voice. Localization: `SpireTalk/localization/{eng,zhs,zht,jpn,kor}/`.
+NPC personas and the affection rules live in `SpireTalk/npcs.json`; `node tools/build-cards.mjs` compiles them into the cards under `Cards/`. The engine itself is `Engine/yumina-runtime.js` — `packages/engine` from the Yumina repo bundled into one file (`pnpm build` there produces `dist/yumina-runtime.js`; copy it over to update). It runs in-game through Jint. Localization: `SpireTalk/localization/{eng,zhs,zht,jpn,kor}/`.
 
 ## Source
 
-Open source. Server side (game tokens, device-code sign-in, the STS2 worlds) lives in the Yumina repo: https://github.com/lovetimo0421/yumina-oss
+Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 
 ---
 
@@ -57,8 +77,8 @@ Open source. Server side (game tokens, device-code sign-in, the STS2 worlds) liv
 
 ### 功能
 
-- **交谈** — 每位先民的选项里多一个「交谈」，商店右上多一个「聊聊」。每次最多三句：从三个建议回复里选，或自己打字。
-- **有记忆** — 每个 NPC 按存档档案各存一份对话记录。涅奥会提起你两局前说过的话。
+- **交谈** — 每位先民的选项里多一个「交谈」，商店右上多一个「聊聊」。每次最多三句：从三个建议回复里选，或自己打字。只有真开口才会调用 AI（商店原本的招呼还是游戏自己的）。
+- **有记忆** — 每个 NPC 各有各的记忆（按存档档案存）：跟涅奥说的话只有涅奥记得。默认跨局记得；把「NPC 记得之前几局的事」关掉，每局都从头认识。
 - **好感度** — 你说的每一句都按该 NPC 自己的价值观打分（每句 −3…+3，每次最多 ±8）。分档：敌意 / 陌生 / 友好 / 亲近 / 挚爱。
 - **奖励** — 在对的档位好好开口，NPC 可能会：
   | 奖励 | 谁 | 档位 | 上限 |
@@ -72,18 +92,37 @@ Open source. Server side (game tokens, device-code sign-in, the STS2 worlds) liv
   | 免费药水 | 商人 | 挚爱，需有空位 | 每局一次 |
 
   每次拜访最多一个奖励，开场白不给奖励；AI 只负责「说」，每个奖励都由模组按上面的规则校验后，用游戏自己的指令发放。
-- **和 Ancient Affection 联动** — 装了那个模组时，SpireTalk 直接读写它的好感度，聊天推动的就是它解锁好感遗物和结婚的那个数字。没装时，SpireTalk 自己按档案记好感度。
+- **约定** — NPC 见面时可能向你提个要求：「活着走到第 2 章」「到下一章之前不喝药水」「这一章在商店花掉 150 金币」……你按按钮答应或拒绝；题目全部由模组出、不是 AI 编的，所以一定是游戏能核验的事。做到了：好感 +6，另有 50 金币。没做到：只有下次见面一句失望的话，这局这位不再派活。每位同时一条，每局最多三条；进行中的约定挂在顶栏下面。
+- **信物** — NPC 对你到了友好，就会把自己的信物交给你：一件跟关系一起长的遗物。Ⅰ / Ⅱ / Ⅲ 级对应友好 / 亲近 / 挚爱，一局里好感跨档的瞬间就原地升级；每守住一次和她的约定，信物上多一道刻痕（最多 5 道，跨局保留）。九件，每位一件，各按各的性子：
+  | 信物 | Ⅰ | Ⅱ | Ⅲ | 刻痕 |
+  |---|---|---|---|---|
+  | 涅奥 | 每场战斗后回 3 | 回 6 | + 每局一次，致命伤留 1 血 | +1 回血 |
+  | 欧洛巴斯 | 每场战斗后 +15 金，20% 一瓶药水 | +25 金，35% | + 精英多掉一件遗物 | +5 金，+5% |
+  | 诺努佩佩 | 开局 3 格挡 | 5 格挡 | + 1 敏捷 | +1 格挡 |
+  | 佩尔 | 每次胜利最大生命 +1，每章封顶 10 | +2 | +3 | 封顶 +2 |
+  | 达弗 | 首回合多抽 1 | 多抽 2 | + 首回合 1 能量 | — |
+  | 坦克斯 | 每场第一次攻击 +4 伤 | +8 | + 精英/Boss 战开局 1 力量 | +1 伤 |
+  | 特兹卡塔拉 | 休息多回 10 | 多回 20 | + 药水栏 +1 | +2 回血 |
+  | 瓦库 | 开局 +1 力量、掉 2 血 | +2 力量 | 免去血的代价 | — |
+  | 商人的账本 | 全店 −5% | −10%，删牌免费 | −20% | −2% |
+
+  信物只在对话里给，永远不会被随机掉落或摆上货架。
+- **旅途回顾** — 一局结束时，和你关系最深的那位 NPC 会在结算画面上写几句：立过的约、倒在哪一层或怎么赢的。存在档案里。
+- **先民遗物上架** — 某位先民对你到了友好以上，就可能把**自己的**遗物托给商人留给你——平时只在先民殿堂里才有的那种——按稀有遗物的价格卖。档位越高几率越大；每局一次。
+- **先民脾气** — 一个设置：宽容 / 正常 / 严苛。严苛档每句最多 ±2、每次拜访最多 ±5、只有亲近以上才给奖励、约定也出得更狠。
+- **和 Ancient Affection 联动** — 装了那个模组时，SpireTalk 直接读写它的好感度，聊天推动的就是它解锁好感遗物和结婚的那个数字。没装时，SpireTalk 自己按档案记好感度，来聊一次本身就 +2。
 - **仅单人模式。** 多人局不提供交谈选项。
 
-### 设置（二选一）
+### 设置
 
-**A. 自己的 API Key** — 模组配置 → SpireTalk → *NPC 用什么来思考* → **我自己的 API Key**。
-支持 OpenRouter（默认）、OpenAI、本机 Ollama（地址 `http://localhost:11434/v1`，Key 留空）。填地址、Key、模型 id，点「测试」。
+点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。填接口地址、Key、模型 id，点「测试」，结果就写在下面一行。支持 OpenRouter（默认）、OpenAI、本机 Ollama（地址 `http://localhost:11434/v1`，Key 留空）——凡是 OpenAI 聊天接口那一套都行。
 
-**B. Yumina 账号** — 选 **Yumina 账号**，点「登录」。浏览器会打开 yumina.io 的授权页，点「允许」，游戏自己拿到令牌（游戏里不输密码）。账号面板显示登录者、积分、套餐、当前模型，可以在列表里换模型。令牌随时可在 yumina.io → 设置 → 已连接的游戏 里吊销。
+设置就这些，不需要任何账号：NPC 由游戏内置的 Yumina 引擎驱动，模组除了你自己填的接口之外不连任何服务器。模组不含任何 AI 生成的美术。
 
-模组不含任何 AI 生成的美术，除了你自己配置的接口之外不连任何服务器。
+### 卡
+
+每个 NPC 就是一张 Yumina 卡——普通的 Yumina 世界（人设、规则、变量），JSON 格式，模组自带九张。想换一位 NPC 的说话方式，把卡放进 `%APPDATA%\SlayTheSpire2\spiretalk\cards\`，它会顶替内置的那张（按卡里的 `spiretalk.npc`，或者 `sts2-neow` 这样的 id 认 NPC）。卡可以在 Yumina Studio 里写好导出，也可以从 `Cards/` 复制一张手改。分享人设就是分享一个文件。
 
 ### 开源
 
-服务端（游戏令牌、设备码登录、STS2 世界）在 Yumina 仓库：https://github.com/lovetimo0421/yumina-oss
+引擎是 Yumina 的：https://github.com/lovetimo0421/yumina-oss
