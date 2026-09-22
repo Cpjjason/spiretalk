@@ -102,37 +102,47 @@ const CLIMBER_NAMES = {
   REGENT: ["The Regent", "储君"],
 };
 
-function sceneHeading(scene) {
-  if (scene.to === "firstVisitEver") return "The very first time any climber reaches you";
-  if (scene.to === "ANY") return "To any climber who comes back";
-  if (scene.to === "greeting") return "Greeting a customer";
-  if (scene.label) return scene.label[0].toUpperCase() + scene.label.slice(1);
-  const [en, zh] = CLIMBER_NAMES[scene.to] ?? [scene.to, ""];
-  return `To ${en.replace(/^The /, "the ")} (${zh})`;
+const HEADINGS = {
+  en: { firstVisitEver: "The very first time any climber reaches you", ANY: "To any climber who comes back", greeting: "Greeting a customer", to: (name) => `To ${name.replace(/^The /, "the ")}`, narration: "(narration)" },
+  zh: { firstVisitEver: "第一次有攀登者来到你面前时", ANY: "对再次到来的任何攀登者", greeting: "招呼客人", to: (name) => `对${name}`, narration: "（旁白）" },
+};
+const MERCHANT_SITUATIONS_ZH = {
+  purchaseSuccess: "成交之后", purchaseFailureGold: "对方钱不够时", purchaseFailureSpace: "对方药水栏满了时",
+  purchaseFailureForbidden: "买不了的时候", foulPotion: "有人朝你泼臭药水时（你很享受）", playerDead: "死掉的攀登者想买东西时",
+};
+
+function sceneHeading(scene, lang) {
+  const h = HEADINGS[lang];
+  if (h[scene.to] && typeof h[scene.to] === "string") return h[scene.to];
+  if (scene.label) return lang === "zh" ? MERCHANT_SITUATIONS_ZH[scene.to] ?? scene.label : scene.label[0].toUpperCase() + scene.label.slice(1);
+  const names = CLIMBER_NAMES[scene.to] ?? [scene.to, scene.to];
+  return h.to(lang === "zh" ? names[1] : names[0]);
 }
 
-// The NPC's real lines, grouped by who they are said to, with the climber's replies in between so
-// each exchange reads as one scene. Both languages: the Chinese is the game's official
-// translation, and it is what the voice should sound like when the reply language is Chinese.
-function canonBlock(npc) {
+// The NPC's real lines in ONE language, grouped by who they are said to, with the climber's
+// replies in between so each exchange reads as one scene. English and Chinese go in separate
+// entries gated on the language variable: shown side by side, small models answer in both.
+function canonBlock(npc, lang) {
   const scenes = canon[npc.key] ?? [];
   if (scenes.length === 0) return "";
   const who = npc.kind === "merchant" ? "the Merchant" : npc.name;
+  const source = lang === "zh" ? "the game's official Simplified Chinese translation of" : "";
   const out = [
     "YOUR OWN WORDS IN THE GAME",
-    `Every line below is something ${who} really says in Slay the Spire 2, with the game's official Simplified Chinese translation in （brackets） under it. This is your voice. Match its length, rhythm, punctuation and vocabulary in whichever language you reply: in English sound like the English lines, in Chinese sound like the bracketed Chinese lines (without the brackets), never like a stiff translation of your English. Notice how short they are: one bubble is one line like these. These are for rhythm, not a script: answer what the climber actually said with new words in this style. Reuse at most one of these lines in a reply, only when it truly fits, and never one you have already said in this conversation. Lines marked (narration) are stage descriptions, not speech.`,
+    `Every line below is ${source ? source + " " : ""}something ${who} really says in Slay the Spire 2. This is your voice: match its length, rhythm, punctuation and vocabulary. Notice how short the lines are; one bubble is one line like these. They are for rhythm, not a script: answer what the climber actually said with new words in this style. Reuse at most one of these lines in a reply, only when it truly fits, and never one you have already said in this conversation. Lines marked ${HEADINGS[lang].narration} are stage descriptions, not speech.`,
   ];
   let last = "";
   for (const scene of scenes) {
-    const heading = sceneHeading(scene);
+    const heading = sceneHeading(scene, lang);
     if (heading !== last) {
-      out.push("", `${heading}:`);
+      out.push("", `${heading}${lang === "zh" ? "：" : ":"}`);
       last = heading;
     }
     for (const line of scene.lines) {
-      const tag = line.who === "climber" ? `${(CLIMBER_NAMES[scene.to] ?? ["Climber"])[0]}: `
-        : line.who === "narration" ? "(narration) " : "";
-      out.push(`- ${tag}${line.en}`, `  （${line.zh}）`);
+      const names = CLIMBER_NAMES[scene.to] ?? ["Climber", "攀登者"];
+      const tag = line.who === "climber" ? `${lang === "zh" ? names[1] + "：" : names[0] + ": "}`
+        : line.who === "narration" ? `${HEADINGS[lang].narration} ` : "";
+      out.push(`- ${tag}${lang === "zh" ? line.zh : line.en}`);
     }
   }
   return out.join("\n");
@@ -142,12 +152,21 @@ function entriesFor(npc) {
   const scale = npc.kind === "merchant" ? "-100 to 500" : "-100 to 100";
   const rules = catalog.affection_rules.replace("{scale}", scale).replace("{lines}", "3");
   const voiceZh = npc.voice_zh ? `\n\nIN CHINESE\n${npc.voice_zh.trim()}` : "";
-  const persona = `${npc.persona.trim()}${voiceZh}\n\nWHAT MOVES YOU (use this to judge affection_delta; + earns, - costs)\n${npc.moves_you.trim()}\n\n${canonBlock(npc)}`.trim();
+  const persona = `${npc.persona.trim()}${voiceZh}\n\nWHAT MOVES YOU (use this to judge affection_delta; + earns, - costs)\n${npc.moves_you.trim()}`;
   const scene = catalog.shared_rules.replace("{language}", "{{language}}").trim();
   const base = { alwaysSend: true, keywords: [], conditions: [], conditionLogic: "all", enabled: true, section: "system-presets" };
   const k = npc.key.toLowerCase();
+  // Only the block in the reply language reaches the prompt (the language variable reads
+  // "English" or "Simplified Chinese (简体中文)"); condition-gated entries go through the matcher.
+  const canonEntry = (lang, needle, label) => ({
+    id: `sts2-${k}-canon-${lang}`, name: `${npc.name} — own words (${label})`, content: canonBlock(npc, lang),
+    role: "character", position: 0, ...base, alwaysSend: false,
+    conditions: [{ variableId: "language", operator: "contains", value: needle }],
+  });
   return [
     { id: `sts2-${k}-persona`, name: `${npc.name} — persona`, content: persona, role: "character", position: 0, ...base },
+    canonEntry("en", "English", "English"),
+    canonEntry("zh", "Chinese", "中文"),
     { id: "sts2-scene-rules", name: "Rules of the scene", content: scene, role: "system", position: 1, ...base },
     { id: "sts2-affection-rules", name: "Affection & rewards", content: rules, role: "system", position: 2, ...base },
     { id: "sts2-deal-rules", name: "Deals", content: catalog.deal_rules.trim(), role: "system", position: 3, ...base },
