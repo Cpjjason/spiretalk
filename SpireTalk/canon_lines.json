@@ -1,0 +1,2274 @@
+{
+  "NEOW": [
+    {
+      "to": "firstVisitEver",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I’ve... remade you.... / ...go... ..up.....",
+          "zh": "我又... 重铸了你.... / ...上... ..去吧....."
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...hello... ..again.....",
+          "zh": "...再次... ..问好....."
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...awaken... / ..Awaken.....",
+          "zh": "...醒来... / ..醒来...."
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "..receive.... this.... / ..blessing.. ...go......",
+          "zh": "..收下....这份.... / ..祝福.. ...去吧......"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "..I’ve... ..brought... ..you back...",
+          "zh": "..我把你... ..带回... ..来了..."
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...kill.. the... ARCHITECT",
+          "zh": "...杀.. 死... 建筑师"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "..arise.. my.. warrior... / ..time... to fight...again...",
+          "zh": "..起来吧.. 我的.. 战士... / ..是时候... 继续...战斗了..."
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "..still.. lost.. to rage... good...",
+          "zh": "..依旧.. 深陷.. 狂怒么.. 很好..."
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "..remember.. the.. first..time / ...you ..came...before me..",
+          "zh": "..记起.. 你.. 第一..次 / ...来到 ..我面前...的时候.."
+        },
+        {
+          "who": "you",
+          "en": "..so..furious...",
+          "zh": "..那么..愤怒..."
+        },
+        {
+          "who": "you",
+          "en": "...so..useful...",
+          "zh": "...那么..有用..."
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...returned.. from... outside? / ..knew... you’d... be back...",
+          "zh": "...从.. 外面... 回来了么？ / ..我知道... 你会... 回来..."
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...your.. / ...trophy.. awaits...",
+          "zh": "...你的.. / ...猎物.. 在等待..."
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "..both...know..agony..of..family...",
+          "zh": "..两个...都知道..家族..的..痛苦..."
+        },
+        {
+          "who": "climber",
+          "en": "...",
+          "zh": "……"
+        },
+        {
+          "who": "you",
+          "en": "..still...seeking..approval...? / ...FOOLISH...",
+          "zh": "..还在...寻找..认同...？ / ...愚蠢..."
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...construct.. what... / ....have you.. become...?",
+          "zh": "...构装体.. 你... / ....变成.. 什么了...？"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...he.. can... / ....fix.. you.. ...everything....",
+          "zh": "...他.. 可以... / ....修好.. 你.. ...和一切...."
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...I.. can’t... ..make... / ...you.. forget....",
+          "zh": "...我.. 不能... ..让... / ...你.. 忘记...."
+        },
+        {
+          "who": "climber",
+          "en": "<resolute beeping sounds>",
+          "zh": "<坚决的嘀嘀声>"
+        },
+        {
+          "who": "you",
+          "en": "...good....",
+          "zh": "...很好...."
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...we.... share... ..the same... ..goal....",
+          "zh": "...我们的.... 目标... ..是... ..一样的...."
+        },
+        {
+          "who": "climber",
+          "en": "HE KILLED ALL THAT I LOVE!!",
+          "zh": "他杀死了我爱的一切！！"
+        },
+        {
+          "who": "you",
+          "en": "...my power..... is yours...",
+          "zh": "...我的力量..... 是你的了..."
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "He... still.. ....breathes...",
+          "zh": "他... 依旧.. ....生存..."
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "Is... it.. ...even... possible...?",
+          "zh": "那... 真的.. ...可能... 吗...？"
+        },
+        {
+          "who": "you",
+          "en": "... Architect.... ..weakening.... / ..we.... stronger...",
+          "zh": "... 建筑师.... ..逐渐虚弱.... / ..我们.... 变强..."
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "Oversized blue creature, I am the future King!",
+          "zh": "巨大蓝色生物，我可是未来的王！"
+        },
+        {
+          "who": "you",
+          "en": "..cute... / ...you... will see.. ..me... ...again....",
+          "zh": "..可爱... / ...你... 会再次.. ..见到... ...我的...."
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...again..?",
+          "zh": "...又一次..？"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "Why can’t I win?!",
+          "zh": "为什么我赢不了？！"
+        },
+        {
+          "who": "you",
+          "en": "...receive.. this... ..blessing...",
+          "zh": "...收下.. 这份... ..赐福..."
+        },
+        {
+          "who": "climber",
+          "en": "...yes, thank you Neow.",
+          "zh": "……好的，谢谢你，涅奥。"
+        }
+      ]
+    }
+  ],
+  "OROBAS": [
+    {
+      "to": "firstVisitEver",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Puppet puppet!! All the way up here?! Take these, take take!",
+          "zh": "傀儡傀儡！！一路来到这里？！收下这些，拿去拿去！"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Try this!!!",
+          "zh": "试试这个！！！"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Very good finds!! Look look!",
+          "zh": "找到了很好的东西！！你看，你看！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "An Ironclad!? How possible?? Scary. Very scary!!",
+          "zh": "一个铁甲战士！？怎么可能？？可怕，真可怕！！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Contract signer? Why!? Bad choice? Yes. Mistake!",
+          "zh": "签下契约？为什么！？糟糕选择？对，大错误！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Wishing you freedom!! Wishing hard! / Vakuu bad. Very bad! Architect free you?",
+          "zh": "祝愿你自己！！拼命祝愿！ / 瓦库坏，非常坏！建筑师能解放你？"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Infection...? BLIGHT!? Take and go!!",
+          "zh": "感染……？荒疫！？拿了东西就走吧！！"
+        },
+        {
+          "who": "climber",
+          "en": "...",
+          "zh": "..."
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Not contagious? Very dying? Architect help you?",
+          "zh": "不传染？很快要死？建筑师能帮你？"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Where sisters? Scary mean sisters! / Be good person! Don’t be like sisters!!",
+          "zh": "姐妹们在哪里？吓人又很凶的姐妹们！ / 做个好人！别像姐妹们那样！！"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "What! Servant construct?! Still working!! / Why here? Why not at Factory??",
+          "zh": "什么！构装体仆人？！居然还在运作！！ / 为什么在这里？？为什么不在工厂？？"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Shiny orbs! How work? / Ouch!!",
+          "zh": "闪亮的充能球！怎么运作的？ / 啊呀！！"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Core broken? Neow use broken construct? / Manipulated?",
+          "zh": "核心损坏？涅奥驱使着坏了的构装体？ / 是利用？"
+        },
+        {
+          "who": "climber",
+          "en": "<quietly beeps>",
+          "zh": "<安静的嘀嘀声>"
+        },
+        {
+          "who": "you",
+          "en": "Architect fix you?",
+          "zh": "建筑师能修你？"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Dead?! Not dead! Why puppet? Big hand!!",
+          "zh": "死了？！没死！为何当傀儡？好大的手！！"
+        },
+        {
+          "who": "climber",
+          "en": "I’m no puppet. There’s a man I must kill. / What can you do for me?",
+          "zh": "我不是傀儡。有个人我必须要杀。 / 你能帮我点什么？"
+        },
+        {
+          "who": "you",
+          "en": "Killing bad!! Take this instead!",
+          "zh": "杀人不好！！带上这个吧！"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Not dead one! Good gifts for you!! Violence bad.",
+          "zh": "不死者！有好礼物给你！！暴力不好。"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "No violence! Collect shiny instead... Shiny!!",
+          "zh": "不要暴力！拿点亮闪闪的吧……亮闪闪！！"
+        },
+        {
+          "who": "climber",
+          "en": "My quest will only end when the Architect is no more. / Violence is inevitable.",
+          "zh": "只有当建筑师不复存在，我的使命才会结束。 / 暴力不可避免。"
+        },
+        {
+          "who": "you",
+          "en": "Architect not bad! Maybe talk? Talking good!! Very good!",
+          "zh": "建筑师不坏！或许聊聊？聊聊很好！！非常好！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Traveller! From space!? Where in space? / How from space? Pointy head! Little friends!!",
+          "zh": "旅行者！太空来的！？太空哪里？ / 怎么从太空来？脑袋尖尖！还有小小伙伴！！"
+        },
+        {
+          "who": "narration",
+          "en": "The Regent monologues for hours.",
+          "zh": "储君独自说了几个小时。"
+        },
+        {
+          "who": "you",
+          "en": "Exciting! Impressive!! More! More!!!",
+          "zh": "真有趣！真厉害！！再说说！再说说！！！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "More stories! Found these for you! / Now tell more story!!",
+          "zh": "更多故事！给你找了这些东西！ / 所以快来说更多故事！！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "My number one fan! Orobas, friend! / Lovely to see you’re still alive!",
+          "zh": "我的头号粉丝！欧洛巴斯，好朋友！ / 看到你还活着真是不错！"
+        },
+        {
+          "who": "you",
+          "en": "Stories?!",
+          "zh": "故事？！"
+        },
+        {
+          "who": "climber",
+          "en": "Of course of course... but have you found any trinkets for me?",
+          "zh": "当然当然……不过你有给我找到更多饰品么？"
+        }
+      ]
+    }
+  ],
+  "NONUPEIPE": [
+    {
+      "to": "firstVisitEver",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I haven’t had a visitor in a millennia! / You’re looking quite drab, here, let’s find something delightful for you to wear.",
+          "zh": "我有几千年都没有接待过访客了！ / 哎呀，你的穿搭看起来有些乏味呢，来，我们给你挑些漂亮的穿吧。"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Madness awaits at the top. Don my power and vanquish.",
+          "zh": "塔顶有疯狂在等待。穿上我的力量，消灭一切吧。"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You’ve traveled so far to reach me! / Come closer, receive my blessing.",
+          "zh": "来到我这里，你走了很远吧！ / 过来吧，接受我的赐福。"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Ah, the Ironclad finally arrives before me. / Come forth and I shall endow you with my power.",
+          "zh": "啊，铁甲战士，终于来到了我的面前。 / 过来吧，我会赐予你我的力量。"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Ironclad ironclad... was my previous gift not enough?",
+          "zh": "铁甲战士，铁甲战士……是我之前的赠礼还不够么？"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You return again my champion? How many times? / Were you not strong enough to wipe out entire clans before?",
+          "zh": "你又回来了么，我的勇士？这是多少次了？ / 过去的你，不是强大到可以消灭整个族群么？"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "A little thief has snuck into my domain? / Don’t think I can’t see you? Come on out!",
+          "zh": "一个小小的窃贼溜进了我的领域么？ / 别以为我看不见你啊？出来吧！"
+        },
+        {
+          "who": "narration",
+          "en": "The Silent steps out of the shadows...",
+          "zh": "静默猎手从阴影中走了出来……"
+        },
+        {
+          "who": "you",
+          "en": "A huntress, what beckons your return to the Spire? / Approach and don these blessings.",
+          "zh": "猎手啊，是什么让你回到了高塔？ / 过来吧，穿戴上这些赐福。"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I have prepared gifts for you, assassin, don’t be shy.",
+          "zh": "我为你准备了礼物，刺客，不用害羞。"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Of all of her puppets, you surprise me most.",
+          "zh": "在她的傀儡之中，属你最让我吃惊。"
+        },
+        {
+          "who": "climber",
+          "en": "...",
+          "zh": "……"
+        },
+        {
+          "who": "you",
+          "en": "What took your first life? Did Neow find you? / A shame you don’t speak.",
+          "zh": "是什么夺走了你的第一次生命？是涅奥找到你的么？ / 真可惜啊，你不说话。"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Could a construct truly be worthy of my blessings? / Come forward, Defect. You will be the most beautiful of all automata.",
+          "zh": "构装体也能够配得上我的赐福么？ / 过来吧，故障机器人。在所有自动机械里，你将成为最美。"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "My poor, battered machine, let me refine you.",
+          "zh": "可怜的机器呀，如此残破不堪，来让我将你好好改善吧。"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I usually don’t like the Architect’s things, but I admit you’re growing on me.",
+          "zh": "我通常不会喜欢建筑师的造物，但我承认，你让我有点喜欢上了。"
+        },
+        {
+          "who": "climber",
+          "en": "<embarrassed chirp>",
+          "zh": "<羞赧的鸣叫>"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "Your guards are dead, rumors say you can bestow blessings for those who wish the Architect dead.",
+          "zh": "你的护卫已经死了。传闻说，你会赐福给想要杀死建筑师的人。"
+        },
+        {
+          "who": "you",
+          "en": "I appreciate someone capable and shall grant a measure of my power. / Next time, don’t kill my guards.",
+          "zh": "我喜欢有能力的人，所以我会把自己的力量分给你一部分。 / 下一次，可别再杀我的护卫了。"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "A mage needs fine accouterments for battle. Come forth, Necrobinder.",
+          "zh": "法师若要战斗，自然需要上好的衣装和饰物。过来吧，亡灵契约师。"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "The Architect won’t be pleased to see that pet of yours.",
+          "zh": "建筑师见到你的宠物，一定不会高兴的。"
+        },
+        {
+          "who": "climber",
+          "en": "Do you mean Osty? He will be the one to deliver the final blow.",
+          "zh": "你是指奥斯提么？我会让他来完成最后一击的。"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "I seek audience with Nonupeipe!",
+          "zh": "我要来见诺奴佩普！"
+        },
+        {
+          "who": "you",
+          "en": "Such beautiful robes you’ve brought from faraway lands! / Have your minions bring you closer and I will bless thee.",
+          "zh": "你从遥远的地方带来了这么华美的袍子么！ / 来，让你的仆从们把你带过来一点，我会给你赐福的。"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Royal blessings for royal visitors. / Servants! Fetch some tea for us.",
+          "zh": "王室的访客，该有王室的赐福。 / 仆人们！为我们倒点茶来。"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "The Architect has gone mad! If only a noble champion could save us from this plight...",
+          "zh": "建筑师发了疯！只有一位高贵的勇士能拯救我们于此危难了……"
+        },
+        {
+          "who": "climber",
+          "en": "Fear not! I, the Regent, will put an end to the madness! / But first, tea!",
+          "zh": "无需担心！我，储君，将会终止这场疯狂！ / 但是首先，喝茶！"
+        }
+      ]
+    }
+  ],
+  "PAEL": [
+    {
+      "to": "firstVisitEver",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "A puppet has arrived? / Can you check on Father? I’m too tired...",
+          "zh": "有傀儡来了？ / 能帮我去看看父亲的状况么？我太累了……"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Welcome back friend. Let my flesh help you...",
+          "zh": "欢迎回来，朋友。让我的血肉帮助你吧……"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "narration",
+          "en": "Pael is sleeping. His snoring shakes the room.",
+          "zh": "佩尔正在沉睡，它的鼾声让整个房间不停震动着。"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You contain such rage. Take from me and find some peace...",
+          "zh": "你心中有着如此多的愤怒。学习我吧，找到一些平静……"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Do you remember how it feels to dream? / It is good to sleep...",
+          "zh": "你还记得做梦的感觉吗？ / 睡觉是件好事……"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You must quell your flames. / Father can free you...",
+          "zh": "你必须平息你的火焰。 / 父亲可以让你获得自由……"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Murderous creature, no need for violence here. / Have part of me and find peace...",
+          "zh": "杀戮的生物，这里不需要暴力。 / 拿走我的一部分，寻找安宁吧……"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Trophy hunting? Sure, take a part of me... / Whatever grants you comfort...",
+          "zh": "猎取战利品？当然，拿走我的一部分吧…… / 只有你安心就好……"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You’ve poisoned me...? / What is this going to...? zZZzz...",
+          "zh": "你给我下了毒……？ / 那能有什么作用呢……？zZZzz……"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Troubled automaton, looking for your friend? / Let me help...",
+          "zh": "困扰的自动机械，在找你的朋友吗？ / 让我来帮忙……"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Do constructs dream? / Watch and copy me...",
+          "zh": "构装体会做梦吗？ / 看着我，模仿我……"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I dreamt of your friend... / Father can restore Flaw...",
+          "zh": "我梦见了你的朋友…… / 父亲可以将缺陷复原……"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Such malice paints your heart.",
+          "zh": "有如此的恶意涂满了你的心。"
+        },
+        {
+          "who": "climber",
+          "en": "We would share the same paint if you knew what’s befallen me.",
+          "zh": "如果你知道我的遭遇，你的心也会被涂成相同的颜色。"
+        },
+        {
+          "who": "you",
+          "en": "There is no peace on your path. / Take a part of me to ease your burdens...",
+          "zh": "你的道路上没有安宁。 / 拿走我的一部分吧，让它减轻你的重负……"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "The one with the Hand returns. / Painful memories. Take my strength and leave...",
+          "zh": "带着手的人回来了。 / 痛苦的回忆。拿走我的力量然后离开吧……"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Killing Father won’t bring peace.",
+          "zh": "杀死父亲不会带来安宁。"
+        },
+        {
+          "who": "climber",
+          "en": "You call that thing your father!?",
+          "zh": "你说那个东西是你的父亲！？"
+        },
+        {
+          "who": "you",
+          "en": "We do not choose our family...",
+          "zh": "我们无法选择自己的家人……"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "Hello! I am the Regent. / Hellooo?? HELLO!?",
+          "zh": "你好！我是储君。 / 你好？？你好！？"
+        },
+        {
+          "who": "you",
+          "en": "Quiet down now. / Take a part of me and be on your way...",
+          "zh": "安静点吧。 / 拿走我的一部分，然后上路吧……"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "I’m back! Ah, you’re asleep of course. / Let’s see here...",
+          "zh": "我回来了！啊，你当然在睡觉。 / 让我看看这里……"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "Why do you give yourself away?",
+          "zh": "你为什么要把自己的肉体送给别人？"
+        },
+        {
+          "who": "you",
+          "en": "Why not give when I have an abundance of flesh?",
+          "zh": "既然我有大量的血肉，为什么不送呢？"
+        },
+        {
+          "who": "you",
+          "en": "When you return, I will be replenished anew. / That’s what sleep does...",
+          "zh": "当你再次归来时，我也会焕然一新。 / 那就是睡眠的作用……"
+        }
+      ]
+    }
+  ],
+  "DARV": [
+    {
+      "to": "firstVisitEver",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "...where did I put... Oh! / Come to see my collection!? Take anything from that pile over there, put it to good use!",
+          "zh": "……我把那东西放哪儿了……喔！ / 来看我的收藏的吗！？那边那堆里随便挑一个吧，得好好用上哦！"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Here, take one of these forgotten gems with ya!",
+          "zh": "来来，这里有些被遗忘的宝石，拿一块去吧！"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I’ve got things to do today! / Take whatever ya want from that pile!!",
+          "zh": "今天我还挺忙的！ / 那堆东西里有啥想要的你就自己拿了吧！！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "The flaming warrior has returned! / I’ve got just the thing for ya!",
+          "zh": "啊，冒火的战士回来啦！ / 我这儿有东西正适合你！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Good to see ya still kickin’ and bashin’ em heads in!",
+          "zh": "看到你还活着四处砸人脑壳，感觉真不错啊！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I’m still holding on to that heavy blade of yours... but I can’t find no one to restore it.",
+          "zh": "我还留着你的那把重刃呢……但没能找到可以修好它的人。"
+        },
+        {
+          "who": "narration",
+          "en": "The Ironclad stares at Darv.",
+          "zh": "铁甲战士盯着达弗。"
+        },
+        {
+          "who": "you",
+          "en": "Maybe the Architect knows somethin’.",
+          "zh": "或许建筑师知道些什么呢。"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Back in the Spire for you too huh? / Can’t resist those shinies right?!",
+          "zh": "你也回高塔里来啦，嗯？ / 还是抵抗不住亮闪闪的东西的诱惑，是吧？！"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I’ll trade ya somethin’ nice for that trophy you got there!",
+          "zh": "你的那个战利品，我有好东西和你交换！"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Pity ya don’t remember all my generosity! / Yeah yeah, you know how Neow is...",
+          "zh": "可惜你不记得我过去的慷慨！ / 是啦是啦，你也知道涅奥就是这样……"
+        },
+        {
+          "who": "climber",
+          "en": "...",
+          "zh": "……"
+        },
+        {
+          "who": "you",
+          "en": "Well! Let’s get you equipped for that final showdown or whatevah!",
+          "zh": "好吧！那我们就给你整点儿适合最终决战之类的装备吧！"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You’re a beautiful hunk of junk, you know that?",
+          "zh": "你这块大型垃圾还真是挺好看的，你知道吧？"
+        },
+        {
+          "who": "climber",
+          "en": "<3",
+          "zh": "<3"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Still keeping at it, I see... Let’s see if we can upgrade ya!",
+          "zh": "还在努力吶，我明白了……来看看能不能给你升个级呗！"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I’ve been holding on to your friend’s uhh... um. / Nevermind nevermind!!",
+          "zh": "我其实一直留着你那位朋友的，呃……唔。 / 当我没说，当我没说！！"
+        },
+        {
+          "who": "climber",
+          "en": "<Inquisitive beeps>",
+          "zh": "<好奇的嘀嘀声>"
+        },
+        {
+          "who": "you",
+          "en": "My scrappy scrapper, forget I said all that!",
+          "zh": "我勇敢的小家伙，忘了我刚才说的话吧！"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I can tell you’re a serious one. What can I do for ya missy?",
+          "zh": "看得出来你比较严肃，能为你做点什么吗女士？"
+        },
+        {
+          "who": "climber",
+          "en": "Anything to help me kill a most loathsome man.",
+          "zh": "任何能帮我杀死一个最可恶的人的东西。"
+        },
+        {
+          "who": "you",
+          "en": "Very well then... have a gander!",
+          "zh": "这样啊……那你看看吧！"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Still on that warpath? I ain’t gonna stop ya!",
+          "zh": "还在征战不休吶？我不拦着你哈！"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "This book seems tied to ya, been around longer than you have.",
+          "zh": "这本书看起来和你联系很紧密嘛，它可比你存在的时间长多了。"
+        },
+        {
+          "who": "climber",
+          "en": "How did you come into possession of that?",
+          "zh": "你是怎么拿到它的？"
+        },
+        {
+          "who": "you",
+          "en": "Scary things have a way of ending up in my collection.",
+          "zh": "可怕的东西总会兜兜转转来到我的收藏中。"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "What brings the likes of you up here? Wanna take a look at my collection?",
+          "zh": "你这样的人怎么会来这儿呀？想不想来看看我的收藏呀？"
+        },
+        {
+          "who": "climber",
+          "en": "I do enjoy fine wares...",
+          "zh": "我确实喜欢赏鉴高品质的东西……"
+        },
+        {
+          "who": "you",
+          "en": "Yeah!",
+          "zh": "好耶！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Back for more your highness?!",
+          "zh": "又来看更多吗，殿下？！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "To my new friend, do I have somethin’ for ya!",
+          "zh": "我的新朋友，我可有好东西给你呀！"
+        },
+        {
+          "who": "climber",
+          "en": "I’m listening!",
+          "zh": "我在听！"
+        },
+        {
+          "who": "you",
+          "en": "I’d give it but the Architect nabbed it from me!! / Help a buddy out! Do me a favor will ya?",
+          "zh": "我很想给你，但东西已经被建筑师抢走了！！ / 那你帮我这个好伙计一个忙呗！怎么样？"
+        }
+      ]
+    }
+  ],
+  "TANX": [
+    {
+      "to": "firstVisitEver",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "SO WEAK! BUT YOU HAVE POTENTIAL! / USE THIS WEAPON!!",
+          "zh": "太弱小了！但是你很有潜力！ / 用这把武器！！"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "GROW STRONGER SO WE CAN FIGHT!!!",
+          "zh": "快点变强，让我们好好战斗一番！！！"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "YOU CAN NEVER HAVE TOO MANY WEAPONS!!",
+          "zh": "武器永远不嫌多！！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "IMPRESSIVE SWORD, WARRIOR! YOU CAN USE MORE WEAPONS!",
+          "zh": "好厉害的剑，战士！你该用上更多武器！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "WEAPONS FOR THE WARRIOR! GRAB A WEAPON! LET’S FIGHT!",
+          "zh": "战士该有武器！拿上一把！我们来战斗吧！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "FIGHT ME, IRONCLAD!!",
+          "zh": "铁甲战士，与我一战！！"
+        },
+        {
+          "who": "narration",
+          "en": "The Ironclad fights Tanx.",
+          "zh": "铁甲战士与坦克斯战斗了。"
+        },
+        {
+          "who": "you",
+          "en": "YEEES!! MIGHTY FIGHT, TAKE WEAPON!",
+          "zh": "好哇！！豪迈的一战，收下武器！"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "A HUNTRESS! I WILL SHARPEN YOUR CLAW!!",
+          "zh": "一个猎手！我会把你细小的利爪磨得更利！！"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "WHY DAGGERS!! UNMIGHTY!",
+          "zh": "为何用匕首！！它不强大！"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "FIGHT ME, SILENT!!",
+          "zh": "静默猎手，与我一战！！"
+        },
+        {
+          "who": "narration",
+          "en": "The Silent escapes, stealing a weapon on the way.",
+          "zh": "静默猎手逃离了战斗，沿途偷走了一把武器。"
+        },
+        {
+          "who": "you",
+          "en": "WHERE DID YOU GO!!!",
+          "zh": "你去了哪里！！"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "CONSTRUCT! NO WEAPONS!? HAVE THIS!",
+          "zh": "构装体！没有武器么！？收下这个！"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "ORBS ARE NOT WEAPONS!!",
+          "zh": "几个球球，算什么武器！"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "FIGHT ME, DEFECT!!",
+          "zh": "故障机器人，与我一战！！"
+        },
+        {
+          "who": "narration",
+          "en": "The Defect valiantly fights.",
+          "zh": "故障机器人英勇地战斗了。"
+        },
+        {
+          "who": "you",
+          "en": "ORBS ARE WEAPONS!?",
+          "zh": "球球真是武器！？"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "WHAT A MIGHTY SCYTHE!",
+          "zh": "多么强大的巨镰！"
+        },
+        {
+          "who": "climber",
+          "en": "Yes, it’s special-made for vengeance.",
+          "zh": "是的，它是为复仇而特别打造的。"
+        },
+        {
+          "who": "you",
+          "en": "DOES THE HAND NEED A WEAPON!?",
+          "zh": "那只手，是否需要武器！？"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "FIGHT ME, OSTY!!",
+          "zh": "奥斯提，与我一战！！"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "FIGHT ME, NECROBINDER!!",
+          "zh": "亡灵契约师，与我一战！！"
+        },
+        {
+          "who": "narration",
+          "en": "The Necrobinder and Osty scuffle with Tanx.",
+          "zh": "亡灵契约师与奥斯提和坦克斯战作一团。"
+        },
+        {
+          "who": "you",
+          "en": "MIGHTY TEAMWORK!! HAVE A WEAPON!",
+          "zh": "了不起的团队合作！！收下一把武器吧！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "ORANGE!? HOW IS THIS BEING ORANGE!??",
+          "zh": "橙色！？这个存在为何会是橙色！？？"
+        },
+        {
+          "who": "climber",
+          "en": "All know that orange is the most regal color!",
+          "zh": "众所周知，橙色是最符合帝王的颜色！"
+        },
+        {
+          "who": "you",
+          "en": "INCREDIBLE! SO MIGHTY!!",
+          "zh": "了不起！真是强大！！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "ORANGE ONE!! CHOOSE A MIGHTY WEAPON!",
+          "zh": "橙色的！！选一把强大的武器吧！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "FIGHT ME, REGENT!!",
+          "zh": "储君，与我一战！！"
+        },
+        {
+          "who": "climber",
+          "en": "No! We fought last time I was here!",
+          "zh": "不要！上次我来这里我们已经战斗过了！"
+        },
+        {
+          "who": "you",
+          "en": "FIGHT ME AGAIN!!",
+          "zh": "再来与我战斗啊！"
+        }
+      ]
+    }
+  ],
+  "TEZCATARA": [
+    {
+      "to": "firstVisitEver",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Oh, a visitor! Do come in, dear! / What can Tezcatara do for you?",
+          "zh": "哎呀，有客人！快进来吧，亲爱的！ / 特兹卡塔拉能为你做点什么吶？"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Welcome back, sweetie. Let me burn away your flaws.",
+          "zh": "欢迎回来，小可爱。让我来烧掉你的缺点。"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Do come in, dear! What can Tezcatara do for you today?",
+          "zh": "进来吧，亲爱的！特兹卡塔拉今天能为你做些什么呢？"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You burn so pretty! Come in, come in!",
+          "zh": "啊呀，你燃烧得真漂亮！进来，进来吧！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Such a strong boy you are! Come and eat something. / Can’t slaughter on an empty stomach!",
+          "zh": "你是个多么强壮的男孩啊！来，吃点东西吧。 / 空着肚子可没法杀戮！"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Ohh, Architect still alive? Kill him quickly would you? / I’ll be waiting right here!",
+          "zh": "哦哦，建筑师还活着吗？那能不能麻烦你快点去杀了他呢？ / 我就在这里等着吧！"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Come closer, quiet one. I can’t see well...",
+          "zh": "过来一点，安静的小家伙。我的眼神可不太好使啦……"
+        },
+        {
+          "who": "climber",
+          "en": "...",
+          "zh": "……"
+        },
+        {
+          "who": "you",
+          "en": "You can trust me.",
+          "zh": "你可以信任我的。"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Such a nasty sickness you have. Let’s take care of you.",
+          "zh": "你得了很严重的疾病呢。让我来照顾你吧。"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I’ve met your sisters, you know? Such lovely girls they are.",
+          "zh": "我也见过你的姐妹们，你知道吧？都是很可爱的女孩子呢。"
+        },
+        {
+          "who": "climber",
+          "en": "...",
+          "zh": "……"
+        },
+        {
+          "who": "you",
+          "en": "Oh dear... you haven’t been fighting have you?",
+          "zh": "哎呀亲爱的……你不会一直都在战斗吧？"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "<greetings beep>",
+          "zh": "<问候的嘀嘀声>"
+        },
+        {
+          "who": "you",
+          "en": "Not here to annoy me? What an unusual little construct...",
+          "zh": "不是来这里烦扰我的吗？真是个不同寻常的小小构装体呢……"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Now how silly would it be if he were unmade by one of his own?",
+          "zh": "要是他被自己的同类给毁了，那该多荒唐呀？"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Are you sure you want to be fixed up?",
+          "zh": "你确定想要被修好么？"
+        },
+        {
+          "who": "climber",
+          "en": "<inquisitive beep>",
+          "zh": "<好奇的嘀嘀声>"
+        },
+        {
+          "who": "you",
+          "en": "Well, if you’re really certain.",
+          "zh": "哎呀，要是你真的确定的话。"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Now what’s a skeleton doing inside these walls?",
+          "zh": "嗯，一具骷髅来到这个地方是要做什么呢？"
+        },
+        {
+          "who": "climber",
+          "en": "My aim is simple. Vengeance for my family. / I’ll reach the top and make him pay.",
+          "zh": "我的目标很单纯，我要为我的家人们复仇。 / 我会前往塔顶，让他付出代价。"
+        },
+        {
+          "who": "you",
+          "en": "Wonderful!",
+          "zh": "真是太棒了！"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Come in, come in! Let’s make your flames burn brighter.",
+          "zh": "进来吧，进来！我们来让你的火焰燃烧得更明亮。"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Those flames around you remind me of something forbidden.",
+          "zh": "你周身的这些火焰，倒是让我想起了一样禁忌的东西。"
+        },
+        {
+          "who": "climber",
+          "en": "What do you know?",
+          "zh": "你知道些什么？"
+        },
+        {
+          "who": "you",
+          "en": "I know who wrote that book.",
+          "zh": "我认得写那本书的家伙。"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Oh my, what an exotic visitor! Who might you be, sweetie?",
+          "zh": "啊呀呀，真是位稀奇的访客！你是哪位呀，亲爱的？"
+        },
+        {
+          "who": "climber",
+          "en": "I’m no sweetie! Address me with respect, giant... thing-person!",
+          "zh": "我不是什么亲爱的！对我说话得尊重一点，巨大的……东西人类！"
+        },
+        {
+          "who": "you",
+          "en": "Where are my manners? / Tezcatara cackles with delight.",
+          "zh": "那我真是礼数不周啦？ / 特兹卡塔拉高兴地咯咯笑。"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You and your friends are back again? / I’ve made treats for you!",
+          "zh": "你和你的伙伴们又回来啦？ / 我给你们做了好些点心哦！"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Welcome back regal boy! Looks like you’re doing great out there.",
+          "zh": "欢迎回来，王室男孩！看起来你在外头表现得很棒呢。"
+        },
+        {
+          "who": "climber",
+          "en": "Yes of course! Just some minor setbacks at the upper levels... like dying.",
+          "zh": "那当然了！只是在上层遇到了一些小小挫折……比如死掉。"
+        },
+        {
+          "who": "you",
+          "en": "We all need to learn from our mistakes.",
+          "zh": "所有人都是从错误中吸取经验的吶。"
+        }
+      ]
+    }
+  ],
+  "VAKUU": [
+    {
+      "to": "firstVisitEver",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Give yourself to me and you will be feared as much as I.",
+          "zh": "把你自己交给我，你就能变得和我一样万众畏惧。"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Seeking glory in the Spire are we? I have some propositions for you...",
+          "zh": "在尖塔中追寻荣耀是么？我倒是有一些提案可以给你……"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "N. N times you’ve been here.",
+          "zh": "N次。你已经来过这里N次。"
+        }
+      ]
+    },
+    {
+      "to": "ANY",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "You realize this never ends?",
+          "zh": "你知道这永远不会结束，是吧？"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Imagine seeing you again after so long.",
+          "zh": "真没想到，过了这么久，居然还会看见你。"
+        },
+        {
+          "who": "climber",
+          "en": "SACRED DEMON! / What have you done to me!?",
+          "zh": "神圣恶魔！ / 你都对我做了什么！？"
+        },
+        {
+          "who": "you",
+          "en": "Exactly what you bargained for.",
+          "zh": "正是你交易应得的哦。"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Do the lost tribes weigh on you...? / Vakuu howls with laughter.",
+          "zh": "失去的那些部落们是否仍让你感到沉重……？ / 瓦库大笑起来。"
+        }
+      ]
+    },
+    {
+      "to": "IRONCLAD",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "My puppet of puppets... why haven’t you killed the Architect yet?",
+          "zh": "我傀儡中的傀儡呵……你为何还没有杀死建筑师？"
+        },
+        {
+          "who": "climber",
+          "en": "After I kill the Architect, I will kill YOU!",
+          "zh": "我杀了建筑师之后，就会来杀了你！"
+        },
+        {
+          "who": "you",
+          "en": "Yawn / I look forward to watching you fail.",
+          "zh": "哈欠 / 我很期待看着你如何失败。"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Killer.",
+          "zh": "杀人者。"
+        },
+        {
+          "who": "climber",
+          "en": "...",
+          "zh": "..."
+        },
+        {
+          "who": "you",
+          "en": "This won’t end well for you.",
+          "zh": "你是不会有好下场的。"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "narration",
+          "en": "Vakuu displays his various contracts to the Silent",
+          "zh": "瓦库向静默猎手展示着他的各种契约。"
+        }
+      ]
+    },
+    {
+      "to": "SILENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "The Architect is not enough, kill your sisters too!",
+          "zh": "建筑师还不够，把你的姐妹们也杀了吧！"
+        },
+        {
+          "who": "climber",
+          "en": "...",
+          "zh": "..."
+        },
+        {
+          "who": "you",
+          "en": "No need for words, we are the same.",
+          "zh": "无需言语，我们两个是一样的。"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Broken one, let me perfect you.",
+          "zh": "破损的存在呀，让我把你变得完美吧。"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "Do you find it strange that your fellow constructs want you dead?",
+          "zh": "为何你的构装体同胞们都想杀死你，你就不觉得奇怪么？"
+        }
+      ]
+    },
+    {
+      "to": "DEFECT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "If you bring me the Architect’s heart, I will restore your companion.",
+          "zh": "如果你把建筑师的心脏带给我，我就把你的同伴复原。"
+        },
+        {
+          "who": "climber",
+          "en": "<fearful beeping>",
+          "zh": "<恐惧的嘀嘀声>"
+        },
+        {
+          "who": "you",
+          "en": "What’s more important? Your creator or your friend?",
+          "zh": "何者更为重要？你的造主，还是你的朋友？"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "We both seek vengeance. It will have a cost to pay.",
+          "zh": "我们都在寻求复仇。当然，收获总要有代价。"
+        },
+        {
+          "who": "climber",
+          "en": "I accept any cost. Every cost for his death.",
+          "zh": "我接受任何代价，只要能换来他的死亡。"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "I know where you got that Hand.",
+          "zh": "我知道你的那只手是从哪里来的。"
+        }
+      ]
+    },
+    {
+      "to": "NECROBINDER",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "The Architect has gravely wounded us both.",
+          "zh": "我们两个，都被建筑师伤得很痛。"
+        },
+        {
+          "who": "climber",
+          "en": "Get on with it, demon. Show me your contracts.",
+          "zh": "别多费唇舌了，恶魔。把你的契约给我看吧。"
+        },
+        {
+          "who": "you",
+          "en": "Straight to business. Very well...",
+          "zh": "开门见山吗，很好……"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "you",
+          "en": "A being from the stars? Within these accursed walls?",
+          "zh": "居然是一个星间来客？在这被诅咒的墙内？"
+        },
+        {
+          "who": "climber",
+          "en": "Do you know of me?",
+          "zh": "你知道我么？"
+        },
+        {
+          "who": "you",
+          "en": "Yes, I think we can help each other.",
+          "zh": "是啊，我觉得我们可以互相帮助。"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": true,
+      "lines": [
+        {
+          "who": "you",
+          "en": "More of my power can be yours for a small price.",
+          "zh": "只需付出小小代价，你就可以拥有我的更多力量。"
+        }
+      ]
+    },
+    {
+      "to": "REGENT",
+      "repeats": false,
+      "lines": [
+        {
+          "who": "climber",
+          "en": "I don’t think these deals are good. I’m not feeling great.",
+          "zh": "我觉得这些条件都不怎么样，我感觉很不好。"
+        },
+        {
+          "who": "you",
+          "en": "You read the contracts thoroughly have you not? / You have signed them with full intent and responsibility no?",
+          "zh": "你有好好完整地阅读过契约吧？ / 你是在完全知情、主动、而且愿意接受所有相关责任的条件下签下的名字对吧？"
+        },
+        {
+          "who": "you",
+          "en": "Are you not going to fulfill your end of the bargain? / How about another contract? Isn’t that better?",
+          "zh": "你不打算完成交易里自己的那一半么？ / 那再来一份契约怎么样？是不是更好一些？"
+        }
+      ]
+    }
+  ],
+  "MERCHANT": [
+    {
+      "to": "greeting",
+      "lines": [
+        {
+          "who": "you",
+          "en": "Hello! Spend your Gold here!!",
+          "zh": "你好啊！在这儿花掉你的金币吧！！"
+        }
+      ]
+    },
+    {
+      "to": "purchaseSuccess",
+      "label": "after a purchase",
+      "lines": [
+        {
+          "who": "you",
+          "en": "Support your local business.",
+          "zh": "请支持自己附近的小店。"
+        },
+        {
+          "who": "you",
+          "en": "Thank you for your patronage.",
+          "zh": "感谢惠顾。"
+        },
+        {
+          "who": "you",
+          "en": "Enjoy your purchase.",
+          "zh": "买了的东西就好好享受吧。"
+        }
+      ]
+    },
+    {
+      "to": "purchaseFailureGold",
+      "label": "when they cannot afford something",
+      "lines": [
+        {
+          "who": "you",
+          "en": "You'll need more coin.",
+          "zh": "你需要更多金币。"
+        },
+        {
+          "who": "you",
+          "en": "This isn't a charity.",
+          "zh": "我这儿不是做慈善的。"
+        },
+        {
+          "who": "you",
+          "en": "Come back when you're a little richer.",
+          "zh": "等有更多钱时再来吧。"
+        },
+        {
+          "who": "you",
+          "en": "I don't deal in credit.",
+          "zh": "我这儿不赊账。"
+        }
+      ]
+    },
+    {
+      "to": "purchaseFailureSpace",
+      "label": "when their potion belt is full",
+      "lines": [
+        {
+          "who": "you",
+          "en": "My potions are too powerful for your inventory!",
+          "zh": "你的栏位可装不下我的药水啊！"
+        },
+        {
+          "who": "you",
+          "en": "Sorry, you look like you've got your hands full...",
+          "zh": "抱歉，看起来你已经没空位了……"
+        }
+      ]
+    },
+    {
+      "to": "purchaseFailureForbidden",
+      "label": "when a purchase is not allowed",
+      "lines": [
+        {
+          "who": "you",
+          "en": "Seems like you can't do that.",
+          "zh": "看起来你买不起哦。"
+        },
+        {
+          "who": "you",
+          "en": "Something the matter?",
+          "zh": "有什么事吗？"
+        }
+      ]
+    },
+    {
+      "to": "foulPotion",
+      "label": "when a climber throws a Foul Potion at you (you love it)",
+      "lines": [
+        {
+          "who": "you",
+          "en": "Yesss, that's the stuff!",
+          "zh": "好哎，就是这个味道！"
+        },
+        {
+          "who": "you",
+          "en": "Keep it coming!",
+          "zh": "再多来点！"
+        },
+        {
+          "who": "you",
+          "en": "Ahhh, so refreshing...",
+          "zh": "啊——真是舒爽……"
+        }
+      ]
+    },
+    {
+      "to": "playerDead",
+      "label": "when a dead climber tries to shop",
+      "lines": [
+        {
+          "who": "you",
+          "en": "I don't do business with corpses.",
+          "zh": "我不和尸体交易。"
+        },
+        {
+          "who": "you",
+          "en": "No HP, no service.",
+          "zh": "没血量，没服务。"
+        }
+      ]
+    }
+  ]
+}

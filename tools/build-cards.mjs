@@ -13,6 +13,9 @@ import path from "node:path";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(readFileSync(path.join(root, "SpireTalk", "npcs.json"), "utf8"));
+// Every line each NPC says in the game, English + official Simplified Chinese
+// (tools/extract-canon-lines.py pulls them from the game's localization tables).
+const canon = JSON.parse(readFileSync(path.join(root, "SpireTalk", "canon_lines.json"), "utf8"));
 const outDir = path.join(root, "Cards");
 mkdirSync(outDir, { recursive: true });
 
@@ -91,10 +94,55 @@ Then END the reply with exactly these three directive lines, in this form and no
 [action: set {"type": "none", "amount": 0}]
 Replace the values (an integer -3..3; three strings in the reply language; a type from allowed_actions or "none"). Keep the brackets, the colon, the word set, and the JSON exactly as shown.`;
 
+const CLIMBER_NAMES = {
+  IRONCLAD: ["The Ironclad", "铁甲战士"],
+  SILENT: ["The Silent", "静默猎手"],
+  DEFECT: ["The Defect", "故障机器人"],
+  NECROBINDER: ["The Necrobinder", "亡灵契约师"],
+  REGENT: ["The Regent", "储君"],
+};
+
+function sceneHeading(scene) {
+  if (scene.to === "firstVisitEver") return "The very first time any climber reaches you";
+  if (scene.to === "ANY") return "To any climber who comes back";
+  if (scene.to === "greeting") return "Greeting a customer";
+  if (scene.label) return scene.label[0].toUpperCase() + scene.label.slice(1);
+  const [en, zh] = CLIMBER_NAMES[scene.to] ?? [scene.to, ""];
+  return `To ${en.replace(/^The /, "the ")} (${zh})`;
+}
+
+// The NPC's real lines, grouped by who they are said to, with the climber's replies in between so
+// each exchange reads as one scene. Both languages: the Chinese is the game's official
+// translation, and it is what the voice should sound like when the reply language is Chinese.
+function canonBlock(npc) {
+  const scenes = canon[npc.key] ?? [];
+  if (scenes.length === 0) return "";
+  const who = npc.kind === "merchant" ? "the Merchant" : npc.name;
+  const out = [
+    "YOUR OWN WORDS IN THE GAME",
+    `Every line below is something ${who} really says in Slay the Spire 2, with the game's official Simplified Chinese translation in （brackets） under it. This is your voice. Match its length, rhythm, punctuation and vocabulary in whichever language you reply: in English sound like the English lines, in Chinese sound like the bracketed Chinese lines (without the brackets), never like a stiff translation of your English. Notice how short they are: one bubble is one line like these. These are for rhythm, not a script: answer what the climber actually said with new words in this style. Reuse at most one of these lines in a reply, only when it truly fits, and never one you have already said in this conversation. Lines marked (narration) are stage descriptions, not speech.`,
+  ];
+  let last = "";
+  for (const scene of scenes) {
+    const heading = sceneHeading(scene);
+    if (heading !== last) {
+      out.push("", `${heading}:`);
+      last = heading;
+    }
+    for (const line of scene.lines) {
+      const tag = line.who === "climber" ? `${(CLIMBER_NAMES[scene.to] ?? ["Climber"])[0]}: `
+        : line.who === "narration" ? "(narration) " : "";
+      out.push(`- ${tag}${line.en}`, `  （${line.zh}）`);
+    }
+  }
+  return out.join("\n");
+}
+
 function entriesFor(npc) {
   const scale = npc.kind === "merchant" ? "-100 to 500" : "-100 to 100";
   const rules = catalog.affection_rules.replace("{scale}", scale).replace("{lines}", "3");
-  const persona = `${npc.persona.trim()}\n\nWHAT MOVES YOU (use this to judge affection_delta; + earns, - costs)\n${npc.moves_you.trim()}`;
+  const voiceZh = npc.voice_zh ? `\n\nIN CHINESE\n${npc.voice_zh.trim()}` : "";
+  const persona = `${npc.persona.trim()}${voiceZh}\n\nWHAT MOVES YOU (use this to judge affection_delta; + earns, - costs)\n${npc.moves_you.trim()}\n\n${canonBlock(npc)}`.trim();
   const scene = catalog.shared_rules.replace("{language}", "{{language}}").trim();
   const base = { alwaysSend: true, keywords: [], conditions: [], conditionLogic: "all", enabled: true, section: "system-presets" };
   const k = npc.key.toLowerCase();
