@@ -167,7 +167,7 @@ internal static class EpilogueService
         var act = SafeInt(() => runState.CurrentActIndex + 1, 1);
         sb.Append("[EPILOGUE. The climb is over: ");
         sb.Append(win ? $"{character} reached the top and won." : $"{character} died on floor {floor}, in act {act}.");
-        sb.Append(" Speak as yourself, looking back on this climber's whole run: 4 to 6 sentences, one paragraph, in ");
+        sb.Append(" Speak as yourself, looking back on this climber's whole run: 3 or 4 short sentences in your own voice (as short as your usual lines), one paragraph, in ");
         sb.Append(Loc.ReplyLanguageName());
         sb.Append(". Draw on what you remember - what they said to you, the deals they kept or broke. ");
         sb.Append("This is a farewell, not a visit: no choices, no offers, no directive lines at all - plain prose only.]");
@@ -216,18 +216,20 @@ internal sealed partial class EpiloguePanel : Control
         Name = "SpireTalkEpilogue";
         MouseFilter = MouseFilterEnum.Ignore;
         ZIndex = 50;
-        // Right of the fallen character, above the buttons' row; the bubble grows downwards.
+        // Right of the fallen character. The bubble sits on a line 200px above the bottom edge and
+        // grows UPWARDS, so a long farewell can never cover the Continue button below it.
         SetAnchorsPreset(LayoutPreset.CenterBottom);
         OffsetLeft = -230;
         OffsetRight = 790;
-        OffsetTop = -600;
-        OffsetBottom = -360;
+        OffsetTop = -760;
+        OffsetBottom = -200;
         Modulate = new Color(1, 1, 1, 0);
 
         _line = NativeDialogue.ForNpc(npc, Loc.EventText("epilogueWaiting"));
         if (_line != null)
         {
-            _line.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide);
+            _line.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomWide);
+            _line.GrowVertical = GrowDirection.Begin;
             AddChild(_line);
         }
 
