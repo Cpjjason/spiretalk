@@ -38,15 +38,16 @@
   Keepsakes are only ever given in conversation; they are never rolled as rewards or sold.
 - **Epilogue** — when a run ends, the NPC who knew you best says a few words about it on the game-over screen: the deals, where you fell or how you won. Kept in the profile.
 - **Ancient relics on the shelf** — once an Ancient likes you (friendly or better), they may leave one of *their own* relics with the Merchant for you — relics otherwise only found in their halls — priced like a rare. Chance rises with the tier; once per run.
+- **On the road** — up to two new events per run, each with its own painting. *The Overturned Cart*: the Merchant's cart has tipped over; help (−5 HP, a potion now and 15% off at the next shop), pocket a relic (every shop costs 15% more for the rest of the run), or walk on. *An Ancient by the Road*: an Ancient you have talked to, or who likes you, sits by the path; a stranger asks for gold, a friend for a potion, someone close asks for nothing. Give it or sit with them, and a random card is upgraded. The NPC speaks in their own voice and remembers it next visit. With AncientWaifus / Merchant2CuteII installed, the paintings switch to match those skins.
 - **Temperament** — a setting: lenient / normal / strict. Strict caps each line at ±2, a visit at ±5, hands rewards out only from *close*, and sizes the deals harder.
 - **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile, and showing up to talk earns +2 by itself.
 - **Single player only.** In multiplayer the Talk option is not offered.
 
 ## Setup
 
-Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*). Enter an API endpoint, your key and a model id, press **Test**; the result shows right underneath. Works with OpenRouter (default), OpenAI, or a local Ollama (`http://localhost:11434/v1`, leave the key empty) — anything that speaks the OpenAI chat-completions dialect.
+Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*). Pick a source (OpenRouter, a local Ollama, or any other OpenAI-compatible endpoint), paste your key (Ollama needs none), pick a model from the list (or *Other* to type one), and press **Test**; the result shows right underneath.
 
-That is the whole setup. There is no account: the NPCs run on the Yumina engine *inside the game*, and the only thing the mod ever connects to is the endpoint you configure. The Workshop cover is generated art; nothing in the game itself is.
+That is the whole setup. There is no account: the NPCs run on the Yumina engine *inside the game*, and the only thing the mod ever connects to is the endpoint you configure. The Workshop cover and the road-encounter paintings are generated art, redrawn from the game's own characters.
 
 ## Cards
 
@@ -109,15 +110,16 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
   信物只在对话里给，永远不会被随机掉落或摆上货架。
 - **旅途回顾** — 一局结束时，和你关系最深的那位 NPC 会在结算画面上写几句：立过的约、倒在哪一层或怎么赢的。存在档案里。
 - **先民遗物上架** — 某位先民对你到了友好以上，就可能把**自己的**遗物托给商人留给你——平时只在先民殿堂里才有的那种——按稀有遗物的价格卖。档位越高几率越大；每局一次。
+- **路上偶遇** — 每局最多两次新事件，各配一张插画。*翻倒的货车*：商人的货车翻了；帮忙捡（−5 血，现在给一瓶药水，下次进店 −15%）、顺走一件遗物（这局之后每家店都贵 15%），或者走开。*路边的先民*：聊过或对你有好感的先民坐在路边；陌生时讨金币、友好时讨药水、亲近以上什么都不要。给了或坐下陪一会儿，随机升级一张牌。NPC 会用自己的口吻说话，下次见面还记得。装了 AncientWaifus / Merchant2CuteII 时插画自动换成对应画风。
 - **先民脾气** — 一个设置：宽容 / 正常 / 严苛。严苛档每句最多 ±2、每次拜访最多 ±5、只有亲近以上才给奖励、约定也出得更狠。
 - **和 Ancient Affection 联动** — 装了那个模组时，SpireTalk 直接读写它的好感度，聊天推动的就是它解锁好感遗物和结婚的那个数字。没装时，SpireTalk 自己按档案记好感度，来聊一次本身就 +2。
 - **仅单人模式。** 多人局不提供交谈选项。
 
 ### 设置
 
-点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。填接口地址、Key、模型 id，点「测试」，结果就写在下面一行。支持 OpenRouter（默认）、OpenAI、本机 Ollama（地址 `http://localhost:11434/v1`，Key 留空）——凡是 OpenAI 聊天接口那一套都行。
+点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。选来源（OpenRouter、本机 Ollama、或其他 OpenAI 兼容接口），贴密钥（Ollama 不用），从列表挑模型（或选「其他」手动填），点「测试连接」，结果就写在下面一行。
 
-设置就这些，不需要任何账号：NPC 由游戏内置的 Yumina 引擎驱动，模组除了你自己填的接口之外不连任何服务器。创意工坊封面是生成图；游戏内没有任何 AI 生成的美术。
+设置就这些，不需要任何账号：NPC 由游戏内置的 Yumina 引擎驱动，模组除了你自己填的接口之外不连任何服务器。创意工坊封面和路上偶遇的插画是生成图，按游戏里的角色重绘。
 
 ### 卡
 
