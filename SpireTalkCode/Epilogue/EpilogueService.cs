@@ -231,6 +231,7 @@ internal sealed partial class EpiloguePanel : Control
             _line.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomWide);
             _line.GrowVertical = GrowDirection.Begin;
             AddChild(_line);
+            ThinkingTicker.Attach(_line, Loc.EventText("epilogueWaiting"));
         }
 
         var tween = CreateTween();

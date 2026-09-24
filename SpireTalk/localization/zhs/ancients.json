@@ -10,6 +10,7 @@
   "SPIRETALK.endInfoNoLines": "好感 {Affection} · {Tier}",
   "SPIRETALK.next": "……",
   "SPIRETALK.thinking": "……",
+  "SPIRETALK.thinkingLong": "还在想（{0} 秒）",
   "SPIRETALK.silence": "……",
   "SPIRETALK.farewell": "{AncientName}沉默地注视着你。",
   "SPIRETALK.failed": "（先民没有回应。{Reason}）",
@@ -54,5 +55,7 @@
   "SPIRETALK.shelfToast": "{0}托商人给你留了件东西：{1}",
   "SPIRETALK.keepsakeGiven": "{0}把信物交给了你：{1}",
   "SPIRETALK.keepsakeLevel": "{0}升到了 {1} 级",
-  "SPIRETALK.keepsakeEngraved": "{0}多了一道刻痕（{1}）"
+  "SPIRETALK.keepsakeEngraved": "{0}多了一道刻痕（{1}）",
+  "SPIRETALK.roadFavor": "商人记得你在路上帮过忙：这次全场便宜 {0}%。",
+  "SPIRETALK.roadGrudge": "商人记得路上那件事：这一局的价格都上浮 {0}%。"
 }

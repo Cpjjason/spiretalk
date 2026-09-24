@@ -10,6 +10,7 @@
   "SPIRETALK.endInfoNoLines": "Affection {Affection} · {Tier}",
   "SPIRETALK.next": "…",
   "SPIRETALK.thinking": "…",
+  "SPIRETALK.thinkingLong": "still thinking ({0}s)",
   "SPIRETALK.silence": "…",
   "SPIRETALK.farewell": "{AncientName} watches you in silence.",
   "SPIRETALK.failed": "(The Ancient does not answer. {Reason})",
@@ -54,5 +55,7 @@
   "SPIRETALK.shelfToast": "{0} left something with the Merchant for you: {1}",
   "SPIRETALK.keepsakeGiven": "{0} gave you a keepsake: {1}",
   "SPIRETALK.keepsakeLevel": "{0} grew to level {1}",
-  "SPIRETALK.keepsakeEngraved": "{0} was engraved ({1})"
+  "SPIRETALK.keepsakeEngraved": "{0} was engraved ({1})",
+  "SPIRETALK.roadFavor": "The Merchant remembers your help on the road: {0}% off this visit.",
+  "SPIRETALK.roadGrudge": "The Merchant remembers the road: prices are {0}% higher for the rest of this run."
 }

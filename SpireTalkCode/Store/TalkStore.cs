@@ -56,6 +56,14 @@ public sealed class TalkStore
         [JsonPropertyName("shelfRelic")] public string? ShelfRelic { get; set; }
         /// <summary>Whether the epilogue for this run was written (one per run).</summary>
         [JsonPropertyName("epilogueDone")] public bool EpilogueDone { get; set; }
+        /// <summary>Road encounters (event ids) met this run; a run gets at most a couple.</summary>
+        [JsonPropertyName("encounters")] public List<string> Encounters { get; set; } = new();
+        /// <summary>The Ancient met resting by the road this run, so a reload meets the same one.</summary>
+        [JsonPropertyName("restAncient")] public string? RestAncient { get; set; }
+        /// <summary>Helped the merchant on the road: his next shop this run is cheaper, once.</summary>
+        [JsonPropertyName("merchantFavor")] public bool MerchantFavor { get; set; }
+        /// <summary>Robbed the merchant on the road: every shop for the rest of this run costs more.</summary>
+        [JsonPropertyName("merchantGrudge")] public bool MerchantGrudge { get; set; }
     }
 
     /// <summary>A deal an NPC proposed and the climber accepted. Settled by the game, not by the AI.</summary>

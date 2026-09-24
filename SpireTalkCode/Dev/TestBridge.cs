@@ -29,6 +29,7 @@ public sealed partial class TestBridge : Node
     private static readonly string ResPath = Path.Combine(Dir, "res.json");
 
     private readonly Queue<Action> _steps = new();
+    private readonly List<CanvasItem> _hiddenForClean = new();
     private int _frameWait;
     private double _poll;
 
@@ -259,6 +260,73 @@ public sealed partial class TestBridge : Node
                 WriteResult(true, "quitting");
                 _steps.Enqueue(() => GetTree().Quit());
                 break;
+            case "clean":
+            {
+                // Hide every overlay (top bar, event text/options, dialogue bubbles, our labels) so a
+                // shot shows only the room art; clean off=true puts them back.
+                if (cmd["off"]?.GetValue<bool?>() == true)
+                {
+                    foreach (var n in _hiddenForClean.Where(IsInstanceValid)) n.Visible = true;
+                    _hiddenForClean.Clear();
+                    WriteResult(true, "restored");
+                    break;
+                }
+                var names = new[] { "TopBar", "Options", "EventDescription", "Title", "Dialogue", "SpireTalk", "Hotkey", "Tooltip" };
+                void Hide(Node node)
+                {
+                    foreach (var child in node.GetChildren())
+                    {
+                        if (child is CanvasItem ci && ci.Visible)
+                        {
+                            var typeName = child.GetType().Name;
+                            var name = child.Name.ToString();
+                            if (typeName.Contains("Dialogue") || typeName.Contains("OptionButton") || typeName.Contains("TopBar") ||
+                                names.Any(k => name.Contains(k, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                ci.Visible = false;
+                                _hiddenForClean.Add(ci);
+                                continue;
+                            }
+                        }
+                        Hide(child);
+                    }
+                }
+                Hide(GetTree().Root);
+                WriteResult(true, $"hid {_hiddenForClean.Count}");
+                break;
+            }
+            case "thinkdemo":
+            {
+                // A vanilla dialogue bubble reading "……" with the waiting ticker on it, no run needed.
+                var layer = GetTree().Root.GetNodeOrNull<CanvasLayer>("SpireTalkThinkDemo");
+                layer?.QueueFree();
+                if (cmd["off"]?.GetValue<bool?>() == true)
+                {
+                    WriteResult(true, "removed");
+                    break;
+                }
+                layer = new CanvasLayer { Name = "SpireTalkThinkDemo", Layer = 90 };
+                GetTree().Root.AddChild(layer);
+                var holder = new Control { Position = new Vector2(420, 720), Size = new Vector2(1100, 200) };
+                layer.AddChild(holder);
+                var text = Loc.EventText("thinking");
+                if (SpireTalk.Ui.NativeDialogue.Create(text, null, null, null) is { } line)
+                {
+                    line.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.TopWide);
+                    holder.AddChild(line);
+                }
+                SpireTalk.Ui.ThinkingTicker.Attach(holder, text);
+                // replyMs: stand in for the model's answer landing, to prove the ticker lets go of it.
+                if (cmd["replyMs"]?.GetValue<int?>() is int replyMs && holder.GetChildCount() > 0 && holder.GetChild(0) is Control bubble)
+                {
+                    GetTree().CreateTimer(replyMs / 1000.0).Timeout += () =>
+                    {
+                        if (IsInstanceValid(bubble)) SpireTalk.Ui.NativeDialogue.SetText(bubble, "回复到了：这句话不能被点点点盖掉。");
+                    };
+                }
+                WriteResult(true, "demo up");
+                break;
+            }
             case "wait":
             {
                 var frames = Math.Max(1, (int)((cmd["ms"]?.GetValue<int?>() ?? 500) / 16.0));
@@ -386,8 +454,14 @@ public sealed partial class TestBridge : Node
         var method = dev.GetType().GetMethod("ProcessCommand", new[] { typeof(string) })
             ?? throw new InvalidOperationException("ProcessCommand missing");
         var result = method.Invoke(dev, new object[] { command });
-        var success = result?.GetType().GetField("success")?.GetValue(result) as bool? ?? true;
-        var message = result?.GetType().GetField("message")?.GetValue(result)?.ToString() ?? result?.ToString() ?? "";
+        object? Member(string name)
+        {
+            var type = result?.GetType();
+            const BindingFlags any = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase;
+            return type?.GetField(name, any)?.GetValue(result) ?? type?.GetProperty(name, any)?.GetValue(result);
+        }
+        var success = Member("success") as bool? ?? true;
+        var message = Member("msg")?.ToString() ?? Member("message")?.ToString() ?? result?.ToString() ?? "";
         WriteResult(success, message);
     }
 

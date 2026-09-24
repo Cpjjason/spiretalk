@@ -51,7 +51,33 @@ public sealed class SpireTalkConfig : SimpleModConfig
     public static string OwnKey { get; set; } = "";
 
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 120)]
-    public static string OwnModel { get; set; } = "google/gemini-2.5-flash-lite";
+    public static string OwnModel { get; set; } = ApiSources.OpenRouterModels[0].Id;
+
+    // The three values above are what the client reads. The settings page drives them from a
+    // source picker; these remember each source's own key and address so switching back and
+    // forth loses nothing.
+
+    public static ApiSource Source { get; set; } = ApiSource.OpenRouter;
+
+    public static bool SourceChosen { get; set; } = false;
+
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 300)]
+    public static string KeyOpenRouter { get; set; } = "";
+
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 300)]
+    public static string KeyCustom { get; set; } = "";
+
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 200)]
+    public static string CustomBaseUrl { get; set; } = "";
+
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 120)]
+    public static string ModelOpenRouter { get; set; } = "";
+
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 120)]
+    public static string ModelOllama { get; set; } = "";
+
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 120)]
+    public static string ModelCustom { get; set; } = "";
 
     // ── Conversation ─────────────────────────────────────────────────────
 
@@ -149,6 +175,53 @@ public sealed class SpireTalkConfig : SimpleModConfig
     }
 
     // ── Actions used by the screen ───────────────────────────────────────
+
+    /// <summary>Configs from before the source picker only have a URL; work out which source it was once.</summary>
+    public static void EnsureSource()
+    {
+        if (SourceChosen) return;
+        Source = ApiSources.Infer(OwnBaseUrl);
+        if (Source == ApiSource.Custom) CustomBaseUrl = OwnBaseUrl;
+        StashKey();
+        SourceChosen = true;
+    }
+
+    /// <summary>
+    /// Point the client at another source: its address, and the key and model last used with it.
+    /// A source never used before gets OpenRouter's default model, or none (the page then picks
+    /// the first model the server lists).
+    /// </summary>
+    public static void SwitchSource(ApiSource next)
+    {
+        EnsureSource();
+        StashKey();
+        Source = next;
+        OwnBaseUrl = ApiSources.UrlFor(next);
+        OwnKey = next switch
+        {
+            ApiSource.OpenRouter => KeyOpenRouter,
+            ApiSource.Custom => KeyCustom,
+            _ => "",
+        };
+        OwnModel = next switch
+        {
+            ApiSource.OpenRouter => string.IsNullOrWhiteSpace(ModelOpenRouter) ? ApiSources.OpenRouterModels[0].Id : ModelOpenRouter,
+            ApiSource.Ollama => ModelOllama,
+            _ => ModelCustom,
+        };
+    }
+
+    /// <summary>Copy the live key and model into the current source's slots (the page edits the live ones).</summary>
+    public static void StashKey()
+    {
+        switch (Source)
+        {
+            case ApiSource.OpenRouter: KeyOpenRouter = OwnKey; ModelOpenRouter = OwnModel; break;
+            case ApiSource.Ollama: ModelOllama = OwnModel; break;
+            case ApiSource.Custom: KeyCustom = OwnKey; ModelCustom = OwnModel; break;
+        }
+        if (Source == ApiSource.Custom) OwnBaseUrl = CustomBaseUrl;
+    }
 
     public static void ResetMemories()
     {

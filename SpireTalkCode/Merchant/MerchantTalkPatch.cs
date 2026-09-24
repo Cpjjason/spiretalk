@@ -74,6 +74,7 @@ internal static class MerchantTalk
         // The vanilla merchant already says hello; the AI only speaks once the player opens the
         // panel, so a shop visit without a chat costs nothing.
         if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered; talk via " + MainFile.Backend.DisplayName, 1);
+        ApplyRoadMemory(owner);
         _conversation = new MerchantConversation(owner);
     }
 
@@ -106,6 +107,29 @@ internal static class MerchantTalk
         var button = inventory.GetNodeOrNull<Control>("SpireTalkMerchantButton");
         if (button != null) button.Visible = false;
         _conversation?.ClosePanel();
+    }
+
+    /// <summary>
+    /// What happened on the road this run follows the climber into the shop: a helper gets one
+    /// cheaper visit, a thief pays more at every shop for the rest of the climb.
+    /// </summary>
+    private static void ApplyRoadMemory(Player owner)
+    {
+        var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(owner));
+        if (run.MerchantGrudge)
+        {
+            DiscountPercent = -SpireTalk.Encounters.MerchantWreck.GrudgeMarkup;
+            RewardExecutor.Toast(string.Format(Loc.EventText("roadGrudge"), SpireTalk.Encounters.MerchantWreck.GrudgeMarkup));
+        }
+        else if (run.MerchantFavor)
+        {
+            DiscountPercent = SpireTalk.Encounters.MerchantWreck.FavorDiscount;
+            run.MerchantFavor = false;
+            TalkStore.Instance.Save();
+            RewardExecutor.Toast(string.Format(Loc.EventText("roadFavor"), SpireTalk.Encounters.MerchantWreck.FavorDiscount));
+        }
+        else return;
+        Callable.From(RefreshPrices).CallDeferred();
     }
 
     public static void ApplyDiscount(int percent)
@@ -226,7 +250,7 @@ internal static class MerchantPricePatch
     private static void ApplyTalkDiscount(MerchantEntry entry, ref decimal __result)
     {
         var pct = MerchantTalk.DiscountPercent;
-        if (pct <= 0) return;
+        if (pct == 0) return;
         if (entry is MerchantCardRemovalEntry) return;
         __result = Math.Max(0m, Math.Round(__result * (100m - pct) / 100m));
     }

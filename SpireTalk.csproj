@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
-        <DefaultItemExcludes>packages/**</DefaultItemExcludes>
+        <DefaultItemExcludes>packages/**;tools/**</DefaultItemExcludes>
         <AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
         <PathMap>$(AppOutputBase)=.\</PathMap>
         <GodotDisabledSourceGenerators>GodotPluginsInitializer</GodotDisabledSourceGenerators>
@@ -39,6 +39,7 @@
 
     <ItemGroup>
         <Compile Remove="SpireTalk/**" />
+        <Compile Remove="tools/**" />
         <EmbeddedResource Remove="SpireTalk/**" />
     </ItemGroup>
 

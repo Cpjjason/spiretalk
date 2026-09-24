@@ -63,6 +63,7 @@ public sealed partial class TalkPanel : Control
     {
         ClearChoices();
         ShowLines(new[] { Loc.EventText("thinking") });
+        ThinkingTicker.Attach(_lines, Loc.EventText("thinking"));
     }
 
     public void SetTurn(IReadOnlyList<string> lines, IReadOnlyList<string> choices, int linesLeft, bool showInput, string footer)

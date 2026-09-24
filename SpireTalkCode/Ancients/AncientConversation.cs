@@ -346,6 +346,7 @@ public sealed class AncientConversation
         {
             layout.ClearOptions();
             ShowLines(layout, new[] { Loc.Event("thinking") });
+            SpireTalk.Ui.ThinkingTicker.Attach(layout, Loc.EventText("thinking"));
         }
         catch (Exception ex)
         {
