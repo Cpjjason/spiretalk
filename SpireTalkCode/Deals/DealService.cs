@@ -24,6 +24,7 @@ public static class DealService
     public const int MaxDealsPerRun = 3;
     public const int KeptAffection = 6;
     public const int KeptGold = 50;
+    private const int MinSpendDeal = 60;
 
     public enum DealType
     {
@@ -100,10 +101,15 @@ public static class DealService
         if (run.Players.Count > 1) return null;
         var lastAct = act >= actCount - 1;
 
-        var allowed = npc.Deals.Select(ParseType).Where(t => t.HasValue).Select(t => t!.Value).ToList();
+        var gold = SafeInt(() => player.Gold, 0);
+        var allowed = npc.Deals.Select(ParseType).Where(t => t.HasValue).Select(t => t!.Value)
+            .Where(t => t != DealType.SpendAtShop || gold >= MinSpendDeal).ToList();
         if (allowed.Count == 0) return null;
         var lastType = store.Get(npc.Key).LastDealType;
-        var candidates = allowed.Where(t => !lastAct || t == DealType.SpendAtShop).Where(t => TypeKey(t) != lastType).ToList();
+        var usedThisRun = runDeals.Select(d => d.Type).ToHashSet();
+        var candidates = allowed.Where(t => !lastAct || t == DealType.SpendAtShop)
+            .Where(t => TypeKey(t) != lastType && !usedThisRun.Contains(TypeKey(t))).ToList();
+        if (candidates.Count == 0) candidates = allowed.Where(t => !lastAct || t == DealType.SpendAtShop).Where(t => TypeKey(t) != lastType).ToList();
         if (candidates.Count == 0) candidates = allowed.Where(t => !lastAct || t == DealType.SpendAtShop).ToList();
         if (candidates.Count == 0) return null;
 
@@ -130,7 +136,11 @@ public static class DealService
                 return SafeInt(() => player.Gold, 0) + extra;
             }
             case DealType.SpendAtShop:
-                return mood switch { Temperament.Lenient => 100, Temperament.Strict => 200, _ => 150 };
+            {
+                var wanted = mood switch { Temperament.Lenient => 100, Temperament.Strict => 200, _ => 150 };
+                var affordable = SafeInt(() => player.Gold, 0) / 10 * 10;
+                return Math.Max(MinSpendDeal, Math.Min(wanted, affordable));
+            }
             default:
                 return 0;
         }

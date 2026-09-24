@@ -28,7 +28,15 @@ internal static class EpilogueService
 {
     private static readonly FieldInfo? RunStateField = AccessTools.Field(typeof(NGameOverScreen), "_runState");
 
-    private static void Postfix(NGameOverScreen __instance)
+    // A finalizer, not a postfix: other mods' patches inside _Ready can throw (a null death-quote
+    // key has been seen), and the deals and epilogue must still run. The exception is passed on.
+    private static Exception? Finalizer(Exception? __exception, NGameOverScreen __instance)
+    {
+        Run(__instance);
+        return __exception;
+    }
+
+    private static void Run(NGameOverScreen __instance)
     {
         try
         {
