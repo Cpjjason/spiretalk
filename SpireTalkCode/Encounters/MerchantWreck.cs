@@ -69,7 +69,7 @@ public sealed class MerchantWreck : EncounterEvent
             MainFile.Logger.Warn($"[Encounter] wreck potion failed: {ex.Message}", 1);
         }
 
-        EncounterVoice.Remember(npc, Owner, "On the road this run your cart overturned and the climber stopped to help you gather your goods, cutting a hand on broken glass. You gave them a potion and owe them a discount at your next shop.");
+        EncounterVoice.Remember(npc, Owner, "memory.wreckHelped");
         await ReactAndFinish(
             $"The climber just helped you pick everything up and cut their hand doing it. You pressed a potion on them and promised them exactly {FavorDiscount}% off everything at your next shop - say that number if you mention it.",
             "pages.HELP.description",
@@ -98,7 +98,7 @@ public sealed class MerchantWreck : EncounterEvent
         run.MerchantFavor = false;
         TalkStore.Instance.Save();
 
-        EncounterVoice.Remember(npc, Owner, $"On the road this run your cart overturned, and while you were gathering your goods the climber pocketed {relicName} and walked off. You saw it. Your prices for them are higher for the rest of this climb.");
+        EncounterVoice.Remember(npc, Owner, "memory.wreckStole", relicName);
         await ReactAndFinish(
             $"While you were gathering your goods you looked up and saw the climber slip {relicName} from the pile into their pack. You will charge them {GrudgeMarkup}% more for the rest of this climb.",
             "pages.POCKET.description",
@@ -110,7 +110,7 @@ public sealed class MerchantWreck : EncounterEvent
         if (Owner == null || Finished) return;
         var npc = Npc!;
         AffectionService.Apply(npc.Key, NpcKind.Merchant, WalkAffection);
-        EncounterVoice.Remember(npc, Owner, "On the road this run your cart overturned and the climber walked right past without stopping.");
+        EncounterVoice.Remember(npc, Owner, "memory.wreckWalked");
         await ReactAndFinish("The climber looked at the mess and walked on without stopping.", "pages.WALK_ON.description");
     }
 }

@@ -298,6 +298,7 @@ internal sealed class MerchantConversation
                 _visitBonusGiven = true;
                 AffectionService.VisitBonus(MerchantTalk.NpcKey, NpcKind.Merchant);
             }
+            TalkStore.Instance.BeginVisit(MerchantTalk.NpcKey, _runKey);
             _ctx = BuildContext();
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
@@ -489,7 +490,6 @@ internal sealed class MerchantConversation
         ctx.Married = married;
         ctx.LinesLeft = ConversationRules.LinesPerVisit;
         ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Merchant, ctx.Tier, RewardState());
-        ctx.History.AddRange(TalkStore.Instance.HistoryOf(MerchantTalk.NpcKey, _runKey));
         ctx.Variables["affection_source"] = AffectionService.UsingAncientAffection ? "Ancient Affection mod" : "SpireTalk";
         ctx.Variables["shop_special"] = AncientRelicShelf.PromptFor(_owner);
         return ctx;

@@ -186,6 +186,7 @@ public sealed class AncientConversation
                 _visitBonusGiven = true;
                 AffectionService.VisitBonus(_key, NpcKind.Ancient);
             }
+            TalkStore.Instance.BeginVisit(_key, _runKey);
             _ctx = BuildContext();
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
@@ -279,17 +280,55 @@ public sealed class AncientConversation
             if (appliedDelta != 0 && _ancient.Owner != null) await VisitExtras.AfterAffectionChangedAsync(_ctx, _npc, _ancient.Owner);
         }
 
-        // 3. Reward — validate against the rules, then let the game do it.
+        // 3. Reward — validate against the rules now; the game hands it over once the player has
+        // read the reply to its last page, so the words come before any reward screen.
         // Rewards are earned with lines, never handed out on the greeting.
         var reward = isOpener ? NpcAction.None : ConversationRules.Validate(turn.Action, NpcKind.Ancient, _ctx.Tier, RewardState(), MaxHp());
-        var rewardSummary = "none";
+        TalkStore.Instance.Save();
         if (!reward.IsNone && _ancient.Owner != null)
+        {
+            _rewardsThisVisit++;
+            _pendingReward = () => ApplyRewardAsync(reward, turn, appliedDelta);
+        }
+        else
+        {
+            LogTurn(turn, appliedDelta, "none");
+        }
+
+        // 4. Render.
+        Present(turn);
+    }
+
+    private Func<Task>? _pendingReward;
+
+    /// <summary>The reply's last page is on screen: hand over the reward it came with.</summary>
+    internal static void OnLastDialoguePage(NAncientEventLayout layout)
+    {
+        foreach (var conversation in Active.Values)
+        {
+            if (!ReferenceEquals(conversation.Layout, layout)) continue;
+            conversation.RunPendingReward();
+        }
+    }
+
+    private void RunPendingReward()
+    {
+        var pending = _pendingReward;
+        _pendingReward = null;
+        if (pending != null && !Gone) Callable.From(() => { _ = pending(); }).CallDeferred();
+    }
+
+    private async Task ApplyRewardAsync(NpcAction reward, NpcTurn turn, int appliedDelta)
+    {
+        if (_ctx == null || _ancient.Owner == null) return;
+        var rewardSummary = "none";
+        try
         {
             if (reward.Type == "reroll_relics")
             {
-                if (RerollRelics())
+                if (!RerollRelics()) _rewardsThisVisit--;
+                else
                 {
-                    _rewardsThisVisit++;
                     _rerollUsed = true;
                     rewardSummary = "reroll";
                     RewardExecutor.Toast(string.Format(Loc.EventText("rewardReroll"), _npc.DisplayName));
@@ -298,25 +337,29 @@ public sealed class AncientConversation
             else
             {
                 var outcome = await RewardExecutor.ApplyAsync(reward, _ancient.Owner, _key, _ancient.Title.GetFormattedText(), _runKey, _ancient, _ctx.Affection);
-                if (outcome.Applied) _rewardsThisVisit++;
+                if (!outcome.Applied) _rewardsThisVisit--;
                 rewardSummary = outcome.Summary;
             }
         }
-        TalkStore.Instance.Save();
-
-        if (SpireTalkConfig.DebugLogging)
+        catch (Exception ex)
         {
-            MainFile.Logger.Info($"[Talk] {_key} line {_linesUsed}/{ConversationRules.LinesPerVisit}: delta {turn.AffectionDelta}→{appliedDelta} (now {_ctx.Affection}, {ConversationRules.TierName(_ctx.Tier)}) reason='{turn.Reason}' action={turn.Action.Type}→{rewardSummary} model={turn.ModelUsed}", 1);
+            MainFile.Logger.Warn($"[Talk] {_key} reward failed: {ex.Message}", 1);
         }
+        TalkStore.Instance.Save();
+        LogTurn(turn, appliedDelta, rewardSummary);
+    }
 
-        // 4. Render.
-        Present(turn);
+    private void LogTurn(NpcTurn turn, int appliedDelta, string rewardSummary)
+    {
+        if (!SpireTalkConfig.DebugLogging || _ctx == null) return;
+        MainFile.Logger.Info($"[Talk] {_key} line {_linesUsed}/{ConversationRules.LinesPerVisit}: delta {turn.AffectionDelta}→{appliedDelta} (now {_ctx.Affection}, {ConversationRules.TierName(_ctx.Tier)}) reason='{turn.Reason}' action={turn.Action.Type}→{rewardSummary} model={turn.ModelUsed}", 1);
     }
 
     private void EndConversation()
     {
         if (_ended) return;
         _ended = true;
+        RunPendingReward();
         DisposeInput();
         TalkStore.Instance.Save();
 
@@ -589,7 +632,6 @@ public sealed class AncientConversation
         ctx.Married = married;
         ctx.LinesLeft = ConversationRules.LinesPerVisit;
         ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Ancient, ctx.Tier, RewardState());
-        ctx.History.AddRange(TalkStore.Instance.HistoryOf(_key, _runKey));
         ctx.Variables["affection_source"] = AffectionService.UsingAncientAffection ? "Ancient Affection mod" : "SpireTalk";
         return ctx;
     }

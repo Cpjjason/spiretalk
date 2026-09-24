@@ -89,6 +89,24 @@ internal static class AncientDialoguePagePatch
             // cosmetic only
         }
     }
+
+    private static readonly System.Reflection.FieldInfo? DialogueField = AccessTools.Field(typeof(NAncientEventLayout), "_dialogue");
+
+    [HarmonyPostfix]
+    private static void AfterPage(NAncientEventLayout __instance, int lineIndex)
+    {
+        try
+        {
+            if (DialogueField?.GetValue(__instance) is System.Collections.ICollection lines && lineIndex >= lines.Count - 1)
+            {
+                AncientConversation.OnLastDialoguePage(__instance);
+            }
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Talk] last-page hook: {ex.Message}", 1);
+        }
+    }
 }
 
 /// <summary>Drop per-event conversation state when the room goes away.</summary>

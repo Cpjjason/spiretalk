@@ -158,7 +158,7 @@ public sealed class AncientRest : EncounterEvent
         if (Owner == null || Finished) return;
         var gold = Request.gold;
         await PlayerCmd.LoseGold(gold, Owner, GoldLossType.Lost);
-        await Grateful(GiveAffection, $"The climber gave you {gold} gold without arguing.", $"gave you {gold} gold when you were resting by the road, worn out");
+        await Grateful(GiveAffection, $"The climber gave you {gold} gold without arguing.", "memory.restGold", gold);
     }
 
     private async Task GivePotion()
@@ -171,17 +171,17 @@ public sealed class AncientRest : EncounterEvent
             name = potion.Title.GetFormattedText();
             await PotionCmd.Discard(potion);
         }
-        await Grateful(GiveAffection, $"The climber gave you their {name}.", $"gave you their {name} when you were resting by the road, worn out");
+        await Grateful(GiveAffection, $"The climber gave you their {name}.", "memory.restPotion", name);
     }
 
     private async Task SitWith()
     {
         if (Owner == null || Finished) return;
-        await Grateful(SitAffection, "The climber sat down beside you on the stone for a while and asked for nothing.", "sat with you for a while when you were resting by the road, worn out");
+        await Grateful(SitAffection, "The climber sat down beside you on the stone for a while and asked for nothing.", "memory.restSat");
     }
 
     /// <summary>The thanks: affection, a blessing on one card, the keepsake catching up, and their reply.</summary>
-    private async Task Grateful(int affection, string whatHappened, string memory)
+    private async Task Grateful(int affection, string whatHappened, string memoryKey, params object[] memoryArgs)
     {
         var npc = Npc!;
         AffectionService.Apply(npc.Key, NpcKind.Ancient, affection);
@@ -194,7 +194,7 @@ public sealed class AncientRest : EncounterEvent
         {
             MainFile.Logger.Warn($"[Encounter] keepsake refresh failed: {ex.Message}", 1);
         }
-        EncounterVoice.Remember(npc, Owner!, "On the road this run the climber " + memory + ".");
+        EncounterVoice.Remember(npc, Owner!, memoryKey, memoryArgs);
         await ReactAndFinish(
             whatHappened + (card != null ? $" You touched their deck and strengthened {card} in thanks." : ""),
             "pages.THANKS.description",
@@ -206,14 +206,14 @@ public sealed class AncientRest : EncounterEvent
         if (Owner == null || Finished) return;
         var npc = Npc!;
         if (Request.ask != Ask.Nothing) AffectionService.Apply(npc.Key, NpcKind.Ancient, RefuseAffection);
-        EncounterVoice.Remember(npc, Owner, "On the road this run you were resting, worn out, and the climber turned down what you asked and moved on.");
+        EncounterVoice.Remember(npc, Owner, "memory.restDeclined");
         await ReactAndFinish("The climber said no and moved on.", "pages.DECLINE.description");
     }
 
     private async Task Leave()
     {
         if (Owner == null || Finished) return;
-        EncounterVoice.Remember(Npc!, Owner, "On the road this run you were resting, worn out, and the climber only nodded and moved on.");
+        EncounterVoice.Remember(Npc!, Owner, "memory.restLeft");
         await ReactAndFinish("The climber nodded and moved on.", "pages.DECLINE.description");
     }
 

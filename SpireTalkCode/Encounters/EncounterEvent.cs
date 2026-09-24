@@ -5,6 +5,8 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using SpireTalk.Npc;
+using SpireTalk.Rewards;
+using SpireTalk.Store;
 using SpireTalk.Ui;
 
 namespace SpireTalk.Encounters;
@@ -49,7 +51,12 @@ public abstract class EncounterEvent : CustomEventModel
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
-        if (Owner != null) EncounterBudget.Spend(Owner, Id.Entry);
+        if (Owner != null)
+        {
+            EncounterBudget.Spend(Owner, Id.Entry);
+            var npc = Npc;
+            if (npc != null) TalkStore.Instance.BeginVisit(npc.Key, RewardExecutor.RunKey(Owner));
+        }
         return Page();
     }
 

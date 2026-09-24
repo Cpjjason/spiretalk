@@ -18,8 +18,6 @@ namespace SpireTalk.Backend;
 /// </summary>
 public sealed class EngineBackend : INpcBackend
 {
-    private const int HistoryLinesToSend = 40; // 20 exchanges
-
     private readonly OpenAiClient _llm = new();
 
     public string DisplayName => "Yumina engine · " + OpenAiClient.Model;
@@ -61,11 +59,8 @@ public sealed class EngineBackend : INpcBackend
         vars["choices"] = new JsonArray();
         stateJson = runtime.ApplyVariables(card.Json, stateJson!, vars);
 
-        var history = new JsonArray();
-        foreach (var h in ctx.History.TakeLast(HistoryLinesToSend))
-        {
-            history.Add(new JsonObject { ["role"] = h.Role == "npc" ? "assistant" : "user", ["content"] = h.Text });
-        }
+        // Read fresh every line: memory notes for earlier visits, this visit word for word.
+        var history = MemoryText.BuildHistory(ctx.NpcKey, ctx.RunKey);
 
         var prompt = runtime.BuildTurnPrompt(card.Json, stateJson, history, playerLine, OpenAiClient.Model);
         if (SpireTalkConfig.DebugLogging)
@@ -86,10 +81,10 @@ public sealed class EngineBackend : INpcBackend
         {
             MainFile.Logger.Info($"[Engine] dropped AI writes: {result.DroppedEffects.ToJsonString()}", 1);
         }
-        return ToTurn(result, raw);
+        return ToTurn(result, raw, TalkStore.Instance.RecentNpcTexts(ctx.NpcKey));
     }
 
-    private static NpcTurn ToTurn(YuminaRuntime.TurnResult result, string raw)
+    private static NpcTurn ToTurn(YuminaRuntime.TurnResult result, string raw, List<string> saidBefore)
     {
         var vars = result.Variables;
         var delta = 0;
@@ -125,7 +120,7 @@ public sealed class EngineBackend : INpcBackend
         // Models that ignore the directive syntax often still write the fields as loose
         // "key: value" lines. Recover them from the raw output and keep them off screen.
         var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action);
-        var lines = Ancients.AncientConversation.SplitIntoLines(text);
+        var lines = RepeatFilter.Apply(Ancients.AncientConversation.SplitIntoLines(text), saidBefore);
         choices = choices.Select(PlainChoice).Where(c => c.Length > 0).ToList();
         return new NpcTurn(lines, choices, delta, null, action, OpenAiClient.Model);
     }

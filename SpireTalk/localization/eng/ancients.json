@@ -57,5 +57,13 @@
   "SPIRETALK.keepsakeLevel": "{0} grew to level {1}",
   "SPIRETALK.keepsakeEngraved": "{0} was engraved ({1})",
   "SPIRETALK.roadFavor": "The Merchant remembers your help on the road: {0}% off this visit.",
-  "SPIRETALK.roadGrudge": "The Merchant remembers the road: prices are {0}% higher for the rest of this run."
+  "SPIRETALK.roadGrudge": "The Merchant remembers the road: prices are {0}% higher for the rest of this run.",
+  "SPIRETALK.memory.restGold": "{0} was resting by the road, worn out; the climber gave {0} {1} gold.",
+  "SPIRETALK.memory.restPotion": "{0} was resting by the road, worn out; the climber gave {0} their {1}.",
+  "SPIRETALK.memory.restSat": "{0} was resting by the road, worn out; the climber sat with {0} a while and asked for nothing.",
+  "SPIRETALK.memory.restDeclined": "{0}, resting by the road, asked the climber for something; the climber refused and moved on.",
+  "SPIRETALK.memory.restLeft": "{0} was resting by the road; the climber only nodded and moved on.",
+  "SPIRETALK.memory.wreckHelped": "{0}'s cart overturned on the road; the climber stopped to help gather the goods and cut a hand on broken glass. {0} gave them a potion and promised a discount at the next shop.",
+  "SPIRETALK.memory.wreckStole": "{0}'s cart overturned on the road; while {0} gathered the goods, the climber pocketed {1}. {0} saw it and charges the climber more for the rest of this climb.",
+  "SPIRETALK.memory.wreckWalked": "{0}'s cart overturned on the road; the climber walked right past."
 }

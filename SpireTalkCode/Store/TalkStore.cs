@@ -31,6 +31,10 @@ public sealed class TalkStore
         /// <summary>Deals kept with this NPC, ever — marks on the keepsake relic.</summary>
         [JsonPropertyName("engravings")] public int Engravings { get; set; }
         [JsonPropertyName("history")] public List<HistoryEntry> History { get; set; } = new();
+        /// <summary>What the NPC remembers of earlier visits: short notes, never its own old lines.</summary>
+        [JsonPropertyName("memories")] public List<MemoryNote> Memories { get; set; } = new();
+        /// <summary>Id of the visit in progress (or the last one); its lines are sent in full.</summary>
+        [JsonPropertyName("visit")] public string? CurrentVisit { get; set; }
     }
 
     public sealed class HistoryEntry
@@ -40,6 +44,19 @@ public sealed class TalkStore
         [JsonPropertyName("utc")] public string? Utc { get; set; }
         /// <summary>Run (seed:character) the line was said in, so per-run memory can filter.</summary>
         [JsonPropertyName("run")] public string? Run { get; set; }
+        [JsonPropertyName("visit")] public string? Visit { get; set; }
+    }
+
+    /// <summary>One thing an NPC remembers about the climber. Players can read, edit, add and delete these.</summary>
+    public sealed class MemoryNote
+    {
+        [JsonPropertyName("id")] public string Id { get; set; } = Guid.NewGuid().ToString("N")[..10];
+        [JsonPropertyName("text")] public string Text { get; set; } = "";
+        /// <summary>auto (summed up from a visit) / road (an encounter) / player (written by the player)</summary>
+        [JsonPropertyName("source")] public string Source { get; set; } = "auto";
+        [JsonPropertyName("run")] public string? Run { get; set; }
+        [JsonPropertyName("visit")] public string? Visit { get; set; }
+        [JsonPropertyName("utc")] public string? Utc { get; set; }
     }
 
     /// <summary>Rewards already handed out in one run (keyed by run seed + character).</summary>
@@ -181,11 +198,100 @@ public sealed class TalkStore
     public void AppendHistory(string npcKey, string role, string text, string? runKey = null)
     {
         var rec = Get(npcKey);
-        rec.History.Add(new HistoryEntry { Role = role, Text = text, Utc = DateTime.UtcNow.ToString("o"), Run = runKey });
+        rec.History.Add(new HistoryEntry { Role = role, Text = text, Utc = DateTime.UtcNow.ToString("o"), Run = runKey, Visit = rec.CurrentVisit });
         if (rec.History.Count > MaxHistoryPerNpc)
         {
             rec.History.RemoveRange(0, rec.History.Count - MaxHistoryPerNpc);
         }
+    }
+
+    private const int MaxAutoMemories = 30;
+
+    /// <summary>
+    /// A new visit starts. Whatever the last visit(s) left in the log is summed up into a memory
+    /// note first, so from now on the model reads a note about those visits instead of its own
+    /// old lines (which it would otherwise copy).
+    /// </summary>
+    public string BeginVisit(string npcKey, string? runKey)
+    {
+        var rec = Get(npcKey);
+        SummarizeFinishedVisits(rec, except: null);
+        rec.CurrentVisit = Guid.NewGuid().ToString("N")[..10];
+        return rec.CurrentVisit;
+    }
+
+    private static void SummarizeFinishedVisits(NpcRecord rec, string? except)
+    {
+        foreach (var entry in rec.History.Where(h => h.Visit == null)) entry.Visit = "legacy";
+        var noted = rec.Memories.Select(m => m.Visit).Where(v => v != null).ToHashSet();
+        var visits = rec.History.Select(h => h.Visit!).Distinct().Where(v => v != except && !noted.Contains(v)).ToList();
+        foreach (var visit in visits)
+        {
+            var lines = rec.History.Where(h => h.Visit == visit).ToList();
+            var text = MemoryText.FromVisit(lines);
+            // An empty note still marks the visit as handled.
+            rec.Memories.Add(new MemoryNote { Text = text ?? "", Source = "auto", Run = lines.LastOrDefault()?.Run, Visit = visit, Utc = lines.LastOrDefault()?.Utc });
+        }
+        var auto = rec.Memories.Where(m => m.Source == "auto").ToList();
+        if (auto.Count > MaxAutoMemories)
+        {
+            foreach (var old in auto.Take(auto.Count - MaxAutoMemories)) rec.Memories.Remove(old);
+        }
+    }
+
+    /// <summary>Lines of the visit in progress, oldest first.</summary>
+    public List<HistoryEntry> CurrentVisitLines(string npcKey)
+    {
+        var rec = Get(npcKey);
+        return rec.CurrentVisit == null ? new() : rec.History.Where(h => h.Visit == rec.CurrentVisit).ToList();
+    }
+
+    /// <summary>Notes the model may read this visit; with per-run memory only this run's (and the player's own).</summary>
+    public List<MemoryNote> MemoriesFor(string npcKey, string? runKey)
+    {
+        var rec = Get(npcKey);
+        return rec.Memories
+            .Where(m => !string.IsNullOrWhiteSpace(m.Text))
+            .Where(m => SpireTalkConfig.RememberAcrossRuns || m.Source == "player" || runKey == null || m.Run == runKey)
+            .ToList();
+    }
+
+    /// <summary>What the NPC said in this visit and the two before it, clean of directives — the repeat filter's reference.</summary>
+    public List<string> RecentNpcTexts(string npcKey, int visits = 3)
+    {
+        var rec = Get(npcKey);
+        var recent = rec.History.Select(h => h.Visit).Distinct().TakeLast(visits).ToHashSet();
+        return rec.History.Where(h => h.Role == "npc" && recent.Contains(h.Visit)).Select(h => MemoryText.CleanNpcText(h.Text)).ToList();
+    }
+
+    public MemoryNote AddMemory(string npcKey, string text, string source, string? runKey)
+    {
+        var note = new MemoryNote { Text = text, Source = source, Run = runKey, Utc = DateTime.UtcNow.ToString("o") };
+        Get(npcKey).Memories.Add(note);
+        return note;
+    }
+
+    public void DeleteMemory(string npcKey, string id) => Get(npcKey).Memories.RemoveAll(m => m.Id == id);
+
+    public void DeleteHistoryEntry(string npcKey, HistoryEntry entry) => Get(npcKey).History.Remove(entry);
+
+    /// <summary>For the memory screen: finish any visit that is over so its note shows up.</summary>
+    public void SummarizeForViewing(string npcKey)
+    {
+        var rec = Get(npcKey);
+        SummarizeFinishedVisits(rec, except: null);
+    }
+
+    /// <summary>Forget what was said (log, notes, engine session) but keep the relationship and keepsake marks.</summary>
+    public void ForgetConversation(string npcKey)
+    {
+        var rec = Get(npcKey);
+        rec.History.Clear();
+        rec.Memories.Clear();
+        rec.EngineState = null;
+        rec.CurrentVisit = null;
+        rec.LastLine = null;
+        Save();
     }
 
     /// <summary>

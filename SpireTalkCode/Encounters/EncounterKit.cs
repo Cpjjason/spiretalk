@@ -96,11 +96,7 @@ public static class EncounterVoice
             vars["deal_offer"] = "none";
 
             var state = runtime.StartSession(card.Json, vars).StateJson;
-            var history = new JsonArray();
-            foreach (var h in TalkStore.Instance.HistoryOf(npc.Key, runKey).TakeLast(8))
-            {
-                history.Add(new JsonObject { ["role"] = h.Role == "npc" ? "assistant" : "user", ["content"] = h.Text });
-            }
+            var history = MemoryText.BuildHistory(npc.Key, runKey);
             var request =
                 "[ROAD ENCOUNTER - not your usual place. " + situation +
                 " Speak as yourself: 1 to 3 short sentences in your usual voice, one paragraph, in " + Loc.ReplyLanguageName() +
@@ -114,6 +110,7 @@ public static class EncounterVoice
             var delta = 0;
             var action = NpcAction.None;
             var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action).Trim();
+            text = string.Join("\n", RepeatFilter.Apply(Ancients.AncientConversation.SplitIntoLines(text), TalkStore.Instance.RecentNpcTexts(npc.Key)));
             if (string.IsNullOrWhiteSpace(text)) return null;
             TalkStore.Instance.AppendHistory(npc.Key, "npc", text, runKey);
             TalkStore.Instance.Save();
@@ -141,10 +138,12 @@ public static class EncounterVoice
 
     private static bool IsCjk(char c) => c >= 0x2E80;
 
-    /// <summary>A line of narration in the NPC's memory ("on the road, the climber ...").</summary>
-    public static void Remember(NpcDefinition npc, Player player, string note)
+    /// <summary>What happened on the road becomes one of the NPC's memory notes (text from the mod's events table).</summary>
+    public static void Remember(NpcDefinition npc, Player player, string memoryKey, params object[] args)
     {
-        TalkStore.Instance.AppendHistory(npc.Key, "player", "[" + note + "]", RewardExecutor.RunKey(player));
+        var text = string.Format(Loc.EventText(memoryKey), new object[] { Loc.NpcName(npc) }.Concat(args).ToArray());
+        if (text.Length > 0) text = char.ToUpperInvariant(text[0]) + text[1..];
+        TalkStore.Instance.AddMemory(npc.Key, text, "road", RewardExecutor.RunKey(player));
         TalkStore.Instance.Save();
     }
 }

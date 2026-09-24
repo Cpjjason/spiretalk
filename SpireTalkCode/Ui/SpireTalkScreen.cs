@@ -288,7 +288,12 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         mood.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         bottom.AddChild(mood);
         bottom.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
-        var reset = _config.MakeButton(Loc.Ui("ResetMemoriesBtn"), () =>
+        bottom.AddChild(_config.MakeButton(Loc.Ui("MemoryBtn"), () =>
+        {
+            Close();
+            MemoryScreen.OpenLater(MemoryScreen.Open);
+        }, "#4a7d9d"));
+        var reset =_config.MakeButton(Loc.Ui("ResetMemoriesBtn"), () =>
         {
             SpireTalkConfig.ResetMemories();
             SetStatus(_ownStatus, Loc.Ui("ResetDoneBody"), ok: true);

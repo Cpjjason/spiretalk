@@ -20,9 +20,6 @@ public sealed class VisitContext
     /// <summary>Run snapshot + relationship state, same keys in both backends.</summary>
     public JsonObject Variables { get; } = new();
 
-    /// <summary>Earlier lines (previous visits first, then this visit), oldest first.</summary>
-    public List<HistoryLine> History { get; } = new();
-
     public string Language { get; set; } = "English";
 
     public int Affection { get; set; }

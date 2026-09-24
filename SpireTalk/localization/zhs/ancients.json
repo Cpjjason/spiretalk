@@ -57,5 +57,13 @@
   "SPIRETALK.keepsakeLevel": "{0}升到了 {1} 级",
   "SPIRETALK.keepsakeEngraved": "{0}多了一道刻痕（{1}）",
   "SPIRETALK.roadFavor": "商人记得你在路上帮过忙：这次全场便宜 {0}%。",
-  "SPIRETALK.roadGrudge": "商人记得路上那件事：这一局的价格都上浮 {0}%。"
+  "SPIRETALK.roadGrudge": "商人记得路上那件事：这一局的价格都上浮 {0}%。",
+  "SPIRETALK.memory.restGold": "{0}累得坐在路边，攀登者给了{0} {1} 金币。",
+  "SPIRETALK.memory.restPotion": "{0}累得坐在路边，攀登者把自己的{1}给了{0}。",
+  "SPIRETALK.memory.restSat": "{0}累得坐在路边，攀登者在旁边陪着坐了一会儿，什么也没要。",
+  "SPIRETALK.memory.restDeclined": "{0}累得坐在路边开口要东西，攀登者没给，走了。",
+  "SPIRETALK.memory.restLeft": "{0}累得坐在路边，攀登者点点头就走了。",
+  "SPIRETALK.memory.wreckHelped": "{0}的货车在路上翻了，攀登者停下来帮忙捡货，手被碎玻璃划破。{0}送了一瓶药水，答应下一家店给折扣。",
+  "SPIRETALK.memory.wreckStole": "{0}的货车在路上翻了，攀登者趁{0}捡货顺走了{1}。{0}看见了，这一局给攀登者的价都涨了。",
+  "SPIRETALK.memory.wreckWalked": "{0}的货车在路上翻了，攀登者看都没看就走过去了。"
 }

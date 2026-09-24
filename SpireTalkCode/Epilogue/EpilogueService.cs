@@ -118,11 +118,8 @@ internal static class EpilogueService
             vars["deal_offer"] = "none";
 
             var state = runtime.StartSession(card.Json, vars).StateJson;
-            var history = new JsonArray();
-            foreach (var h in TalkStore.Instance.HistoryOf(npc.Key, runKey).TakeLast(6))
-            {
-                history.Add(new JsonObject { ["role"] = h.Role == "npc" ? "assistant" : "user", ["content"] = h.Text });
-            }
+            TalkStore.Instance.SummarizeForViewing(npc.Key);
+            var history = MemoryText.BuildHistory(npc.Key, runKey, includeCurrentVisit: false);
             var request = BuildRequest(player, runState, win);
             var prompt = runtime.BuildTurnPrompt(card.Json, state, history, request, OpenAiClient.Model);
 
