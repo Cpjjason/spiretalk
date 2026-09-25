@@ -63,9 +63,10 @@
   "SPIRETALK-DEAL_MERCHANT.description": "{Terms}\nKeep it: affection +{Affection}, gold +{Gold}.{State}",
   "SPIRETALK-DEAL_MERCHANT.flavor": "In writing.",
   "SPIRETALK-MERCHANT_FAVOR.title": "The Merchant's Favour",
-  "SPIRETALK-MERCHANT_FAVOR.description": "Your next shop is [gold]{Discount}%[/gold] off. Spent once you walk in.",
+  "SPIRETALK-MERCHANT_FAVOR.description": "Your next shop is [gold]{Discount}%[/gold] off, card removal included. Spent once you walk in.",
   "SPIRETALK-MERCHANT_FAVOR.flavor": "\"I will remember this one.\"",
   "SPIRETALK-MERCHANT_GRUDGE.title": "The Merchant's Grudge",
-  "SPIRETALK-MERCHANT_GRUDGE.description": "Every shop costs [red]{Markup}%[/red] more for the rest of this run.",
-  "SPIRETALK-MERCHANT_GRUDGE.flavor": "He saw."
+  "SPIRETALK-MERCHANT_GRUDGE.description": "Every shop costs [red]{Markup}%[/red] more for the rest of this run, card removal included.",
+  "SPIRETALK-MERCHANT_GRUDGE.flavor": "He saw.",
+  "SPIRETALK-KEEPSAKE_TEZCATARA.additionalRestSiteHealText": "+{Heal} HP from Tezcatara's Keepsake."
 }

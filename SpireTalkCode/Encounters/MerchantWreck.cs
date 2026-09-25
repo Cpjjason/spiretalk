@@ -61,7 +61,7 @@ public sealed class MerchantWreck : EncounterEvent
         var potionName = "";
         try
         {
-            var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, Rng.Chaotic);
+            var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, Rng.Chaotic).ToMutable();
             var got = await PotionCmd.TryToProcure(potion, Owner);
             if (got.success) potionName = potion.Title.GetFormattedText();
         }

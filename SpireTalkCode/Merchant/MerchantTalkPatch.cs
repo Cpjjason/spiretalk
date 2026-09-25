@@ -35,6 +35,8 @@ internal static class MerchantTalk
 
     /// <summary>Discount granted this shop visit, applied by the price hook below.</summary>
     public static int DiscountPercent { get; private set; }
+    /// <summary>What the overturned cart left for this shop: +15 off (favour) or −15 (grudge). Stacks with the talk discount.</summary>
+    public static int RoadPercent { get; private set; }
     public static bool DiscountUsedThisVisit { get; private set; }
 
     private static MerchantConversation? _conversation;
@@ -61,20 +63,23 @@ internal static class MerchantTalk
     {
         _dialogueNode = node;
         DiscountPercent = 0;
+        RoadPercent = 0;
         DiscountUsedThisVisit = false;
         _conversation?.Dispose();
         _conversation = null;
-        if (!SpireTalkConfig.EnableMerchant) return;
         var owner = ResolveLocalPlayer();
         if (owner == null || owner.RunState.Players.Count > 1)
         {
             if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered but no solo local player; skipping", 1);
             return;
         }
+        // The cart's favour or grudge is a relic the climber holds: it applies whether or not
+        // talking to the Merchant is switched on.
+        ApplyRoadMemory(owner);
+        if (!SpireTalkConfig.EnableMerchant) return;
         // The vanilla merchant already says hello; the AI only speaks once the player opens the
         // panel, so a shop visit without a chat costs nothing.
         if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered; talk via " + MainFile.Backend.DisplayName, 1);
-        ApplyRoadMemory(owner);
         _conversation = new MerchantConversation(owner);
     }
 
@@ -89,10 +94,9 @@ internal static class MerchantTalk
 
     public static void OnInventoryOpened(NMerchantInventory inventory)
     {
-        if (!SpireTalkConfig.EnableMerchant) return;
         // A new inventory node means a new shop visit. Some skin mods replace the vanilla
         // Initialize path (so NMerchantDialogue.Initialize never fires); Open is the reliable hook.
-        if (!ReferenceEquals(_inventoryNode, inventory) || _conversation == null)
+        if (!ReferenceEquals(_inventoryNode, inventory) || (_conversation == null && SpireTalkConfig.EnableMerchant))
         {
             _inventoryNode = inventory;
             var dialogue = inventory.GetNodeOrNull<NMerchantDialogue>("%Dialogue") ?? inventory.GetNodeOrNull<NMerchantDialogue>("Dialogue");
@@ -118,17 +122,23 @@ internal static class MerchantTalk
         var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(owner));
         if (run.MerchantGrudge)
         {
-            DiscountPercent = -SpireTalk.Encounters.MerchantWreck.GrudgeMarkup;
+            RoadPercent = -SpireTalk.Encounters.MerchantWreck.GrudgeMarkup;
             Tokens.TokenService.GrudgeCharged(owner);
             RewardExecutor.Toast(string.Format(Loc.EventText("roadGrudge"), SpireTalk.Encounters.MerchantWreck.GrudgeMarkup));
         }
         else if (run.MerchantFavor)
         {
-            DiscountPercent = SpireTalk.Encounters.MerchantWreck.FavorDiscount;
+            RoadPercent = SpireTalk.Encounters.MerchantWreck.FavorDiscount;
             run.MerchantFavor = false;
+            run.FavorFloor = owner.RunState.TotalFloor;
             TalkStore.Instance.Save();
             Tokens.TokenService.FavorSpent(owner);
             RewardExecutor.Toast(string.Format(Loc.EventText("roadFavor"), SpireTalk.Encounters.MerchantWreck.FavorDiscount));
+        }
+        else if (run.FavorFloor == owner.RunState.TotalFloor)
+        {
+            // Back in the shop that spent the favour (closed and reopened, or reloaded): same prices.
+            RoadPercent = SpireTalk.Encounters.MerchantWreck.FavorDiscount;
         }
         else return;
         Callable.From(RefreshPrices).CallDeferred();
@@ -244,17 +254,20 @@ internal static class MerchantInventoryClosePatch
     }
 }
 
-/// <summary>The discount reward: every ordinary price this visit is reduced by the granted percent.</summary>
+/// <summary>
+/// The Merchant's talk discount and the cart's favour/grudge: every price in this shop, card
+/// removal included, moves by both percents (they stack rather than replace each other).
+/// </summary>
 [HarmonyPatch(typeof(Hook), nameof(Hook.ModifyMerchantPrice))]
 internal static class MerchantPricePatch
 {
     [HarmonyPostfix]
     private static void ApplyTalkDiscount(MerchantEntry entry, ref decimal __result)
     {
-        var pct = MerchantTalk.DiscountPercent;
-        if (pct == 0) return;
-        if (entry is MerchantCardRemovalEntry) return;
-        __result = Math.Max(0m, Math.Round(__result * (100m - pct) / 100m));
+        var talk = MerchantTalk.DiscountPercent;
+        var road = MerchantTalk.RoadPercent;
+        if (talk == 0 && road == 0) return;
+        __result = Math.Max(0m, Math.Round(__result * (100m - talk) / 100m * (100m - road) / 100m));
     }
 }
 

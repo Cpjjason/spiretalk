@@ -63,9 +63,10 @@
   "SPIRETALK-DEAL_MERCHANT.description": "{Terms}\n守约：好感 +{Affection}，金币 +{Gold}。{State}",
   "SPIRETALK-DEAL_MERCHANT.flavor": "白纸黑字。",
   "SPIRETALK-MERCHANT_FAVOR.title": "商人的人情",
-  "SPIRETALK-MERCHANT_FAVOR.description": "下一家商店全场便宜 [gold]{Discount}%[/gold]。进店后用掉。",
+  "SPIRETALK-MERCHANT_FAVOR.description": "下一家商店全场便宜 [gold]{Discount}%[/gold]，删牌也算。进店后用掉。",
   "SPIRETALK-MERCHANT_FAVOR.flavor": "「这笔我记着。」",
   "SPIRETALK-MERCHANT_GRUDGE.title": "商人的记恨",
-  "SPIRETALK-MERCHANT_GRUDGE.description": "这一局剩下的每家商店都贵 [red]{Markup}%[/red]。",
-  "SPIRETALK-MERCHANT_GRUDGE.flavor": "他看见了。"
+  "SPIRETALK-MERCHANT_GRUDGE.description": "这一局剩下的每家商店都贵 [red]{Markup}%[/red]，删牌也算。",
+  "SPIRETALK-MERCHANT_GRUDGE.flavor": "他看见了。",
+  "SPIRETALK-KEEPSAKE_TEZCATARA.additionalRestSiteHealText": "特兹卡塔拉的信物提供+{Heal}点生命。"
 }

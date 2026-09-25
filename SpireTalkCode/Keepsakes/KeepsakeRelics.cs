@@ -1,3 +1,5 @@
+using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -77,7 +79,7 @@ public sealed class KeepsakeOrobas : KeepsakeRelic
         await PlayerCmd.GainGold(V("Gold"), Owner);
         if (Rng.Chaotic.NextInt(100) < VI("Chance"))
         {
-            var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, Rng.Chaotic);
+            var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, Rng.Chaotic).ToMutable();
             await PotionCmd.TryToProcure(potion, Owner);
         }
     }
@@ -186,11 +188,13 @@ public sealed class KeepsakeDarv : KeepsakeRelic
     }
 }
 
-/// <summary>Tanx: the first blow lands harder. At III, Strength against elites and bosses.</summary>
+/// <summary>
+/// Tanx: the first blow lands harder (Vigor on turn one, as Akabeko does: it survives damage
+/// previews and multi-hits, which a damage hook counting "first" does not). At the vow, Strength
+/// against elites and bosses.
+/// </summary>
 public sealed class KeepsakeTanx : KeepsakeRelic
 {
-    private bool _struckThisCombat;
-
     public override string NpcKey => "TANX";
     protected override string BorrowedIcon => "tanxs_whistle";
 
@@ -202,7 +206,6 @@ public sealed class KeepsakeTanx : KeepsakeRelic
 
     public override async Task BeforeCombatStart()
     {
-        _struckThisCombat = false;
         if (VI("Strength") <= 0) return;
         var type = Owner.RunState.CurrentRoom?.RoomType;
         if (type != RoomType.Elite && type != RoomType.Boss) return;
@@ -210,12 +213,11 @@ public sealed class KeepsakeTanx : KeepsakeRelic
         await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, V("Strength"), Owner.Creature, null);
     }
 
-    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
-        if (_struckThisCombat || dealer != Owner.Creature || cardSource == null) return amount;
-        _struckThisCombat = true;
+        if (!participants.Contains(Owner.Creature) || Owner.PlayerCombatState.TurnNumber > 1) return;
         Flash();
-        return amount + V("Damage");
+        await PowerCmd.Apply<VigorPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, V("Damage"), Owner.Creature, null);
     }
 }
 
@@ -250,6 +252,14 @@ public sealed class KeepsakeTezcatara : KeepsakeRelic
     {
         if (player == Owner) Flash();
         return Task.CompletedTask;
+    }
+
+    /// <summary>The rest option's tooltip lists the extra heal, as Regal Pillow's does.</summary>
+    public override IReadOnlyList<LocString> ModifyExtraRestSiteHealText(Player player, IReadOnlyList<LocString> currentExtraText)
+    {
+        if (!LocalContext.IsMe(Owner)) return currentExtraText;
+        var line = AdditionalRestSiteHealText;
+        return line == null ? currentExtraText : currentExtraText.Append(line).ToList();
     }
 
     /// <summary>The extra slot arrives with level III, whenever that happens, once.</summary>

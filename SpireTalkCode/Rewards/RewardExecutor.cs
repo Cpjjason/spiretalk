@@ -105,7 +105,7 @@ public static class RewardExecutor
                 case "potion":
                 case "gift_potion":
                 {
-                    var potion = PotionFactory.CreateRandomPotionOutOfCombat(player, Rng.Chaotic);
+                    var potion = PotionFactory.CreateRandomPotionOutOfCombat(player, Rng.Chaotic).ToMutable();
                     var result = await PotionCmd.TryToProcure(potion, player);
                     if (!result.success)
                     {

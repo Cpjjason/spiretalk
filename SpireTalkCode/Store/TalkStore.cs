@@ -83,6 +83,8 @@ public sealed class TalkStore
         [JsonPropertyName("restAncient")] public string? RestAncient { get; set; }
         /// <summary>Helped the merchant on the road: his next shop this run is cheaper, once.</summary>
         [JsonPropertyName("merchantFavor")] public bool MerchantFavor { get; set; }
+        /// <summary>The floor whose shop spent the favour, so leaving and re-entering (or reloading) that shop keeps the price.</summary>
+        [JsonPropertyName("favorFloor")] public int? FavorFloor { get; set; }
         /// <summary>Robbed the merchant on the road: every shop for the rest of this run costs more.</summary>
         [JsonPropertyName("merchantGrudge")] public bool MerchantGrudge { get; set; }
     }
