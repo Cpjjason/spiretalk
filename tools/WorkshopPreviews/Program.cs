@@ -20,6 +20,44 @@ if (args.Length < 2)
 }
 
 var fileId = new PublishedFileId_t(ulong.Parse(args[0], CultureInfo.InvariantCulture));
+
+// WorkshopPreviews <id> --text <steam language> <title> <description file>
+// Sets the title and description shown to users of that Steam language (english, schinese, tchinese...).
+// steamcmd only writes the default language, so the translations go through here.
+if (args[1] == "--text")
+{
+    if (args.Length < 5)
+    {
+        Console.Error.WriteLine("usage: WorkshopPreviews <id> --text <language> <title> <description file>");
+        return 2;
+    }
+    var language = args[2];
+    var title = args[3];
+    var description = File.ReadAllText(args[4]).Replace("\r\n", "\n").Trim();
+    File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "steam_appid.txt"), AppIdValue.ToString(CultureInfo.InvariantCulture));
+    if (!SteamAPI.Init())
+    {
+        Console.Error.WriteLine("SteamAPI.Init failed: is the Steam client running and logged in?");
+        return 1;
+    }
+    try
+    {
+        var handle = SteamUGC.StartItemUpdate(new AppId_t(AppIdValue), fileId);
+        if (!SteamUGC.SetItemUpdateLanguage(handle, language) || !SteamUGC.SetItemTitle(handle, title) || !SteamUGC.SetItemDescription(handle, description))
+        {
+            Console.Error.WriteLine("Steam refused the language, title or description (description limit is 8000 bytes)");
+            return 1;
+        }
+        var result = SubmitAndWait(handle, $"{language} text");
+        Console.WriteLine(result == EResult.k_EResultOK ? $"Success: {language} title and description ({description.Length} chars)." : $"Steam answered {result}");
+        return result == EResult.k_EResultOK ? 0 : 1;
+    }
+    finally
+    {
+        SteamAPI.Shutdown();
+    }
+}
+
 var listOnly = args[1] == "--list";
 var folder = listOnly ? "" : Path.GetFullPath(args[1]);
 var replace = args.Contains("--replace");
@@ -82,8 +120,19 @@ try
     }
 
     // 3. submit and wait
+    var result = SubmitAndWait(handle, note);
+    Console.WriteLine(result == EResult.k_EResultOK ? $"Success: {images.Count} screenshot(s) on the item." : $"Steam answered {result}");
+    return result == EResult.k_EResultOK ? 0 : 1;
+}
+finally
+{
+    SteamAPI.Shutdown();
+}
+
+static EResult SubmitAndWait(UGCUpdateHandle_t handle, string note)
+{
     var done = false;
-    EResult result = EResult.k_EResultFail;
+    var result = EResult.k_EResultFail;
     var call = SteamUGC.SubmitItemUpdate(handle, note);
     var callResult = CallResult<SubmitItemUpdateResult_t>.Create((r, ioFailure) =>
     {
@@ -96,7 +145,7 @@ try
     while (!done)
     {
         SteamAPI.RunCallbacks();
-        var status = SteamUGC.GetItemUpdateProgress(handle, out var processed, out var total);
+        var status = SteamUGC.GetItemUpdateProgress(handle, out _, out _);
         if (status != lastStatus)
         {
             Console.WriteLine($"  {status}");
@@ -105,16 +154,11 @@ try
         if (DateTime.UtcNow - started > TimeSpan.FromMinutes(10))
         {
             Console.Error.WriteLine("timed out waiting for Steam");
-            return 1;
+            return EResult.k_EResultTimeout;
         }
         Thread.Sleep(200);
     }
-    Console.WriteLine(result == EResult.k_EResultOK ? $"Success: {images.Count} screenshot(s) on the item." : $"Steam answered {result}");
-    return result == EResult.k_EResultOK ? 0 : 1;
-}
-finally
-{
-    SteamAPI.Shutdown();
+    return result;
 }
 
 static int QueryPreviewCount(PublishedFileId_t fileId)
