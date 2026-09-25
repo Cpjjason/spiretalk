@@ -22,7 +22,7 @@
   "SPIRETALK-RESET_MEMORIES_BTN.title": "Reset",
   "SPIRETALK-MSG.TestOwnOkBody": "Endpoint {0} answered ({2}). Model: {1}.",
   "SPIRETALK-MSG.ResetDoneBody": "Every NPC on this profile will meet you as a stranger next time.",
-  "SPIRETALK-MSG.ErrNotConfigured": "SpireTalk is not set up yet. Click the mushie in the top-right corner of the main menu and add your own API key, or sign in to Yumina.",
+  "SPIRETALK-MSG.ErrNotConfigured": "SpireTalk is not set up yet. Click the mushie in the top-right corner of the main menu and add your own API key.",
   "SPIRETALK-MSG.ErrUnauthorized": "The key or token was rejected.",
   "SPIRETALK-MSG.ErrNoCredits": "Out of credits.",
   "SPIRETALK-MSG.ErrRateLimited": "Too many requests — wait a moment and try again.",
@@ -112,8 +112,8 @@
   "SPIRETALK-MSG.GuideNext": "Next",
   "SPIRETALK-MSG.GuideDone": "Close",
   "SPIRETALK-MSG.GuideSetup": "Open settings",
-  "SPIRETALK-MSG.Guide.welcome.title": "Connect an AI first",
-  "SPIRETALK-MSG.Guide.welcome.body": "The NPCs' lines are written by an AI, using your own API key.\n\nOpen the settings: pick a source, paste your key, pick a model, press Test.",
+  "SPIRETALK-MSG.Guide.welcome.title": "Playable without a key",
+  "SPIRETALK-MSG.Guide.welcome.body": "With no API key, the NPCs speak written lines. Each line gives you three replies to pick from, and affection, deals, keepsakes and road events all work as usual.\n\nWith your own key, an AI writes their lines as you go: they talk about your HP, deck and relics this run, and you can type your own words. The next page shows how to get a key for free.",
   "SPIRETALK-MSG.Guide.talk.title": "Talk",
   "SPIRETALK-MSG.Guide.talk.body": "Ancient events have a Talk option at the bottom. In the shop, Talk is in the top-right corner.\n\nYou get 3 lines per visit. Pick a suggested reply, or type your own and press Enter.\n\nWhat you say changes affection: hostile, stranger, friendly, close, devoted.",
   "SPIRETALK-MSG.Guide.deals.title": "Deals",
@@ -130,5 +130,9 @@
   "SPIRETALK-MSG.BookVow": "Vow",
   "SPIRETALK-MSG.BookNotYet": "Not received yet",
   "SPIRETALK-MSG.BookVowOn": "Vow made {0}",
-  "SPIRETALK-MSG.BookEngravings": "Engravings {0}/{1}"
+  "SPIRETALK-MSG.BookEngravings": "Engravings {0}/{1}",
+  "SPIRETALK-MSG.Guide.freekey.title": "Get a free key",
+  "SPIRETALK-MSG.Guide.freekey.body": "Go to aistudio.google.com/apikey, sign in with a Google account and press Create API key. In the settings pick Google Gemini as the source, paste the key, press Test, and choose a model with flash in its name. The free allowance covers normal play.\n\nIn mainland China, Google is not available: use Zhipu (GLM) from open.bigmodel.cn instead, whose glm-4.7-flash model is free.\n\nWith a graphics card, a local Ollama model is free too and needs no key.",
+  "SPIRETALK-MSG.FreeModelZhipu": "glm-4.7-flash is free.",
+  "SPIRETALK-MSG.FreeModelGoogle": "Models with flash in the name have a free allowance (not in mainland China)."
 }

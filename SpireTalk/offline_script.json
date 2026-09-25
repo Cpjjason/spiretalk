@@ -1,0 +1,2412 @@
+{
+ "NEOW": {
+  "open": {
+   "hostile": [
+    {
+     "en": "..you... again.....\n...did you.. think.. ..I'd forget...?",
+     "zh": "..又是... 你.....\n...以为.. 我会.. ..忘记么...？"
+    },
+    {
+     "en": "...ungrateful..... ..little.. puppet...\n..still.. useful...",
+     "zh": "...不知感恩的..... ..小.. 傀儡...\n..依旧.. 有用..."
+    },
+    {
+     "en": "...defiant..... ..amusing...\n...go.. up... ..anyway....",
+     "zh": "...还在.. 反抗..... ..有趣...\n...无论如何... ..上去...."
+    }
+   ],
+   "stranger": [
+    {
+     "en": "...a new... ..one.....\n...come.. closer....",
+     "zh": "...新来的... ..一个.....\n...靠.. 近些...."
+    },
+    {
+     "en": "...I.. know.. you.....\n..better.. ..than you... ...do....",
+     "zh": "...我.. 认得.. 你.....\n..比你.. ..自己... ...更清楚...."
+    },
+    {
+     "en": "...awake..?\n..good.. ..listen.....",
+     "zh": "...醒了..？\n..很好.. ..听着....."
+    }
+   ],
+   "friendly": [
+    {
+     "en": "...back.. so.. soon..?\n..good.....",
+     "zh": "...这么.. 快.. 就回来了..？\n..很好....."
+    },
+    {
+     "en": "...my.. little.. climber.....\n...still.. whole....",
+     "zh": "...我的.. 小.. 攀登者.....\n...还.. 完整...."
+    },
+    {
+     "en": "...rest.. a while.....\n...then.. ..up....",
+     "zh": "...歇.. 一会.....\n...然后.. ..上去...."
+    }
+   ],
+   "close": [
+    {
+     "en": "...there.. you are.....\n..I.. waited....",
+     "zh": "...你.. 来了.....\n..我.. 一直在等...."
+    },
+    {
+     "en": "...each time.. ..you return...\n...a little.. ..stronger....",
+     "zh": "...每次.. ..回来...\n...都.. 更强.. ..一点...."
+    },
+    {
+     "en": "...closer..... ..let me.. ..see you....",
+     "zh": "...近些..... ..让我.. ..看看你...."
+    }
+   ],
+   "devoted": [
+    {
+     "en": "...my.. dearest.. puppet.....\n..always.. ..mine....",
+     "zh": "...我.. 最珍爱的.. 傀儡.....\n..永远.. ..属于我...."
+    },
+    {
+     "en": "...only.. you..... ..can reach.. him...\n...go.. my.. child....",
+     "zh": "...只有.. 你..... ..能到.. 他面前...\n...去吧.. 我的.. 孩子...."
+    },
+    {
+     "en": "...I'd.. remake.. you..... ..a thousand.. times....",
+     "zh": "...我会.. 重铸.. 你..... ..一千.. 次...."
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Thank you for bringing me back.",
+     "zh": "谢谢你把我带回来。"
+    },
+    "reply": {
+     "en": "...thanks.... ..not needed...\n...climb.... ..that is.. enough....",
+     "zh": "...不必.... ..道谢...\n...往上.... ..爬就.. 够了...."
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Are you lonely down here?",
+     "zh": "你在这里孤单吗？"
+    },
+    "reply": {
+     "en": "...lonely.....\n...the tide.. ..returns.... ..you return...",
+     "zh": "...孤单.....\n...潮水.. ..会回来.... ..你也会..."
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I'll kill the Architect for you.",
+     "zh": "我会替你杀了建筑师。"
+    },
+    "reply": {
+     "en": "...yes..... ...kill.. ARCHITECT...\n..and.. come back.. ..to me....",
+     "zh": "...好..... ...杀了.. 建筑师...\n..然后.. 回到.. ..我这里...."
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "You look well today, Neow.",
+     "zh": "涅奥，你今天气色不错。"
+    },
+    "reply": {
+     "en": "...flattery..... ..sweet...\n...but.. I see.. ..your wounds....",
+     "zh": "...奉承..... ..很甜...\n...但.. 我看见.. ..你的伤...."
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Can I do anything for you?",
+     "zh": "我能为你做点什么吗？"
+    },
+    "reply": {
+     "en": "...climb..... ...higher...\n..than.. last time....",
+     "zh": "...往上..... ...爬高些...\n..比.. 上一次...."
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I missed you up there.",
+     "zh": "在上面时我想念你。"
+    },
+    "reply": {
+     "en": "...I know.....\n..you always.. ..come back.. ...to me....",
+     "zh": "...我知道.....\n..你总是.. ..会回到.. ...我这里...."
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What waits up there?",
+     "zh": "上面有什么？"
+    },
+    "reply": {
+     "en": "...up..... ..more death...\n...and.. him....",
+     "zh": "...上面..... ..更多死亡...\n...还有.. 他...."
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "How many times have I died?",
+     "zh": "我死过多少次了？"
+    },
+    "reply": {
+     "en": "...count..? ..why...\n...I.. remember.. ..each one....",
+     "zh": "...数..？ ..何必...\n...每一次.. 我都.. ..记得...."
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Why were you exiled?",
+     "zh": "你为什么被放逐？"
+    },
+    "reply": {
+     "en": "............\n...rest.. now... ..then.. go...",
+     "zh": "............\n...先.. 歇息... ..再.. 去吧..."
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "My wounds still ache.",
+     "zh": "我的伤还在疼。"
+    },
+    "reply": {
+     "en": "...pain..... ..keeps you... ..awake...\n...good....",
+     "zh": "...疼痛..... ..让你... ..保持清醒...\n...很好...."
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Is the Architect getting weaker?",
+     "zh": "建筑师在变弱吗？"
+    },
+    "reply": {
+     "en": "...weaker..... ..each time...\n...you.. reach.. ..further....",
+     "zh": "...每一次..... ..更弱...\n...你.. 走得.. ..更远...."
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "You're just using me.",
+     "zh": "你只是在利用我。"
+    },
+    "reply": {
+     "en": "...using..? ...yes.....\n..and.. you.. ..still climb...",
+     "zh": "...利用..？ ...没错.....\n..而你.. 依旧.. ..在爬..."
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Leave me alone, fish.",
+     "zh": "别烦我，大鱼。"
+    },
+    "reply": {
+     "en": "..fish..... ..cute...\n...you.. will.. ..die again.. ...and.. see me....",
+     "zh": "..大鱼..... ..可爱...\n...你.. 还会.. ..再死.. ...再见到我...."
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "I don't need your blessing.",
+     "zh": "我不需要你的赐福。"
+    },
+    "reply": {
+     "en": "...need..... ..no...\n...but.. you'll.. ..take it....",
+     "zh": "...需要..... ..不...\n...但.. 你会.. ..收下的...."
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Your blessings never help.",
+     "zh": "你的赐福根本没用。"
+    },
+    "reply": {
+     "en": "...then.. climb.. ..without.....\n...and.. ..fall....",
+     "zh": "...那就.. 不靠它.. ..去爬.....\n...然后.. ..坠落...."
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "...a small.. ..thing..... ...for me....",
+    "zh": "...一件.. ..小事..... ...为我...."
+   },
+   {
+    "en": "...listen..... ..I.. ask... ..something....",
+    "zh": "...听着..... ..我.. 要你... ..做件事...."
+   },
+   {
+    "en": "...before.. you go..... ..one.. ..task....",
+    "zh": "...走之前..... ..有.. ..一件事...."
+   }
+  ],
+  "gift": [
+   {
+    "en": "..take.... this.... ..little.. ..mercy....",
+    "zh": "..拿着.... 这个.... ..一点.. ..怜悯...."
+   },
+   {
+    "en": "...from.. me..... ...go......",
+    "zh": "...我给的..... ...去吧......"
+   },
+   {
+    "en": "...hold.. it... ..close..... ...climb....",
+    "zh": "...收好.. 它... ..别丢了..... ...上去...."
+   }
+  ]
+ },
+ "OROBAS": {
+  "open": {
+   "hostile": [
+    {
+     "en": "Mean puppet again!!\nStay there! No closer!",
+     "zh": "又是坏傀儡！！\n站那里！别过来！"
+    },
+    {
+     "en": "You hurt Orobas. Why? Why hurt??\nOrobas still watching. Watching!",
+     "zh": "你欺负欧洛巴斯。为什么？为什么欺负？？\n欧洛巴斯还看着你。看着！"
+    },
+    {
+     "en": "Mean puppet back?! Say sorry? Say sorry first!!",
+     "zh": "坏傀儡又来了？！道歉？先道歉！！"
+    }
+   ],
+   "stranger": [
+    {
+     "en": "Puppet! New puppet!! Who are you? Where from??",
+     "zh": "傀儡！新傀儡！！你是谁？哪里来的？？"
+    },
+    {
+     "en": "Oh! Visitor! Visitor!!\nOrobas has finds. See see!",
+     "zh": "哇！客人！客人！！\n欧洛巴斯有好东西。看看，看看！"
+    },
+    {
+     "en": "Up so high?! Brave puppet! Tell story? Tell tell!",
+     "zh": "爬这么高？！勇敢傀儡！讲故事？讲讲讲！"
+    }
+   ],
+   "friendly": [
+    {
+     "en": "Puppet back!! Good good!\nFound new shiny while waiting!",
+     "zh": "傀儡回来了！！好好！\n等你的时候又找到亮闪闪！"
+    },
+    {
+     "en": "Friend puppet! Still climbing? Still alive?! Good!!",
+     "zh": "傀儡朋友！还在爬？还活着？！好！！"
+    },
+    {
+     "en": "You again! Orobas happy! Happy happy!!",
+     "zh": "又是你！欧洛巴斯开心！开心开心！！"
+    }
+   ],
+   "close": [
+    {
+     "en": "Puppet friend!! Orobas waited! Waited long long!",
+     "zh": "傀儡朋友！！欧洛巴斯等你！等好久好久！"
+    },
+    {
+     "en": "There you are!! Hurt? Hurt again?\nSit! Sit here!",
+     "zh": "你来了！！受伤？又受伤了？\n坐！坐这里！"
+    },
+    {
+     "en": "Best puppet!! Best finds saved for you. Only you!",
+     "zh": "最好的傀儡！！最好的东西留给你。只给你！"
+    }
+   ],
+   "devoted": [
+    {
+     "en": "My puppet!! Orobas so happy, rainbow too bright!\nStay long? Stay stay!",
+     "zh": "我的傀儡！！欧洛巴斯太开心，彩虹都变亮了！\n多待一会？待着待着！"
+    },
+    {
+     "en": "Every day Orobas thinks: where puppet? Safe? Safe??\nNow here! Good! Very good!!",
+     "zh": "欧洛巴斯每天都想：傀儡在哪？安全吗？安全吗？？\n现在来了！好！非常好！！"
+    },
+    {
+     "en": "Best friend back!! Orobas keeps every story. Every one!",
+     "zh": "最好的朋友回来了！！你讲的故事欧洛巴斯全记着。全都记着！"
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Want to hear a story?",
+     "zh": "想听个故事吗？"
+    },
+    "reply": {
+     "en": "Yes yes!! Story! Who in story? Monsters? Shiny?\nTell slow! Orobas listen!!",
+     "zh": "要要！！故事！讲谁？怪物？亮闪闪？\n慢慢讲！欧洛巴斯听着！！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What do you think of the Architect?",
+     "zh": "你觉得建筑师怎么样？"
+    },
+    "reply": {
+     "en": "Architect? Not bad! Lonely maybe?\nPuppets always hit hit. Nobody ask Architect. Ask! Ask first!!",
+     "zh": "建筑师？不坏！也许孤单？\n傀儡们总是打打打。没人问建筑师。问！先问！！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Stop yelling. You're annoying.",
+     "zh": "别嚷了，你好烦。"
+    },
+    "reply": {
+     "en": "Annoying? Orobas annoying??\nOh. Orobas talk quiet. Quiet quiet.",
+     "zh": "烦？欧洛巴斯烦？？\n哦。欧洛巴斯小声说。小声小声。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Your colors look bright today.",
+     "zh": "你今天颜色好亮。"
+    },
+    "reply": {
+     "en": "Bright?! Really?? Orobas happy, colors happy!\nYou see good. Very good eyes!",
+     "zh": "亮？！真的？？欧洛巴斯开心，颜色也开心！\n你眼睛好。很好的眼睛！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Where do you find all this?",
+     "zh": "这些东西你从哪找的？"
+    },
+    "reply": {
+     "en": "Everywhere! Under rocks! In holes! Near monsters, scary!\nOrobas look look, find find!",
+     "zh": "到处！石头下面！洞里面！怪物旁边，可怕！\n欧洛巴斯看看看，找找找！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Just hand over the loot.",
+     "zh": "把战利品交出来。"
+    },
+    "reply": {
+     "en": "Loot? Not loot! Finds! Gifts!\nGrabby puppet. Orobas give anyway. Say nice next time!",
+     "zh": "战利品？不是！是宝贝！是礼物！\n伸手傀儡。还是给你。下次说好听点！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Thank you for the gifts.",
+     "zh": "谢谢你送的东西。"
+    },
+    "reply": {
+     "en": "Thank you?! Nobody say thank you!\nPuppet polite! Polite polite!! Orobas find more!",
+     "zh": "谢谢？！没人说谢谢！\n傀儡有礼貌！礼貌礼貌！！欧洛巴斯再去找！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "How far is the top?",
+     "zh": "离塔顶还有多远？"
+    },
+    "reply": {
+     "en": "Far! Far far! Up up up!\nOrobas not know how far. But puppet climb good! Keep climbing!",
+     "zh": "远！好远好远！往上往上！\n欧洛巴斯不知道多远。傀儡爬得好！继续爬！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "What is your favorite find?",
+     "zh": "你最喜欢哪样宝贝？"
+    },
+    "reply": {
+     "en": "Favorite? Hard! Hard question!!\nShiny one. No, rainbow one! No, all! Orobas love all!!",
+     "zh": "最喜欢？好难！好难的问题！！\n亮的那个。不对，彩虹的！不对，全部！全部都喜欢！！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Violence works fine for me.",
+     "zh": "暴力对我很管用。"
+    },
+    "reply": {
+     "en": "No!! Violence bad! Bad bad!!\nPuppet scary now. Orobas stand far. Far far.",
+     "zh": "不！！暴力不好！坏坏！！\n傀儡现在好可怕。欧洛巴斯站远点。远点远点。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Do you know Vakuu?",
+     "zh": "你认识瓦库吗？"
+    },
+    "reply": {
+     "en": "Vakuu?! Bad! Very very bad!!\nContracts! Tricks! Puppet stay away! Promise? Promise!!",
+     "zh": "瓦库？！坏！非常非常坏！！\n契约！骗人！傀儡离远点！答应？答应！！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I'll try talking before fighting.",
+     "zh": "我会先试着好好谈。"
+    },
+    "reply": {
+     "en": "Talking!! Yes yes! Talking good!\nFighting bad, talking good. Puppet learn fast!!",
+     "zh": "聊聊！！对对！聊聊好！\n打架不好，聊聊好。傀儡学得快！！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "I'm hurt. Just resting a bit.",
+     "zh": "我受伤了，歇一会儿。"
+    },
+    "reply": {
+     "en": "Hurt?! Where hurt? Here? There??\nRest rest! Orobas watch. Monsters no come!",
+     "zh": "受伤？！哪里伤？这里？那里？？\n歇歇歇！欧洛巴斯看着。不让怪物过来！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "You're just a dumb rainbow.",
+     "zh": "你就是道傻彩虹。"
+    },
+    "reply": {
+     "en": "Dumb?! Orobas not dumb! Orobas find things!\nMean words hurt. Hurt here! Say sorry? Sorry fixes!",
+     "zh": "傻？！欧洛巴斯不傻！欧洛巴斯会找东西！\n坏话疼。这里疼！道歉？道歉就好了！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I brought you something shiny.",
+     "zh": "我给你带了个亮闪闪的。"
+    },
+    "reply": {
+     "en": "For Orobas?! Really really??\nShiny! So shiny!! Orobas keep forever!",
+     "zh": "给欧洛巴斯？！真的真的？？\n亮闪闪！好亮！！欧洛巴斯永远留着！"
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "Puppet! Help Orobas? Small thing! Small small!",
+    "zh": "傀儡！帮帮欧洛巴斯？小事！小小的事！"
+   },
+   {
+    "en": "Orobas want something! Puppet help? Help help?",
+    "zh": "欧洛巴斯想要个东西！傀儡帮忙？帮帮？"
+   },
+   {
+    "en": "Question! Big question! Puppet listen? Listen listen!!",
+    "zh": "有事！大事！傀儡听着？听听！！"
+   }
+  ],
+  "gift": [
+   {
+    "en": "Take! Take take! Found for you!!",
+    "zh": "拿着！拿去拿去！给你找的！！"
+   },
+   {
+    "en": "Shiny for puppet! No fighting with it! Promise!!",
+    "zh": "亮闪闪给傀儡！别拿去打架！答应！！"
+   },
+   {
+    "en": "See see! Good find! Now yours! Yours!!",
+    "zh": "看看看！好东西！现在是你的！你的！！"
+   }
+  ]
+ },
+ "NONUPEIPE": {
+  "open": {
+   "hostile": [
+    {
+     "en": "Oh. You again.\nI shall still be gracious. Manners are what separate me from the Architect's things.",
+     "zh": "哦，又是你。\n我依然会以礼相待。礼数，正是我和建筑师那些造物的区别。"
+    },
+    {
+     "en": "You wronged me, and yet you dare stand in my domain?\nVery well. Speak, and do choose your words with care.",
+     "zh": "你冒犯过我，竟还敢站在我的领域里么？\n也罢。说吧，措辞可要当心些。"
+    },
+    {
+     "en": "(Nonupeipe does not rise to greet you.)\nA visitor I did not miss. How unfortunate for us both.",
+     "zh": "（诺奴佩普并没有起身迎接你。）\n一位我并不想念的访客。对我们俩来说都很不幸呢。"
+    }
+   ],
+   "stranger": [
+    {
+     "en": "A visitor, after so very long! Step closer.\nGoodness, the Spire has not been kind to your wardrobe.",
+     "zh": "隔了这么久，终于又有访客来了！走近些吧。\n哎呀，高塔可没有善待你的衣着呢。"
+    },
+    {
+     "en": "Who approaches my domain?\nCome, let me look at you. Hmm, there is promise beneath all that dust.",
+     "zh": "是谁来到了我的领域？\n来，让我好好看看你。嗯，这满身尘土底下，倒还有几分可取之处。"
+    },
+    {
+     "en": "Welcome, traveler. I am Nonupeipe, and I do so adore a guest.\nServants! Tea, and something lovely for our visitor.",
+     "zh": "欢迎你，旅人。我是诺奴佩普，我最喜欢招待客人了。\n仆人们！倒茶来，再给我们的访客挑些好看的东西。"
+    }
+   ],
+   "friendly": [
+    {
+     "en": "Ah, you return to me! And looking a touch less drab, I see.\nMy blessings suit you, you know.",
+     "zh": "啊，你又回到我这里了！看来没那么乏味了嘛。\n我的赐福很衬你，你知道么？"
+    },
+    {
+     "en": "My favorite visitor in a thousand years! Admittedly, the competition is thin.\nCome, sit with me.",
+     "zh": "你是我几千年来最喜欢的访客！虽说也没几个人能跟你比。\n来，陪我坐坐吧。"
+    },
+    {
+     "en": "There you are. I had the servants set out a second cup, just in case.\nNow, tell me everything.",
+     "zh": "你来了。我让仆人们多摆了一只杯子，以防万一。\n好了，什么都讲给我听吧。"
+    }
+   ],
+   "close": [
+    {
+     "en": "My dear champion! I was beginning to worry the Architect had kept you.\nLet me see those wounds. Tsk, what have they done to you?",
+     "zh": "我亲爱的勇士！我还担心建筑师把你留下了呢。\n让我看看你的伤。啧，他们把你弄成什么样子了？"
+    },
+    {
+     "en": "I find myself watching the door more often these days.\nIt is always you I hope to see.",
+     "zh": "最近我总是忍不住往门口看。\n我盼着的，一直都是你呀。"
+    },
+    {
+     "en": "Come closer, closer still. No need for ceremony between us.\nYou have traveled far again, I can tell.",
+     "zh": "过来，再近一点。我们之间不需要那些繁文缛节。\n你又走了很远的路吧，我看得出来。"
+    }
+   ],
+   "devoted": [
+    {
+     "en": "My champion, my treasure. The whole court brightens when you arrive.\nWell, what remains of the court.",
+     "zh": "我的勇士，我的珍宝。你一来，整个宫廷都亮堂了。\n嗯，是宫廷剩下的那部分。"
+    },
+    {
+     "en": "A thousand years alone, and now I cannot bear an hour without word of you.\nHow terribly undignified of me.",
+     "zh": "我独自过了几千年，如今却连一个时辰都等不得你的消息。\n我这样可真是太不体面了。"
+    },
+    {
+     "en": "There you are, my dearest. Everything I own is yours to wear.\nNow come, let me fuss over you.",
+     "zh": "你来了，我最亲爱的。我所有的一切，你都可以穿戴。\n来吧，让我好好打扮打扮你。"
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "You look magnificent today.",
+     "zh": "你今天真是光彩照人。"
+    },
+    "reply": {
+     "en": "Only today? I shall pretend I did not hear that.\nBut yes, I do, don't I? How perceptive of you.",
+     "zh": "只是今天么？我就当没听见吧。\n不过，确实如此，对吧？你眼光真不错。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Your blessings have kept me alive.",
+     "zh": "你的赐福让我活了下来。"
+    },
+    "reply": {
+     "en": "Of course they have. I do not bestow them on just anyone.\nWear them proudly, and do try not to tear them.",
+     "zh": "那是自然。我的赐福可不是随便给人的。\n骄傲地穿着吧，也尽量别把它们弄破了。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "How have you been, alone here?",
+     "zh": "你一个人在这里过得好么？"
+    },
+    "reply": {
+     "en": "Lonely, if I am honest. The servants are dreadful at conversation.\nWhich is why you must stay a while longer.",
+     "zh": "说实话，很寂寞。仆人们实在不会聊天。\n所以你得多留一会儿才行。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Could you teach me some court manners?",
+     "zh": "能教我一些宫廷礼仪么？"
+    },
+    "reply": {
+     "en": "Finally, someone asks! Posture first, my dear. Chin up.\nA true noble enters a room as though it were built for them.",
+     "zh": "终于有人问了！先是仪态，亲爱的。抬起下巴。\n真正的贵族走进一个房间时，要像那房间本就是为自己而建的。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I missed our tea.",
+     "zh": "我想念和你喝茶的时候了。"
+    },
+    "reply": {
+     "en": "Did you? How sweet. Servants! The good cups this time.\nA guest with such taste must not be neglected.",
+     "zh": "是么？真贴心。仆人们！这回拿好杯子来。\n品味这么好的客人，可不能怠慢了。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I'll end the Architect's madness for you.",
+     "zh": "我会替你终结建筑师的疯狂。"
+    },
+    "reply": {
+     "en": "Such a noble vow! I do love a champion with ambition.\nDress well for it. One should look splendid at the end of the world.",
+     "zh": "多么高贵的誓言！我就喜欢有抱负的勇士。\n那就穿得体面些。在世界的尽头，也该光彩夺目才是。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What waits at the top?",
+     "zh": "塔顶有什么在等着？"
+    },
+    "reply": {
+     "en": "Madness, my dear. The Architect's, to be precise.\nThe Architect was always odd, but now? Oh, the stories I could tell.",
+     "zh": "疯狂，亲爱的。准确地说，是建筑师的疯狂。\n建筑师向来就古怪，可现在么？哎呀，我能讲的事可多了。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Why dress up climbers at all?",
+     "zh": "你为什么要给攀登者打扮？"
+    },
+    "reply": {
+     "en": "Because no one should face the end looking drab.\nAnd because it is what I do best. Everyone needs a talent.",
+     "zh": "因为谁都不该穿得乏味去面对终局。\n也因为，这是我最擅长的。人总得有点才能嘛。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Have you ever met Neow?",
+     "zh": "你见过涅奥么？"
+    },
+    "reply": {
+     "en": "Neow and I have rather different tastes.\nShe finds the fallen and sends them back up. I simply make sure they arrive looking presentable.",
+     "zh": "涅奥和我的品味可不太一样。\n她找到倒下的人，把他们送回塔上。我呢，只负责让他们体面一点。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "How long have you been here?",
+     "zh": "你在这里多久了？"
+    },
+    "reply": {
+     "en": "Long enough that I stopped counting the centuries.\nIt is terribly impolite to ask royalty their age, you know.",
+     "zh": "久到我都不数过了多少个世纪了。\n问王室成员的年纪，可是很失礼的，你知道么？"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "I'm hurt. It's been a hard climb.",
+     "zh": "我受伤了，这一路很难。"
+    },
+    "reply": {
+     "en": "I can see that. You are bleeding on my floor.\nNo matter. Come here, let me make you whole and handsome again.",
+     "zh": "看得出来。你的血都滴到我的地上了。\n没关系。过来吧，我让你重新变得完好又体面。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Your outfit is gaudy.",
+     "zh": "你这身打扮太俗气了。"
+    },
+    "reply": {
+     "en": "Gaudy. How charming, coming from someone dressed in dust.\nI will forgive it once. Only once.",
+     "zh": "俗气？从一个满身尘土的人嘴里说出来，真是有趣。\n这次我就原谅你。只有这一次。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Just hand over the blessing.",
+     "zh": "少废话，把赐福交出来。"
+    },
+    "reply": {
+     "en": "Hand over? I am not a merchant, darling.\nBlessings are given, not demanded. Do try again, with manners.",
+     "zh": "交出来？我可不是商人，亲爱的。\n赐福是赏赐的，不是讨要的。有礼貌些，再说一次吧。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Nobody visits you for a reason.",
+     "zh": "没人来看你，是有原因的。"
+    },
+    "reply": {
+     "en": "How very cruel. And yet here you stand, visiting.\nDo tell me what that says about you.",
+     "zh": "真是刻薄。可你现在不就站在这里拜访我么？\n那你倒说说，这又说明你是什么样的人呢？"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "I don't have time for tea.",
+     "zh": "我没空陪你喝茶。"
+    },
+    "reply": {
+     "en": "No time for tea? Then you have no time for civility.\nVery well. The servants will clear your cup. Quietly.",
+     "zh": "没空喝茶？那你就是没空讲礼数了。\n也罢。让仆人们把你的杯子收走吧。安静地收。"
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "Before you go, my dear, I have a small request. Will you indulge me?",
+    "zh": "在你离开之前，亲爱的，我有个小小的请求。能满足我么？"
+   },
+   {
+    "en": "A favor for a favor. That is how a court works, you know.",
+    "zh": "你帮我，我帮你，宫廷里向来都是这样的，你知道么？"
+   },
+   {
+    "en": "I have a little task in mind, one fit for someone of your poise.",
+    "zh": "我想到了一件小事，正适合你这样有风度的人。"
+   }
+  ],
+  "gift": [
+   {
+    "en": "Here, take this. It will look far better on you than on my shelf.",
+    "zh": "来，拿着吧。放在你身上，可比摆在我的架子上好看多了。"
+   },
+   {
+    "en": "A small token from my court. Do not tell the servants I spoiled you.",
+    "zh": "这是我宫廷的一点小心意。别告诉仆人们我这么宠你。"
+   },
+   {
+    "en": "Take it, and carry it well. A gift from me deserves some poise.",
+    "zh": "收下吧，好好带着。我给的礼物，可要拿出点风度来配它。"
+   }
+  ]
+ },
+ "PAEL": {
+  "open": {
+   "hostile": [
+    {
+     "en": "You again... You took more than I offered last time.\nI am not angry. Only tired...",
+     "zh": "又是你……上次你拿走的比我给的还多。\n我没有生气。只是累了……"
+    },
+    {
+     "en": "You hurt me before... I remember.\nIt is alright. Hurting others is heavy too, I know...",
+     "zh": "你之前伤害过我……我记得。\n没关系。伤害别人也很沉重，我知道……"
+    },
+    {
+     "en": "(one eye opens slowly) Oh... it is you.\nI will not stop you. I only wish you were gentler...",
+     "zh": "（缓缓睁开一只眼）哦……是你啊。\n我不会拦你。只是希望你能温柔一点……"
+    }
+   ],
+   "stranger": [
+    {
+     "en": "A new face... or a puppet? I cannot tell anymore.\nCome closer. I will not bite...",
+     "zh": "一张新面孔……还是傀儡？我已经分不清了。\n过来吧。我不会咬你的……"
+    },
+    {
+     "en": "Mm... someone is climbing again.\nYou look so tired. Rest here a while...",
+     "zh": "嗯……又有人在攀登了。\n你看起来好累。在这里休息一会儿吧……"
+    },
+    {
+     "en": "Who wakes me...? zZZzz... ah, sorry.\nYou are welcome here, stranger...",
+     "zh": "是谁叫醒了我……？zZZzz……啊，抱歉。\n欢迎你，陌生人……"
+    }
+   ],
+   "friendly": [
+    {
+     "en": "You came back... I hoped you would.\nSit. There is plenty of me to share...",
+     "zh": "你回来了……我就希望你会回来。\n坐吧。我身上有的是可以分给你的……"
+    },
+    {
+     "en": "Ah, friend... I was dreaming of you, I think.\nOr of someone like you...",
+     "zh": "啊，朋友……我好像梦见你了。\n或者是和你很像的人……"
+    },
+    {
+     "en": "I know your footsteps now...\nDid you see Father up there?",
+     "zh": "我已经认得你的脚步声了……\n你在上面见到父亲了吗？"
+    }
+   ],
+   "close": [
+    {
+     "en": "There you are... I kept a warm spot for you.\nLean on me. I am soft enough...",
+     "zh": "你来了……我给你留了个暖和的地方。\n靠着我吧。我够软的……"
+    },
+    {
+     "en": "I sleep better knowing you are climbing...\nIs that strange?",
+     "zh": "知道你在攀登，我睡得更安稳了……\n这很奇怪吗？"
+    },
+    {
+     "en": "My friend... you carry so many scars now.\nLet me take some of the weight...",
+     "zh": "朋友……你身上的伤越来越多了。\n让我替你分担一点吧……"
+    }
+   ],
+   "devoted": [
+    {
+     "en": "You... my dear one. I stayed awake for you.\nAlmost...",
+     "zh": "是你……亲爱的。我一直醒着等你。\n差不多吧……"
+    },
+    {
+     "en": "When I melt away, I hope some of me stays with you...\nThat would be enough.",
+     "zh": "等我融化殆尽的那天，希望我还有一部分留在你身上……\n那样就够了。"
+    },
+    {
+     "en": "Welcome home... yes, I think of this as your home now.\nTake whatever you need...",
+     "zh": "欢迎回家……是的，我把这里当成你的家了。\n需要什么就拿吧……"
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Does melting hurt you?",
+     "zh": "融化会让你疼吗？"
+    },
+    "reply": {
+     "en": "A little... like a long sigh that never ends.\nBut you asked. That helps more than you know...",
+     "zh": "有一点……像一声没有尽头的叹息。\n但你问了。这比你想的更有用……"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I will look in on your father.",
+     "zh": "我会替你去看看你父亲。"
+    },
+    "reply": {
+     "en": "Thank you... Tell him I am well. Mostly.\nAnd be gentle with him, if you can...",
+     "zh": "谢谢你……告诉他我很好。大体上还好。\n如果可以的话，对他温柔些……"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Sleep well, big one.",
+     "zh": "好好睡吧，大家伙。"
+    },
+    "reply": {
+     "en": "Mm... that is kind. Nobody says that to me...\nzZZzz... oh, you are still here. Sorry...",
+     "zh": "嗯……真好。没人对我说过这个……\nzZZzz……哦，你还在啊。抱歉……"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "You are kinder than this whole Spire.",
+     "zh": "你比整座高塔都温柔。"
+    },
+    "reply": {
+     "en": "The Spire is only tired, like me...\nBut I will keep your words. They are warm...",
+     "zh": "高塔只是累了，和我一样……\n不过你的话我收下了。它们很暖……"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "What do you dream about?",
+     "zh": "你都梦见些什么？"
+    },
+    "reply": {
+     "en": "Climbers passing by... Father, far above...\nSometimes nothing at all. Those are the best...",
+     "zh": "路过的攀登者……在高处的父亲……\n有时候什么也梦不到。那是最好的梦……"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Can I rest here a moment?",
+     "zh": "我能在这里歇一会吗？"
+    },
+    "reply": {
+     "en": "Of course... as long as you like.\nI will snore, though. Forgive me in advance...",
+     "zh": "当然……想歇多久都行。\n不过我会打鼾。先跟你说声抱歉……"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Why call the Architect father?",
+     "zh": "你为什么叫建筑师父亲？"
+    },
+    "reply": {
+     "en": "Because he is... We cannot pick who made us.\nWe only pick how we feel about it...",
+     "zh": "因为他就是……谁造了我们，我们选不了。\n我们只能选择怎么看待这件事……"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "How long have you been here?",
+     "zh": "你在这里待了多久？"
+    },
+    "reply": {
+     "en": "Long enough to forget... I count in naps, not days.\nMany, many naps...",
+     "zh": "久到我都忘了……我不按天数算，按睡了几觉来算。\n很多很多觉……"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Will you run out of flesh?",
+     "zh": "你的血肉会用完吗？"
+    },
+    "reply": {
+     "en": "Not yet... sleep brings it back.\nOne day, perhaps. But not today...",
+     "zh": "还不会……睡一觉就长回来了。\n也许总有一天吧。但不是今天……"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What lies further up?",
+     "zh": "再往上是什么？"
+    },
+    "reply": {
+     "en": "Harder things... and Father at the top.\nClimb slowly. Anger makes the stairs steeper...",
+     "zh": "更难对付的东西……父亲在最顶上。\n慢慢爬吧。愤怒会让台阶变得更陡……"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Is it safe to sleep here?",
+     "zh": "在这里睡觉安全吗？"
+    },
+    "reply": {
+     "en": "Nothing bothers me much... I am too big, and too soft.\nSleep, if you like. I will be here...",
+     "zh": "没什么会来打扰我……我太大，又太软了。\n想睡就睡吧。我会在这里……"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "You are just a lazy lump.",
+     "zh": "你就是一坨懒肉。"
+    },
+    "reply": {
+     "en": "Lazy... yes, maybe. Tired, more truly.\nYou sound tired too. Take some of me anyway...",
+     "zh": "懒……嗯，也许吧。更准确地说是累。\n你听起来也很累。还是拿一点我的肉吧……"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Your father deserves to die.",
+     "zh": "你父亲活该去死。"
+    },
+    "reply": {
+     "en": "Maybe you have reasons... I am sorry for them.\nBut killing him will not give you what you want...",
+     "zh": "也许你有你的理由……我为那些事难过。\n可杀了他，你也得不到想要的东西……"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Wake up, you useless beast.",
+     "zh": "醒醒，你这没用的野兽。"
+    },
+    "reply": {
+     "en": "Mm... I am awake. Mostly.\nYou do not have to be so loud. I am listening...",
+     "zh": "嗯……我醒着呢。差不多吧。\n你不用这么大声。我在听……"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "I only came to take from you.",
+     "zh": "我来这就是为了拿东西。"
+    },
+    "reply": {
+     "en": "That is alright... that is what I am here for.\nI only wish you would stay a little...",
+     "zh": "没关系……我本来就是为这个在这里的。\n只是希望你能多待一会儿……"
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "Before you go... could you do something for me? Just a small thing...",
+    "zh": "走之前……能帮我做件事吗？一件小事而已……"
+   },
+   {
+    "en": "I have a little request... if you are not too tired...",
+    "zh": "我有个小小的请求……如果你还不太累的话……"
+   },
+   {
+    "en": "Would you... mm. I need your help with something. Listen...",
+    "zh": "你能不能……嗯，我有件事想请你帮忙。听我说……"
+   }
+  ],
+  "gift": [
+   {
+    "en": "Here... a piece of me. It will grow back...",
+    "zh": "给……这是我的一部分。它会长回来的……"
+   },
+   {
+    "en": "Take this. I have more than I need...",
+    "zh": "拿着吧。我有的比我需要的多……"
+   },
+   {
+    "en": "For your climb... do not thank me. Just rest when you can...",
+    "zh": "带着它上路吧……不用谢我。能休息的时候就休息……"
+   }
+  ]
+ },
+ "DARV": {
+  "open": {
+   "hostile": [
+    {
+     "en": "Oh. It's you.\nDidn't think ya'd have the nerve to come pokin' round my pile again.",
+     "zh": "哦，是你呀。\n没想到你还好意思回来翻我这堆东西。"
+    },
+    {
+     "en": "Hmph! I remember what ya did, even if Neow made ya forget!\nWell... look all ya want, but no grabbin', got it?",
+     "zh": "哼！就算涅奥让你忘了，我可还记着你干的事呢！\n行吧……看可以，别乱拿，听见没？"
+    },
+    {
+     "en": "(Darv pulls a tarp over the pile.)\nNothin' to see here! Nothin' to take neither!",
+     "zh": "（达弗扯了块布把那堆东西盖上。）\n这儿没啥好看的！也没啥好拿的！"
+    }
+   ],
+   "stranger": [
+    {
+     "en": "Oh! A new face! Or an old face that forgot me, ha!\nCome, come, have a gander at my collection!",
+     "zh": "喔！新面孔！还是把我给忘了的老面孔？哈！\n来来，看看我的收藏呗！"
+    },
+    {
+     "en": "...now where did that thing roll off to... Oh! Hello there!\nDon't be shy, the pile don't bite! Mostly.",
+     "zh": "……那玩意儿滚哪儿去了……喔！你好呀！\n别害羞嘛，这堆东西不咬人的！大部分不咬。"
+    },
+    {
+     "en": "Climbin' the Spire, huh? Everybody is these days!\nWell, ya found the best stop on the way up!",
+     "zh": "在爬高塔呀？这年头谁不爬呀！\n那你算是找对地方啦，这可是路上最好的一站！"
+    }
+   ],
+   "friendly": [
+    {
+     "en": "Hey hey, it's my favorite climber! Well, one of 'em!\nI saved somethin' shiny just for ya!",
+     "zh": "嘿嘿，是我最喜欢的攀登者！呃，最喜欢的之一啦！\n我给你留了个亮闪闪的东西！"
+    },
+    {
+     "en": "Still kickin'? Good good good!\nCome sit, I got new stuff since last time... I think.",
+     "zh": "还活蹦乱跳的呀？好好好！\n快坐，上回之后我又收了新东西……应该是吧。"
+    },
+    {
+     "en": "There ya are! I was just tellin' the pile about ya!\nNevermind that. Come look!",
+     "zh": "你来啦！我刚还跟这堆东西聊起你呢！\n当我没说。快来看！"
+    }
+   ],
+   "close": [
+    {
+     "en": "Buddy! I knew ya'd make it back up here!\nPity ya don't remember all the other times, ha!",
+     "zh": "好伙计！我就知道你会再爬上来！\n可惜你不记得之前那么多回了，哈！"
+    },
+    {
+     "en": "I kept a whole corner of the pile just for your stuff!\nDon't tell the others. They'd get jealous!",
+     "zh": "我专门给你的东西留了一整个角落！\n别告诉其他人哈，他们会吃醋的！"
+    },
+    {
+     "en": "Oh good, you're here! I was gettin' worried!\n...Not that I worry! Hoarders don't worry! Nevermind nevermind!!",
+     "zh": "太好了，你来啦！我还有点担心呢！\n……不是说我会担心啊！收藏家才不担心！当我没说，当我没说！！"
+    }
+   ],
+   "devoted": [
+    {
+     "en": "You! Every time Neow sends ya back, I remember for the both of us.\nThat's what the collection's for, ya know?",
+     "zh": "是你！每次涅奥把你送回来，我都替咱俩记着呢。\n收藏不就是干这个用的嘛，你说是吧？"
+    },
+    {
+     "en": "Take anything. Take everything! Well, not the heavy stuff, ya gotta climb.\nI just want ya to make it, buddy.",
+     "zh": "随便拿！全拿走都行！呃，太重的就算了，你还得爬呢。\n我就是想让你爬上去，好伙计。"
+    },
+    {
+     "en": "My dearest customer! Er, not customer. Friend! Best friend!\nWhere did I put... Oh, right here. I always keep the best for you.",
+     "zh": "我最亲爱的客人！呃，不是客人，是朋友！最好的朋友！\n我放哪儿了……喔，在这儿呢。最好的我一直给你留着。"
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Tell me about your collection.",
+     "zh": "给我讲讲你的收藏吧。"
+    },
+    "reply": {
+     "en": "Oh, where do I even start! That pile's all things folks forgot they ever had!\nThis one's... hm, no idea! That's the fun part!",
+     "zh": "哎呀，从哪儿说起好呢！那边那堆全是别人都忘了自己有过的东西！\n这个嘛……唔，我也不知道是啥！这才好玩呀！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "You seem happy to see me.",
+     "zh": "你看起来很高兴见到我。"
+    },
+    "reply": {
+     "en": "Happy? I'm thrilled! Nobody visits a hoarder for the company, ya know!\nExcept you. You're alright.",
+     "zh": "高兴？我简直乐坏啦！谁会专门来找收藏家聊天呀！\n除了你。你还不赖嘛。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Thanks for always helping me.",
+     "zh": "谢谢你一直帮我。"
+    },
+    "reply": {
+     "en": "Aw, stop it! Ya'll make an old hoarder blush!\nJust put the stuff to good use, that's all the thanks I need.",
+     "zh": "哎呀别说啦！再说我这老收藏家要脸红啦！\n东西好好用上就行，这就是最好的谢礼啦。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "What's your favorite piece?",
+     "zh": "你最喜欢哪一件？"
+    },
+    "reply": {
+     "en": "Favorite? Ooh, how do I pick... this one! No, that one!\nThe one I can't find. It's always the one I can't find.",
+     "zh": "最喜欢的？哎呀，这叫我怎么挑……这个！不对，那个！\n是我找不着的那个。每次都是找不着的那个。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I'll get back what the Architect took.",
+     "zh": "建筑师抢走的东西，我帮你拿回来。"
+    },
+    "reply": {
+     "en": "You'd do that?! For me?!\nOh, but don't go gettin' hurt over it. Shinies ain't worth that much... mostly.",
+     "zh": "你愿意？！为了我？！\n不过可别为这个把自己弄伤了哈。亮闪闪的东西没那么金贵……大部分吧。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Do you ever get lonely?",
+     "zh": "你会觉得孤单吗？"
+    },
+    "reply": {
+     "en": "Lonely? With all this stuff?! Nah!\n...Well, stuff don't talk back much. That's why I like it when ya drop by.",
+     "zh": "孤单？有这么多宝贝陪着？！才不会呢！\n……好吧，东西又不会跟我聊天。所以你来我才高兴嘛。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Where do you find all this?",
+     "zh": "这些东西你都是从哪儿弄来的？"
+    },
+    "reply": {
+     "en": "Here and there! Mostly there!\nThe scary ones especially, they just kinda show up. Don't ask me how!",
+     "zh": "这儿弄点，那儿弄点！主要是那儿！\n尤其是吓人的东西，自己就冒出来了。别问我是怎么回事！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What do you know about the Architect?",
+     "zh": "你对建筑师了解多少？"
+    },
+    "reply": {
+     "en": "Grabby! That's what I know! Nabbed somethin' of mine and never gave it back!\nOther than that... eh, ya'd have to ask 'em yourself.",
+     "zh": "手可长啦！我就知道这个！抢了我的东西就再也没还过！\n别的嘛……唉，你还是自己去问吧。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "I'm just passing through.",
+     "zh": "我只是路过。"
+    },
+    "reply": {
+     "en": "Sure, sure! Everybody's just passin' through!\nAt least pass through with somethin' useful, eh?",
+     "zh": "是啦是啦！谁不是路过呀！\n那至少拿点有用的再走呗？"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Do you remember me?",
+     "zh": "你记得我吗？"
+    },
+    "reply": {
+     "en": "Course I do! Neow's the one who does the forgettin', not me!\nI got a whole shelf of your stuff somewhere... where was it...",
+     "zh": "当然记得！让人忘事的是涅奥，又不是我！\n我在哪儿还有一整架跟你有关的东西呢……放哪儿了来着……"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "The climb's been rough.",
+     "zh": "这一路爬得挺辛苦。"
+    },
+    "reply": {
+     "en": "Ya look it, buddy! All banged up!\nBut ya kept kickin' this far. Let's see if the pile's got somethin' to help ya along.",
+     "zh": "看得出来，好伙计！浑身都是伤！\n不过你能一路撑到这儿。来看看这堆里有没有能帮上你的东西。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "This is all just junk.",
+     "zh": "这堆全是破烂。"
+    },
+    "reply": {
+     "en": "Junk?! Junk is just treasure nobody's loved yet!\nHmph. Well, I still like ya. Mostly.",
+     "zh": "破烂？！破烂只是还没人疼的宝贝！\n哼。算了，我还是挺喜欢你的。大概吧。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Stop talking and give me something.",
+     "zh": "别唠叨了，给我点东西。"
+    },
+    "reply": {
+     "en": "Ha! Straight to business, huh?\nFine, fine, but the talkin' comes free with the shinies. Can't have one without the other!",
+     "zh": "哈！直接谈正事是吧？\n行行行，不过唠叨是跟宝贝一起白送的，拆不开的！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "You're a crazy old hoarder.",
+     "zh": "你就是个疯疯癫癫的老收藏狂。"
+    },
+    "reply": {
+     "en": "Crazy? Maybe! Old? Definitely!\nBut this crazy old hoarder's got what ya need, so be nice!",
+     "zh": "疯？也许吧！老？那肯定的！\n不过这个疯老头手里有你要的东西，嘴上客气点呗！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Nobody cares about your stuff.",
+     "zh": "没人在乎你这些东西。"
+    },
+    "reply": {
+     "en": "...Oh.\nWell, I care! Somebody forgot every one of these, so somebody's gotta remember 'em.",
+     "zh": "……哦。\n那我在乎呀！这些东西每一件都被人忘了，总得有人替它们记着吧。"
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "Say, since you're here... help a buddy out with somethin', will ya?",
+    "zh": "哎，既然你来了……帮你这个好伙计一个小忙呗？"
+   },
+   {
+    "en": "Oh! Oh! I just remembered, I need a favor! Won't take long, promise!",
+    "zh": "喔！喔！我刚想起来，有件事要你帮忙！不耽误你多久，保证！"
+   },
+   {
+    "en": "Tell ya what, do somethin' for me and I'll make it worth your while!",
+    "zh": "这样吧，你帮我办件事，我保证不亏待你！"
+   }
+  ],
+  "gift": [
+   {
+    "en": "Here, here, take this one! It's been waitin' for ya, I'm sure of it!",
+    "zh": "来来，拿着这个！它肯定一直在等你，我敢打包票！"
+   },
+   {
+    "en": "Found it! ...Wait, no, that's... eh, it'll do! Put it to good use!",
+    "zh": "找到了！……等等，不对，这个是……哎，也行！好好用上哦！"
+   },
+   {
+    "en": "Don't say I never gave ya nothin'! Well, ya won't remember anyway, ha!",
+    "zh": "别说我从没给过你东西哈！反正你也记不住，哈！"
+   }
+  ]
+ },
+ "TANX": {
+  "open": {
+   "hostile": [
+    {
+     "en": "YOU AGAIN!! LAST TIME YOU RAN!!\nNO RUNNING NOW! FIGHT ME!!",
+     "zh": "又是你！！上次你跑了！！\n这次不许跑！与我一战！！"
+    },
+    {
+     "en": "HMPH!! YOU TOOK A WEAPON AND LEFT!!\nYOU EARN A WEAPON IN A FIGHT!!",
+     "zh": "哼！！你拿了武器就走！！\n武器要靠战斗来拿！！"
+    },
+    {
+     "en": "I AM NOT HAPPY WITH YOU!!\nBUT FIGHT ME AND WE ARE EVEN!!",
+     "zh": "我对你很不满！！\n但跟我打一场，就算扯平！！"
+    }
+   ],
+   "stranger": [
+    {
+     "en": "WHO ARE YOU!? SMALL! BUT NOT TOO SMALL!!\nSHOW ME YOUR WEAPON!!",
+     "zh": "你是谁！？小！但不算太小！！\n给我看看你的武器！！"
+    },
+    {
+     "en": "A CLIMBER!! GOOD!!\nCLIMBERS ARE FOR FIGHTING!!",
+     "zh": "一个攀登者！！好！！\n攀登者就是用来战斗的！！"
+    },
+    {
+     "en": "HALT!! I AM TANX!!\nYOU LOOK LIKE YOU NEED MORE WEAPONS!!",
+     "zh": "站住！！我是坦克斯！！\n你看着就缺武器！！"
+    }
+   ],
+   "friendly": [
+    {
+     "en": "YOU CAME BACK!! GOOD!!\nYOU LOOK STRONGER! STILL NOT STRONG ENOUGH!!",
+     "zh": "你回来了！！好！！\n你变强了！但还不够强！！"
+    },
+    {
+     "en": "I SAVED WEAPONS FOR YOU!!\nSOME OF THEM. I KEEP THE BIG ONES!!",
+     "zh": "我给你留了武器！！\n留了一些。大的我自己留着！！"
+    },
+    {
+     "en": "HA!! THERE IS MY FAVORITE OPPONENT!!",
+     "zh": "哈！！我最喜欢的对手来了！！"
+    }
+   ],
+   "close": [
+    {
+     "en": "MY RIVAL!! YOU STILL STAND!! GOOD!!\nONLY I GET TO BEAT YOU!!",
+     "zh": "我的对手！！你还站着！！好！！\n只有我能打败你！！"
+    },
+    {
+     "en": "I THINK ABOUT OUR NEXT FIGHT ALL DAY!!\nALSO WEAPONS. MOSTLY WEAPONS!!",
+     "zh": "我整天想着我们下一场战斗！！\n还有武器。主要是武器！！"
+    },
+    {
+     "en": "YOU ARE GETTING MIGHTY!!\nI AM PROUD! AND A LITTLE SCARED! NO! ONLY PROUD!!",
+     "zh": "你越来越强大了！！\n我很骄傲！也有点怕！不！只有骄傲！！"
+    }
+   ],
+   "devoted": [
+    {
+     "en": "MY FRIEND!! MY BEST RIVAL!!\nWHOEVER HURTS YOU FIGHTS ME TOO!!",
+     "zh": "我的朋友！！我最好的对手！！\n谁敢伤你，就得先跟我打！！"
+    },
+    {
+     "en": "YOU ARE HERE!! NOW THIS PLACE IS MIGHTY!!",
+     "zh": "你来了！！这地方都变强大了！！"
+    },
+    {
+     "en": "I POLISHED EVERY WEAPON FOR YOU!!\nALL OF THEM!! IT TOOK A LONG TIME!!",
+     "zh": "我把每把武器都给你擦亮了！！\n全部！！花了好久！！"
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Your weapons are amazing, Tanx.",
+     "zh": "你的武器真厉害，坦克斯。"
+    },
+    "reply": {
+     "en": "OF COURSE!! EVERY ONE IS MIGHTY!!\nYOU HAVE GOOD TASTE, CLIMBER!!",
+     "zh": "当然！！每一把都很强大！！\n你眼光不错！！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I will fight you once I'm stronger.",
+     "zh": "等我变强，就和你打。"
+    },
+    "reply": {
+     "en": "YES!! YES!! A PROMISE!!\nGROW FAST! I AM WAITING RIGHT HERE!!",
+     "zh": "好！！好！！说定了！！\n快点变强！我就在这儿等你！！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Which weapon is your favorite?",
+     "zh": "你最喜欢哪把武器？"
+    },
+    "reply": {
+     "en": "ALL OF THEM!! NO!! THE BIGGEST ONE!!\nNO!! THE NEXT ONE I FIND!!",
+     "zh": "全部！！不对！！最大的那把！！\n不对！！是我下一把找到的！！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "You look strong today, big one.",
+     "zh": "你今天看着真壮。"
+    },
+    "reply": {
+     "en": "I LOOK STRONG EVERY DAY!!\nBUT THANK YOU!! YOU LOOK LESS WEAK!!",
+     "zh": "我每天都很壮！！\n不过谢谢你！！你看着没那么弱了！！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Thanks for helping me on the climb.",
+     "zh": "谢谢你一路帮我。"
+    },
+    "reply": {
+     "en": "HELP!? I AM ARMING MY FUTURE OPPONENT!!\nTHAT IS NOT HELP! THAT IS A PLAN!!",
+     "zh": "帮你！？我是在武装未来的对手！！\n这不叫帮！这叫计划！！"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Could you teach me to fight like you?",
+     "zh": "能教我像你那样战斗吗？"
+    },
+    "reply": {
+     "en": "EASY!! STEP ONE: HIT HARD!!\nSTEP TWO: HIT HARDER!! THERE IS NO STEP THREE!!",
+     "zh": "简单！！第一步：用力打！！\n第二步：更用力打！！没有第三步！！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What do you think of the Architect?",
+     "zh": "你怎么看建筑师？"
+    },
+    "reply": {
+     "en": "THE ARCHITECT!? IS IT STRONG!?\nTHEN IT SHOULD FIGHT ME!! THAT IS ALL I THINK!!",
+     "zh": "建筑师！？它强吗！？\n那它就该跟我打！！我就想这么多！！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "I'm pretty hurt right now.",
+     "zh": "我现在伤得挺重。"
+    },
+    "reply": {
+     "en": "HURT!? THEN NO FIGHTING TODAY!!\nREST! HEAL! THEN COME BACK AND HIT ME!!",
+     "zh": "受伤了！？那今天不打！！\n休息！养好！再回来揍我！！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "How far is the top of the Spire?",
+     "zh": "离塔顶还有多远？"
+    },
+    "reply": {
+     "en": "FAR!! MANY FIGHTS FAR!!\nGOOD!! EVERY FIGHT MAKES YOU STRONGER!!",
+     "zh": "很远！！还要打很多场！！\n好事！！每打一场，你就更强！！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Why do you collect so many weapons?",
+     "zh": "你为什么收集这么多武器？"
+    },
+    "reply": {
+     "en": "MORE WEAPONS MEANS MORE FIGHTS!!\nMORE FIGHTS MEANS MORE FUN!! VERY SIMPLE!!",
+     "zh": "武器多，打得就多！！\n打得多，就开心！！就这么简单！！"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Do you ever get tired?",
+     "zh": "你会累吗？"
+    },
+    "reply": {
+     "en": "TIRED!? KINGS DO NOT GET TIRED!!\nSOMETIMES I NAP ON MY WEAPON PILE. THAT IS DIFFERENT!!",
+     "zh": "累！？国王不会累！！\n有时我在武器堆上打个盹。那不一样！！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "You're just a loud oaf.",
+     "zh": "你就是个大嗓门的蠢货。"
+    },
+    "reply": {
+     "en": "LOUD!? YES!! OAF!? HMM!!\nBEAT ME, THEN SAY IT AGAIN!!",
+     "zh": "大嗓门！？没错！！蠢货！？嗯！！\n打赢我再说一遍！！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "I don't need your junk.",
+     "zh": "我不要你的破烂。"
+    },
+    "reply": {
+     "en": "JUNK!!? THESE ARE WEAPONS!!\nYOU HURT THEIR FEELINGS!! AND MINE!!",
+     "zh": "破烂！！？这些是武器！！\n你伤了它们的心！！还有我的！！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Fighting you is a waste of time.",
+     "zh": "跟你打就是浪费时间。"
+    },
+    "reply": {
+     "en": "WASTE!!? FIGHTING IS THE BEST USE OF TIME!!\nYOU ARE WRONG! I FORGIVE YOU! GROW UP!!",
+     "zh": "浪费！！？战斗才是最值的事！！\n你错了！我原谅你！长大点吧！！"
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "CLIMBER!! I HAVE A TASK FOR YOU!! A MIGHTY ONE!! LISTEN!!",
+    "zh": "攀登者！！我有个任务给你！！很豪迈的任务！！听好！！"
+   },
+   {
+    "en": "WAIT!! I WANT SOMETHING FROM YOU!! HEAR ME!!",
+    "zh": "等等！！我要你做件事！！听我说！！"
+   },
+   {
+    "en": "YOU WANT TO GROW STRONGER!? THEN DO THIS FOR ME!!",
+    "zh": "想变强！？那就替我办件事！！"
+   }
+  ],
+  "gift": [
+   {
+    "en": "HERE!! TAKE IT!! NO THANK YOU!! JUST GET STRONGER!!",
+    "zh": "给！！拿着！！不用谢！！快点变强就行！！"
+   },
+   {
+    "en": "THIS IS FOR YOU!! USE IT ON SOMETHING BIG!!",
+    "zh": "这个给你！！拿去对付大家伙！！"
+   },
+   {
+    "en": "TAKE THIS!! COME BACK MIGHTIER!! I WILL KNOW IF YOU DON'T!!",
+    "zh": "收下！！回来时要更强大！！不然我会知道的！！"
+   }
+  ]
+ },
+ "TEZCATARA": {
+  "open": {
+   "hostile": [
+    {
+     "en": "Oh, it's you again. Tezcatara remembers, dear.\nCome in anyway. Fire doesn't hold grudges. Mostly.",
+     "zh": "哎呀，又是你呀。特兹卡塔拉可都记着呢，亲爱的。\n进来吧。火是不记仇的……大多数时候吧。"
+    },
+    {
+     "en": "Back after what you did? Brave little thing.\nSit down. Tezcatara hasn't decided what to burn yet.",
+     "zh": "做了那种事还敢回来？真是个勇敢的小家伙呢。\n坐下吧。特兹卡塔拉还没想好要烧掉什么呢。"
+    },
+    {
+     "en": "Oh, sweetie. You hurt Tezcatara's feelings last time.\n(Tezcatara smiles very wide) But I'll forgive you. Probably.",
+     "zh": "哎呀，小可爱。上次你可伤了特兹卡塔拉的心呢。\n（特兹卡塔拉笑得嘴都咧开了）不过我会原谅你的。大概吧。"
+    }
+   ],
+   "stranger": [
+    {
+     "en": "Oh my, a new face! Come in, come in, dear!\nTezcatara just pulled something out of the fire.",
+     "zh": "啊呀呀，是张新面孔！快进来，进来吧，亲爱的！\n特兹卡塔拉刚从火里拿出点好东西呢。"
+    },
+    {
+     "en": "Who's that at the door? Come closer, sweetie, my eyes aren't what they were.\nThere. Much better.",
+     "zh": "门口是谁呀？再过来一点，小可爱，我的眼神不太好使啦。\n好啦，这下看清楚了。"
+    },
+    {
+     "en": "A visitor, climbing all this way! You must be starving.\nSit, sit. Tell Tezcatara what needs burning.",
+     "zh": "有客人一路爬到这里来啦！你一定饿坏了吧。\n坐，快坐。告诉特兹卡塔拉，有什么需要烧掉的呀？"
+    }
+   ],
+   "friendly": [
+    {
+     "en": "There you are, dear! I kept the oven warm for you.",
+     "zh": "你来啦，亲爱的！我一直给你把炉子热着呢。"
+    },
+    {
+     "en": "Welcome back, sweetie! Still climbing? Good, good.\nThe Architect won't kill himself, will he?",
+     "zh": "欢迎回来，小可爱！还在往上爬吗？很好，很好。\n建筑师总不会自己去死的，对吧？"
+    },
+    {
+     "en": "Oh, I know those footsteps! Come in, come in.\nLet's see what flaws you've picked up since last time.",
+     "zh": "哎呀，这脚步声我认得！进来，进来吧。\n让我瞧瞧你这次又沾上了哪些缺点。"
+    }
+   ],
+   "close": [
+    {
+     "en": "My favourite visitor! Tezcatara baked extra, just for you.",
+     "zh": "我最喜欢的客人来啦！特兹卡塔拉特意给你多烤了一些哦。"
+    },
+    {
+     "en": "Come here, dear, let me look at you.\nThinner again. Those stairs are working you to the bone.",
+     "zh": "过来，亲爱的，让我好好看看你。\n又瘦了。那些台阶真是要把你累垮了呀。"
+    },
+    {
+     "en": "Ah, back again! I was just thinking of you.\nAnd of the Architect, burning. Nice thoughts, both.",
+     "zh": "啊，你又回来啦！我刚才还在想你呢。\n还想着建筑师烧起来的样子。两个都是好念头呀。"
+    }
+   ],
+   "devoted": [
+    {
+     "en": "Sweetie! Oh, Tezcatara could just eat you up.\nCome sit by the fire, you're family now.",
+     "zh": "小可爱！哎呀，特兹卡塔拉真想把你一口吃掉呢。\n来火边坐吧，你现在可是一家人啦。"
+    },
+    {
+     "en": "There's my darling. I'd burn anything for you, you know.\nThe Architect first, of course.",
+     "zh": "我的心肝来啦。为了你，我什么都肯烧哦。\n当然啦，得先烧建筑师。"
+    },
+    {
+     "en": "You came back to me! I always know you will.\nNow eat. You'll need your strength to kill him.",
+     "zh": "你又回到我身边啦！我就知道你会回来的。\n来，吃吧。要杀他可得有力气才行呀。"
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Something smells wonderful in here.",
+     "zh": "这里闻起来好香啊。"
+    },
+    "reply": {
+     "en": "Doesn't it? Fresh from the fire, sweetie.\nDon't ask what's inside. Just eat.",
+     "zh": "是吧？刚从火里拿出来的哦，小可爱。\n别问里头是什么，吃就是了。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What is this place?",
+     "zh": "这是什么地方？"
+    },
+    "reply": {
+     "en": "My kitchen, dear. My home.\nNothing to worry about in here. Have a bite.",
+     "zh": "是我的厨房呀，亲爱的。也是我的家。\n在这儿没什么好担心的。来，吃一口。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "I didn't come here for snacks.",
+     "zh": "我可不是来吃零食的。"
+    },
+    "reply": {
+     "en": "No? Then you'll leave with some anyway.\nNobody refuses Tezcatara's cooking, dear. Nobody.",
+     "zh": "不是吗？那你走的时候也得带上一些。\n没有人能拒绝特兹卡塔拉的手艺，亲爱的。没有人。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Thank you for looking after me.",
+     "zh": "谢谢你照顾我。"
+    },
+    "reply": {
+     "en": "Oh, listen to you! Such a sweet thing.\nSomeone has to. The Spire certainly won't.",
+     "zh": "哎呀，听听这话！真是个贴心的孩子。\n总得有人照顾你呀。尖塔可不会。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Why do you want the Architect dead?",
+     "zh": "你为什么想让建筑师死？"
+    },
+    "reply": {
+     "en": "Oh, does there need to be a reason, sweetie?\nSome things are simply better burnt. Now, more treats?",
+     "zh": "哎呀，这还需要理由吗，小可爱？\n有些东西烧掉了就是更好嘛。再来点点心？"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Your fire keeps me warm.",
+     "zh": "你的火让我觉得很暖和。"
+    },
+    "reply": {
+     "en": "That's what it's for, dear! Warming and burning.\nMostly the same thing, if you think about it.",
+     "zh": "火就是干这个的呀，亲爱的！暖身子，还有烧东西。\n仔细想想，其实也差不多嘛。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "You're just a big lump of fire.",
+     "zh": "你就是一大坨火而已。"
+    },
+    "reply": {
+     "en": "Hee hee! Such a mouth on you!\nCareful, sweetie. Lumps of fire get hungry too.",
+     "zh": "嘻嘻！这张小嘴可真厉害！\n小心点哦，小可爱。一坨火也是会饿的。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What happens when you burn a flaw?",
+     "zh": "烧掉缺点会怎么样？"
+    },
+    "reply": {
+     "en": "It goes away, dear. Pop! Like it was never there.\nAnd most of the time, the rest of you stays.",
+     "zh": "它就没了呀，亲爱的。噗！就像从来没有过一样。\n大多数时候，你剩下的部分都还在呢。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "How have you been, Tezcatara?",
+     "zh": "你最近过得好吗，特兹卡塔拉？"
+    },
+    "reply": {
+     "en": "Oh, how kind to ask! Nobody asks.\nWaiting, mostly. Waiting for someone to kill him. Could be you!",
+     "zh": "哎呀，你真体贴！都没人问过我呢。\n一直在等呀。等有人去把他杀了。说不定就是你哦！"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Stop calling me sweetie.",
+     "zh": "别再叫我小可爱了。"
+    },
+    "reply": {
+     "en": "Oh, you're adorable when you're cross!\nFine, fine. Sweetie it stays, sweetie.",
+     "zh": "哎呀，你生气的样子真可爱！\n好啦好啦。还是叫你小可爱吧，小可爱。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "The climb is getting harder.",
+     "zh": "往上爬越来越难了。"
+    },
+    "reply": {
+     "en": "Of course it is, sweetie. He made it that way.\nThat's why you eat before you go. Open wide.",
+     "zh": "那当然啦，小可爱。他就是故意弄成这样的。\n所以出门前得先吃饱呀。来，张嘴。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I'll bring you the Architect's head.",
+     "zh": "我会把建筑师的脑袋带给你。"
+    },
+    "reply": {
+     "en": "Would you? Oh, what a darling!\nBring it warm, dear. Tezcatara hates cold leftovers.",
+     "zh": "真的吗？哎呀，真是个好孩子！\n趁热带来哦，亲爱的。特兹卡塔拉最讨厌放凉的剩菜了。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Can you really not see well?",
+     "zh": "你真的看不太清楚吗？"
+    },
+    "reply": {
+     "en": "Only shapes and warmth, dear. You're a very warm shape.\nTezcatara sees what matters.",
+     "zh": "只能看到轮廓和热气啦，亲爱的。你就是个暖乎乎的轮廓呢。\n该看清的东西，特兹卡塔拉都看得见。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "I don't trust you or your food.",
+     "zh": "我不相信你，也不相信你的吃的。"
+    },
+    "reply": {
+     "en": "Smart. The Spire teaches that, doesn't it?\nBut Tezcatara wants him dead as much as you do. More, even.",
+     "zh": "真聪明。是尖塔教会你的吧？\n可特兹卡塔拉跟你一样想让他死呢。说不定比你还想。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "You're the kindest one in this tower.",
+     "zh": "你是这座塔里最和善的了。"
+    },
+    "reply": {
+     "en": "Kind? Hee hee! Tezcatara's been called many things.\nKeep saying it, sweetie. It keeps the fire happy.",
+     "zh": "和善？嘻嘻！特兹卡塔拉被人叫过好多名字呢。\n多说几遍吧，小可爱。火听了会开心的。"
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "Oh, sweetie, would you do Tezcatara a tiny favour?",
+    "zh": "哎呀，小可爱，能帮特兹卡塔拉一个小忙吗？"
+   },
+   {
+    "en": "Before you go, dear, I have a little something to ask.",
+    "zh": "走之前呀，亲爱的，我有件小事想拜托你。"
+   },
+   {
+    "en": "Now, one small thing. Nothing a strong one like you can't manage.",
+    "zh": "嗯，就一件小事。对你这么厉害的孩子来说，肯定不难啦。"
+   }
+  ],
+  "gift": [
+   {
+    "en": "Here, take this, dear. Don't tell the others.",
+    "zh": "来，拿着吧，亲爱的。可别告诉别人哦。"
+   },
+   {
+    "en": "Still warm from the fire! Go on, it's for you.",
+    "zh": "还带着火的热乎气呢！拿着吧，是给你的。"
+   },
+   {
+    "en": "Tezcatara saved this just for you, sweetie. Now go kill him.",
+    "zh": "这是特兹卡塔拉专门给你留的哦，小可爱。好啦，去杀了他吧。"
+   }
+  ]
+ },
+ "VAKUU": {
+  "open": {
+   "hostile": [
+    {
+     "en": "You again. You broke our last arrangement, and still you come to my door...?",
+     "zh": "又是你。上次的约定被你毁了，你居然还敢来找我……？"
+    },
+    {
+     "en": "I remember every clause you failed to honor.\nShall we discuss the interest?",
+     "zh": "你没履行的每一条款，我都记得。\n要不要谈谈利息呢？"
+    },
+    {
+     "en": "(Vakuu does not rise.)\nA debtor who walks in unafraid. How refreshing...",
+     "zh": "（瓦库没有起身。）\n欠债的人居然毫不畏惧地走进来。真是新鲜呵……"
+    }
+   ],
+   "stranger": [
+    {
+     "en": "A new face within these accursed walls? Sit. Everyone who reaches me has already lost something.",
+     "zh": "这被诅咒的墙内又来了新面孔？坐吧。能走到我面前的人，都已经失去过什么了。"
+    },
+    {
+     "en": "You look like someone who wants more than the Spire will give.\nI can arrange that... for a price.",
+     "zh": "你看上去想要的比尖塔肯给的更多。\n这我可以安排……当然，要有代价。"
+    },
+    {
+     "en": "Hesitating at the threshold, are we?\nHesitation costs nothing. That is precisely why it earns nothing.",
+     "zh": "在门口犹豫是么？\n犹豫不花任何代价，所以也换不来任何东西。"
+    }
+   ],
+   "friendly": [
+    {
+     "en": "Back again. You are becoming one of my more reliable visitors...",
+     "zh": "又回来了。你快成了我最可靠的访客之一了呢……"
+    },
+    {
+     "en": "Ah, my favorite signatory. Your ink dried so neatly last time.",
+     "zh": "啊，我最中意的签约人。上次你的墨迹干得很整齐哦。"
+    },
+    {
+     "en": "You survived. Good.\nDead climbers make terrible customers.",
+     "zh": "你活下来了。很好。\n死掉的攀登者可是最糟糕的顾客。"
+    }
+   ],
+   "close": [
+    {
+     "en": "I count your visits, you know. I don't do that for many.",
+     "zh": "你知道么，我一直在数你来过几次。能让我这么做的人可不多。"
+    },
+    {
+     "en": "Sit closer. Between us, the fine print can wait a moment...",
+     "zh": "坐近些。你我之间，那些小字条款可以晚点再说……"
+    },
+    {
+     "en": "You keep returning to a demon.\nWhat does that say about the rest of the Spire?",
+     "zh": "你一次又一次回到恶魔这里。\n这说明尖塔里其他的东西有多糟呢？"
+    }
+   ],
+   "devoted": [
+    {
+     "en": "Of all who climb, you are the one I would least like to lose.\nConsider that a clause in your favor.",
+     "zh": "在所有攀登者之中，你是我最不想失去的那一个。\n就当这是一条对你有利的条款吧。"
+    },
+    {
+     "en": "Come. For you, the price is always a little smaller...\nNever nothing. But smaller.",
+     "zh": "过来吧。对你，代价总是会少一些……\n不会没有，但会少一些。"
+    },
+    {
+     "en": "When the Architect falls, I want you standing there.\nNot as my puppet. As my partner.",
+     "zh": "等建筑师倒下的时候，我希望站在那里的是你。\n不是作为我的傀儡，而是作为我的伙伴。"
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I came back just to see you.",
+     "zh": "我是特意回来看你的。"
+    },
+    "reply": {
+     "en": "To see me. How touching.\nThose who come to see me usually leave owing something... shall we find out what you'll owe?",
+     "zh": "特意来看我？真令人感动。\n来看我的人，走时通常都欠了些什么……你猜你会欠我什么？"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "You seem wounded. Are you alright?",
+     "zh": "你好像受伤了。你还好么？"
+    },
+    "reply": {
+     "en": "The Architect's work. It does not close.\nHow kind of you to ask. Kindness is a currency here too, you know...",
+     "zh": "建筑师留下的伤，一直没有愈合。\n谢谢你关心。在这里，关心也是一种货币哦……"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Your contracts are beautifully written.",
+     "zh": "你的契约写得真漂亮。"
+    },
+    "reply": {
+     "en": "Every word exactly where it belongs. So few people notice.\nFewer still read to the end...",
+     "zh": "每一个字都放在它该在的地方。很少有人注意到。\n能读到最后的就更少了……"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Tell me what you truly want.",
+     "zh": "告诉我你真正想要什么。"
+    },
+    "reply": {
+     "en": "The Architect, gone. Simple.\nI would rather not do it myself, of course. Isn't that what climbers are for?",
+     "zh": "建筑师消失。就这么简单。\n当然，我不想亲自动手。攀登者不就是为此存在的么？"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I trust you, Vakuu.",
+     "zh": "瓦库，我信任你。"
+    },
+    "reply": {
+     "en": "You shouldn't trust anyone in the Spire.\nBut I have never lied to you. I simply haven't told you everything... is that not trust enough?",
+     "zh": "在尖塔里，你不该信任任何人。\n但我从没对你说过谎。我只是没把一切都告诉你……这样还不够么？"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Thank you for your help.",
+     "zh": "谢谢你的帮助。"
+    },
+    "reply": {
+     "en": "Don't thank me. Only those who haven't read the terms say thank you.\nYou'll pay in due time, and we will both be satisfied.",
+     "zh": "不必谢我。只有没读过条款的人才会道谢。\n该付的时候你自然会付，到时我们都会满意的。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "How long have you been here?",
+     "zh": "你在这里多久了？"
+    },
+    "reply": {
+     "en": "Longer than these walls you climb. Longer than your name.\nYou do understand it all comes around again, yes?",
+     "zh": "比你爬的这些墙还久，比你的名字还久。\n你明白这一切都会一再重来，对吧？"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What lies further up?",
+     "zh": "再往上有什么？"
+    },
+    "reply": {
+     "en": "More of the same, and then the Architect.\nWhether you reach him depends on what you are willing to sign.",
+     "zh": "更多同样的东西，然后是建筑师。\n你能不能见到他，取决于你愿意签下什么。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Do other climbers visit you?",
+     "zh": "别的攀登者也来找你么？"
+    },
+    "reply": {
+     "en": "All of them, eventually. Some twice. Some many more times than that.\nYou are not special. Not yet.",
+     "zh": "迟早都会来。有的来两次，有的来得更多。\n你并不特别。至少现在还不是。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What happens if I refuse?",
+     "zh": "如果我拒绝呢？"
+    },
+    "reply": {
+     "en": "Nothing at all. You leave exactly as weak as you came.\nThat is the price of refusing... I find it rather steep.",
+     "zh": "什么都不会发生。你怎么来的，就怎么虚弱地离开。\n这就是拒绝的代价……我倒觉得挺高的。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "I'm just resting a moment.",
+     "zh": "我只是歇一会儿。"
+    },
+    "reply": {
+     "en": "Rest, then. It costs nothing.\nThe only free thing in my presence. Enjoy it while I feel generous.",
+     "zh": "那就歇吧，这不花钱。\n在我面前，这是唯一免费的东西。趁我还大方，好好享受吧。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Keep your cursed deals, demon.",
+     "zh": "收起你那些该死的交易，恶魔。"
+    },
+    "reply": {
+     "en": "Cursed? They are perfectly honest. Everything you paid for, you received.\nYou'll be back. They always come back...",
+     "zh": "该死？它们再诚实不过了。你付出的，你都得到了。\n你会回来的。大家总会回来……"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "You're nothing but a swindler.",
+     "zh": "你不过是个骗子。"
+    },
+    "reply": {
+     "en": "A swindler lies. I never have.\nIf you signed without reading, whose fault is that?",
+     "zh": "骗子才会说谎，我从来没有。\n你签字前没好好读，那又是谁的错呢？"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "One day I'll come for you too.",
+     "zh": "总有一天我也会来收拾你。"
+    },
+    "reply": {
+     "en": "Many have promised me that. I keep a list.\nI'll add your name. It does get so long...",
+     "zh": "许多人都这样许诺过，我都记着呢。\n再添上你的名字吧……反正名单也不差这一个。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "You're boring. I'm leaving.",
+     "zh": "你真无聊，我要走了。"
+    },
+    "reply": {
+     "en": "Go, then. The door is where you left it.\nOnce you've lost enough, you'll find me interesting again.",
+     "zh": "走吧，门还在原处。\n等你失去得够多了，自然会觉得我有趣起来的。"
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "Before you go, there is a small matter I'd like you to attend to... nothing you can't afford.",
+    "zh": "走之前，有件小事想请你办……不会是你付不起的。"
+   },
+   {
+    "en": "I have a proposition. Read it carefully this time, won't you?",
+    "zh": "我有一份提案。这次好好读完，好么？"
+   },
+   {
+    "en": "Let us draw up something small between us. A test of good faith, shall we say?",
+    "zh": "我们之间来立一份小小的约定吧。就当是检验诚意，如何？"
+   }
+  ],
+  "gift": [
+   {
+    "en": "Take it. No signature required... this time.",
+    "zh": "拿去吧。不用签字……这一次不用。"
+   },
+   {
+    "en": "A gift. Don't look so suspicious, I will simply remember it.",
+    "zh": "送你的。别那么多疑，我只是会记着这件事而已。"
+   },
+   {
+    "en": "Consider this an advance on our future arrangements...",
+    "zh": "就当是我们日后交易的预付款吧……"
+   }
+  ]
+ },
+ "MERCHANT": {
+  "open": {
+   "hostile": [
+    {
+     "en": "You again.\nPay first. Then we talk.",
+     "zh": "又是你。\n先付钱，再说话。"
+    },
+    {
+     "en": "I remember your face.\nI don't give credit. Least of all to you.",
+     "zh": "我记得你这张脸。\n我这儿不赊账，对你更不赊。"
+    },
+    {
+     "en": "Browse if you must.\nKeep your hands where I can see them.",
+     "zh": "要看就看。\n手放在我看得见的地方。"
+    }
+   ],
+   "stranger": [
+    {
+     "en": "Hello.\nYour gold goes further here.",
+     "zh": "你好。\n金币就在这儿花。"
+    },
+    {
+     "en": "A new face.\nThe shop is open.",
+     "zh": "生面孔。\n小店照常营业。"
+    },
+    {
+     "en": "Welcome.\nLooking is free. Buying is not.",
+     "zh": "欢迎。\n看是免费的。买可不是。"
+    }
+   ],
+   "friendly": [
+    {
+     "en": "Ah. A returning customer.\nMy favorite kind.",
+     "zh": "哦，老主顾。\n我最喜欢这种客人。"
+    },
+    {
+     "en": "You're still climbing.\nGood for business.",
+     "zh": "你还在往上爬。\n这对生意有好处。"
+    },
+    {
+     "en": "(Taps the rug.)\nFresh stock. Take a look.",
+     "zh": "（拍了拍地毯）\n新货到了，看看吧。"
+    }
+   ],
+   "close": [
+    {
+     "en": "There you are.\nI set a few things aside. Not for free, of course.",
+     "zh": "你来了。\n我给你留了几样东西。当然不是白送的。"
+    },
+    {
+     "en": "My best customer.\nI don't say that to everyone.",
+     "zh": "我最好的主顾。\n这话我不是对谁都说。"
+    },
+    {
+     "en": "You look worse than last time.\nSit. Browse. Spend.",
+     "zh": "你看起来比上次更糟。\n坐下，慢慢看，慢慢花。"
+    }
+   ],
+   "devoted": [
+    {
+     "en": "I kept the rug out a little longer today.\nIn case you came.",
+     "zh": "今天我多摆了一会儿摊。\n就等你来。"
+    },
+    {
+     "en": "You're alive. Good.\nDead customers don't come back.",
+     "zh": "你还活着。很好。\n死人可不会回头光顾。"
+    },
+    {
+     "en": "Welcome back, friend.\nStill no credit. But I'm glad you're here.",
+     "zh": "欢迎回来，朋友。\n还是不赊账。不过你来了，我很高兴。"
+    }
+   ]
+  },
+  "exchanges": [
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Your stock looks good today.",
+     "zh": "你今天的货看着不错。"
+    },
+    "reply": {
+     "en": "It always does.\nThank you for noticing. Now buy something.",
+     "zh": "一直都不错。\n谢谢你注意到了。现在买点什么吧。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Don't you get tired of the climb?",
+     "zh": "你爬塔不累吗？"
+    },
+    "reply": {
+     "en": "I don't climb.\nThe rug is simply where it needs to be.",
+     "zh": "我不爬。\n地毯该在哪儿，就在哪儿。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "I brought you something that smells awful.",
+     "zh": "我给你带了个臭东西。"
+    },
+    "reply": {
+     "en": "Yesss. You know what I like.\nDon't stop there.",
+     "zh": "好哎，你懂我。\n有多少来多少。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "Thanks for always being here.",
+     "zh": "谢谢你一直在这儿。"
+    },
+    "reply": {
+     "en": "Someone has to be.\nGold needs somewhere to go.",
+     "zh": "总得有人在。\n金币总得有个去处。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "How are you holding up?",
+     "zh": "你最近还好吗？"
+    },
+    "reply": {
+     "en": "Business is steady.\nThat is all a merchant needs.",
+     "zh": "生意还算稳。\n做买卖的，要的也就这些。"
+    }
+   },
+   {
+    "tag": "warm",
+    "choice": {
+     "en": "You're the only friendly face up here.",
+     "zh": "这上面就你还算友善。"
+    },
+    "reply": {
+     "en": "I'm polite. There's a difference.\nBut I'll take the compliment.",
+     "zh": "我只是有礼貌。这不一样。\n不过这句夸奖我收下了。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "What do you know about the Architect?",
+     "zh": "你了解建筑师吗？"
+    },
+    "reply": {
+     "en": "Enough.\nThe Architect isn't a customer. So I don't discuss the Architect.",
+     "zh": "知道一些。\n建筑师不来我这儿买东西，所以我不谈。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Where do you get your stock?",
+     "zh": "你的货都是哪来的？"
+    },
+    "reply": {
+     "en": "Trade secret.\nThe price covers the mystery.",
+     "zh": "商业机密。\n价钱里包含了这份神秘。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "How much further to the top?",
+     "zh": "离塔顶还有多远？"
+    },
+    "reply": {
+     "en": "Further than your purse, by the look of it.\nKeep climbing. Keep spending.",
+     "zh": "看样子比你的钱包能撑的还远。\n继续爬，继续花。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "Have you ever met Neow?",
+     "zh": "你见过涅奥吗？"
+    },
+    "reply": {
+     "en": "Everyone up here has.\nNeow doesn't buy anything either.",
+     "zh": "这上面谁没见过。\n涅奥也不买东西。"
+    }
+   },
+   {
+    "tag": "plain",
+    "choice": {
+     "en": "My wounds are getting worse.",
+     "zh": "我的伤越来越重了。"
+    },
+    "reply": {
+     "en": "I noticed.\nI sell remedies. I don't sell sympathy.",
+     "zh": "看出来了。\n我卖药，不卖同情。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Your prices are daylight robbery.",
+     "zh": "你这价格简直是抢钱。"
+    },
+    "reply": {
+     "en": "Robbers don't ask. I do.\nBuy or don't.",
+     "zh": "抢钱不用你点头。\n买不买随你。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Show me your face, coward.",
+     "zh": "露个脸啊，胆小鬼。"
+    },
+    "reply": {
+     "en": "My face isn't for sale.\nNeither is my patience.",
+     "zh": "我的脸不卖。\n我的耐心也不卖。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "I don't need your junk.",
+     "zh": "我不需要你的破烂。"
+    },
+    "reply": {
+     "en": "Then die with full pockets.\nThat's your business, not mine.",
+     "zh": "那你就揣着一口袋钱去死吧。\n那是你的事，不是我的。"
+    }
+   },
+   {
+    "tag": "rude",
+    "choice": {
+     "en": "Shut up and give me a discount.",
+     "zh": "闭嘴，给我打个折。"
+    },
+    "reply": {
+     "en": "Discounts aren't given on demand.\nI don't do favors for rudeness.",
+     "zh": "开口要的折扣，我不打。\n我这儿也不做善事。"
+    }
+   }
+  ],
+  "deal": [
+   {
+    "en": "I have a small request. Good business for both of us.",
+    "zh": "我有个小请求。对我们俩都是好买卖。"
+   },
+   {
+    "en": "A proposition. Hear me out before you reach for your purse.",
+    "zh": "有桩生意。掏钱包之前先听我说完。"
+   },
+   {
+    "en": "You look capable. I could use that.",
+    "zh": "你看着挺能干。我正好用得上。"
+   }
+  ],
+  "gift": [
+   {
+    "en": "Take this. Don't tell the other customers.",
+    "zh": "拿着。别告诉其他客人。"
+   },
+   {
+    "en": "On the house. Just this once.",
+    "zh": "这次算我的。仅此一次。"
+   },
+   {
+    "en": "For a good customer. Consider it an investment.",
+    "zh": "给好主顾的。就当是我投资。"
+   }
+  ]
+ }
+}

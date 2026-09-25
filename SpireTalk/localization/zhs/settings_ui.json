@@ -22,7 +22,7 @@
   "SPIRETALK-RESET_MEMORIES_BTN.title": "清空",
   "SPIRETALK-MSG.TestOwnOkBody": "接口 {0} 有响应（{2}）。模型：{1}。",
   "SPIRETALK-MSG.ResetDoneBody": "下次见面时，本档案的所有 NPC 都会把你当陌生人。",
-  "SPIRETALK-MSG.ErrNotConfigured": "SpireTalk 还没设置。点主菜单右上角的 mushie，填自己的 API Key，或登录 Yumina。",
+  "SPIRETALK-MSG.ErrNotConfigured": "SpireTalk 还没设置。点主菜单右上角的 mushie，填自己的 API 密钥。",
   "SPIRETALK-MSG.ErrUnauthorized": "Key 或令牌被拒绝。",
   "SPIRETALK-MSG.ErrNoCredits": "积分/额度用完了。",
   "SPIRETALK-MSG.ErrRateLimited": "请求太频繁，稍等一下再试。",
@@ -112,8 +112,8 @@
   "SPIRETALK-MSG.GuideNext": "下一页",
   "SPIRETALK-MSG.GuideDone": "关闭",
   "SPIRETALK-MSG.GuideSetup": "打开设置",
-  "SPIRETALK-MSG.Guide.welcome.title": "先接上 AI",
-  "SPIRETALK-MSG.Guide.welcome.body": "NPC 的台词由 AI 生成，需要你自己的 API 密钥。\n\n打开设置：选来源，贴密钥，选模型，点「测试连接」。在国内可以直接用 DeepSeek、硅基流动、阿里云百炼、智谱。",
+  "SPIRETALK-MSG.Guide.welcome.title": "不填密钥也能玩",
+  "SPIRETALK-MSG.Guide.welcome.body": "没填 API 密钥时，NPC 说写好的台词。每句给你三个回复可选，好感、约定、信物、路上偶遇都照常。\n\n填了自己的密钥，NPC 的话由 AI 现写：会看你这局的血量、卡组和遗物说话，你也可以自己打字。下一页讲怎么免费拿一个。",
   "SPIRETALK-MSG.Guide.talk.title": "交谈",
   "SPIRETALK-MSG.Guide.talk.body": "先民事件的选项最下面有「交谈」，商店右上角有「聊聊」。\n\n每次见面说 3 句。点给出的回复，或者在输入框里打字，按回车发送。\n\n说的话会改变好感：敌意、陌生、友好、亲近、挚爱。",
   "SPIRETALK-MSG.Guide.deals.title": "约定",
@@ -130,5 +130,9 @@
   "SPIRETALK-MSG.BookVow": "誓约",
   "SPIRETALK-MSG.BookNotYet": "还没拿到",
   "SPIRETALK-MSG.BookVowOn": "{0} 立下誓约",
-  "SPIRETALK-MSG.BookEngravings": "刻痕 {0}/{1}"
+  "SPIRETALK-MSG.BookEngravings": "刻痕 {0}/{1}",
+  "SPIRETALK-MSG.Guide.freekey.title": "免费拿一个密钥",
+  "SPIRETALK-MSG.Guide.freekey.body": "在国内：去智谱开放平台 open.bigmodel.cn 注册（要手机号和实名认证），在「API Keys」页新建一个密钥。设置里来源选「智谱（GLM）」，贴上密钥，点「测试连接」，模型选 glm-4.7-flash，这个模型不收费。\n\n在国外：去 aistudio.google.com/apikey，用 Google 账号登录，点 Create API key。来源选「Google Gemini」，模型选名字带 flash 的，免费额度够平时聊天。\n\n有独立显卡的话，本机 Ollama 也免费，不用密钥。",
+  "SPIRETALK-MSG.FreeModelZhipu": "glm-4.7-flash 不收费。",
+  "SPIRETALK-MSG.FreeModelGoogle": "名字带 flash 的模型有免费额度（中国大陆用不了）。"
 }

@@ -172,11 +172,8 @@ public sealed class AncientConversation
                 return;
             }
 
-            var backend = MainFile.Backend;
-            if (!backend.IsConfigured)
-            {
-                throw new BackendException(Loc.Ui("ErrNotConfigured"), null, "NOT_CONFIGURED");
-            }
+            // No key: the written offline script plays the NPC instead of an AI.
+            var backend = Backends.Active;
 
             ShowThinking();
             // Showing up counts for something when the mod keeps its own ledger (Ancient
@@ -234,7 +231,7 @@ public sealed class AncientConversation
 
             ShowThinking();
             using var cts = TurnTimeout(120);
-            var turn = await MainFile.Backend.ExchangeAsync(_ctx, playerLine, false, cts.Token);
+            var turn = await Backends.Active.ExchangeAsync(_ctx, playerLine, false, cts.Token);
             if (Gone) return;
             await HandleTurnAsync(turn, playerLine, isOpener: false);
         }
@@ -445,7 +442,7 @@ public sealed class AncientConversation
         // The typed line joins the option list BEFORE the dialogue is laid out: on the last page
         // the layout scrolls up by the list's measured height, once.
         DisposeInput();
-        if (SpireTalkConfig.FreeTextInput && !outOfLines && !offerPending)
+        if (SpireTalkConfig.FreeTextInput && !Backends.Scripted && !outOfLines && !offerPending)
         {
             AttachInputBox(layout, ConversationRules.LinesPerVisit - _linesUsed);
         }

@@ -121,6 +121,8 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 
 点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。选来源（OpenRouter、OpenAI、Anthropic、Google Gemini、DeepSeek、xAI、Mistral、Groq、月之暗面、硅基流动、阿里云百炼、智谱、本机 Ollama，或其他 OpenAI 兼容接口），贴密钥（Ollama 不用），从列表挑模型（或选「其他」手动填），点「测试连接」，结果就写在下面一行。
 
+不填密钥也能玩：NPC 说 `SpireTalk/offline_script.json` 里写好的台词（每人按关系分档的开场白、15 组「回复→回答」、约定和送礼的台词，中英各一套），你从三个回复（热情/平常/冒犯）里选，好感按 +3/+1/−3 走同一套上限规则；约定、信物、偶遇照常，只是不能自己打字、偶遇里没有「搭话」、局末不回顾。免费密钥：国内智谱 glm-4.7-flash，国外 Google AI Studio 的 flash 模型。
+
 设置就这些，不需要任何账号：NPC 由游戏内置的 Yumina 引擎驱动，模组除了你自己填的接口之外不连任何服务器。创意工坊封面和路上偶遇的插画是生成图，按游戏里的角色重绘。
 
 ### 卡

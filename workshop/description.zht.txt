@@ -1,5 +1,7 @@
 [b]先民會回話了。[/b]八位遠古先民和商人都會用自己的口吻跟你說話，記得你上一局說過什麼，會向你提要求，還會把一件隨關係成長的遺物交給你。用你自己的 API Key，在遊戲裡直接執行，不用註冊賬號，也不連任何伺服器。
 
+[b]沒有金鑰也能玩。[/b]不填金鑰時，NPC 說寫好的臺詞，你從三個回覆裡選一個；好感、約定、信物、路上偶遇都照常。填了金鑰（有免費的，見下文），臺詞由 AI 現寫，你也可以自己打字。
+
 [b]兩種畫風都支援：[/b]預設是原版畫風；裝了 [b]AncientWaifus[/b] + [b]Merchant2CuteII[/b]，模組自己的插畫會自動換成娘化畫風。
 
 [h1]有什麼[/h1]
@@ -34,6 +36,7 @@
 [*] 選一個來源：OpenRouter、OpenAI、Anthropic、Google Gemini、DeepSeek、xAI、Mistral、Groq、月之暗面、矽基流動、阿里雲百鍊、智譜、本機 Ollama，或者任何相容 OpenAI 介面的服務。國內的幾家不用翻牆。
 [*] 貼上金鑰（Ollama 不需要），從列表裡選一個模型，點「測試連線」。開一局，去聊天。
 [/olist]
+免費金鑰：國內用[b]智譜開放平臺[/b]（open.bigmodel.cn，glm-4.7-flash 模型不收費，註冊要手機號和實名）；國外用 [b]Google AI Studio[/b]（aistudio.google.com/apikey，名字帶 flash 的模型有免費額度）。不想折騰也可以直接玩寫好的臺詞。
 第一次進主選單會彈出一份簡短的新手指南，之後在設定裡也能隨時再看。
 這些角色由 [url=https://github.com/lovetimo0421/yumina-oss]Yumina 引擎[/url] 在遊戲內執行，模組只連線你自己配置的介面地址。每位角色都是一張 Yumina 角色卡（一個 JSON 檔案），把你自己的卡放進 [i]%APPDATA%\SlayTheSpire2\spiretalk\cards\[/i] 就能替換對應的人設。
 

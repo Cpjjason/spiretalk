@@ -291,8 +291,7 @@ internal sealed class MerchantConversation
     {
         if (_greeted) return;
         _greeted = true;
-        var backend = MainFile.Backend;
-        if (!backend.IsConfigured) return;
+        var backend = Backends.Active;
         try
         {
             if (!_visitBonusGiven)
@@ -347,11 +346,6 @@ internal sealed class MerchantConversation
         var host = (Node?)NGame.Instance;
         if (host == null) return;
         host.AddChild(_panel);
-        if (!MainFile.Backend.IsConfigured)
-        {
-            _panel.SetError(Loc.Ui("ErrNotConfigured"));
-            return;
-        }
         if (!_greeted)
         {
             _panel.SetThinking();
@@ -395,7 +389,7 @@ internal sealed class MerchantConversation
             _panel?.SetThinking();
 
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
-            var turn = await MainFile.Backend.ExchangeAsync(_ctx, playerLine, false, cts.Token);
+            var turn = await Backends.Active.ExchangeAsync(_ctx, playerLine, false, cts.Token);
             _lastTurn = turn;
 
             TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", playerLine, _runKey);
@@ -472,7 +466,7 @@ internal sealed class MerchantConversation
             return;
         }
         var choices = turn.Choices.Count > 0 ? turn.Choices : new[] { Loc.EventText("defaultChoice1"), Loc.EventText("defaultChoice2"), Loc.EventText("defaultChoice3") };
-        _panel.SetTurn(lines, choices, linesLeft, SpireTalkConfig.FreeTextInput, footer);
+        _panel.SetTurn(lines, choices, linesLeft, SpireTalkConfig.FreeTextInput && !Backends.Scripted, footer);
     }
 
     private ConversationRules.RewardState RewardState()

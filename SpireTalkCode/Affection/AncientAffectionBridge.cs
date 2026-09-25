@@ -1,4 +1,5 @@
 using System.Reflection;
+using Godot;
 
 namespace SpireTalk.Affection;
 
@@ -126,6 +127,60 @@ public static class AncientAffectionBridge
             return null;
         }
     }
+
+    /// <summary>
+    /// Show a change on Ancient Affection's own heart in the top right, so there is one heart on
+    /// screen, not two. On an Ancient's page that heart stays up for the whole visit: refresh it,
+    /// put "Name +N" beside it for a while, then go back to just the name. Ancients only. False
+    /// when the mod is missing or its internals moved.
+    /// </summary>
+    public static bool ShowChange(string npcKey, string name, int value, int delta, double holdSeconds)
+    {
+        try
+        {
+            if (!Available || _store == null) return false;
+            var asm = _store.Assembly;
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+            var toast = asm.GetType("AncientAffection.AncientAffectionToast", throwOnError: false);
+            var persistent = toast?.GetMethod("ShowPersistent", flags);
+            if (toast == null || persistent == null) return false;
+            var married = IsMarried(npcKey);
+            persistent.Invoke(null, new object[] { name, value, married });
+
+            if (toast.GetField("_deltaLabel", flags)?.GetValue(null) is not Label label || !GodotObject.IsInstanceValid(label))
+            {
+                // Can't reach the side label: the plain toast still shows the change, then fades.
+                toast.GetMethod("Show", flags)?.Invoke(null, new object[] { name, value, delta, married });
+                return true;
+            }
+            var changed = $"{name} {(delta >= 0 ? "+" : "")}{delta}";
+            label.Text = changed;
+            label.AddThemeColorOverride("font_color", delta >= 0 ? AffectionGain : AffectionLoss);
+            if (toast.GetField("_host", flags)?.GetValue(null) is Control host && GodotObject.IsInstanceValid(host))
+            {
+                host.PivotOffset = new Vector2(44, 44);
+                var pop = host.CreateTween();
+                pop.TweenProperty(host, "scale", Vector2.One * 1.12f, 0.1);
+                pop.TweenProperty(host, "scale", Vector2.One, 0.16);
+            }
+            label.GetTree()?.CreateTimer(holdSeconds).Connect("timeout", Callable.From(() =>
+            {
+                if (!GodotObject.IsInstanceValid(label) || label.Text != changed) return;
+                label.Text = name;
+                label.AddThemeColorOverride("font_color", AffectionGain);
+            }));
+            return true;
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[AA] ShowChange({npcKey}) failed: {ex.Message}", 1);
+            return false;
+        }
+    }
+
+    // The two colours Ancient Affection's own toast uses for a gain and a loss.
+    private static readonly Color AffectionGain = new(1f, 0.88f, 0.42f);
+    private static readonly Color AffectionLoss = new(1f, 0.36f, 0.32f);
 
     /// <summary>Apply a delta to Ancient Affection's store. Returns the new value, or null when the write failed.</summary>
     public static int? Increment(string npcKey, int delta)

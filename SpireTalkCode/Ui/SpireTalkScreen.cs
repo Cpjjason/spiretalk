@@ -208,9 +208,14 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
     }
 
     /// <summary>OpenRouter, Ollama and "other" have their own words; the provider presets share one line.</summary>
-    private static string SourceHint(ApiSource source) => source is ApiSource.OpenRouter or ApiSource.Ollama or ApiSource.Custom
-        ? Loc.Ui("SourceHint" + source)
-        : string.Format(Loc.Ui("SourceHintPreset"), Loc.Ui("Source" + source), ApiSources.PresetOf(source)?.KeysSite ?? "");
+    private static string SourceHint(ApiSource source)
+    {
+        var hint = source is ApiSource.OpenRouter or ApiSource.Ollama or ApiSource.Custom
+            ? Loc.Ui("SourceHint" + source)
+            : string.Format(Loc.Ui("SourceHintPreset"), Loc.Ui("Source" + source), ApiSources.PresetOf(source)?.KeysSite ?? "");
+        // The two sources with a model that costs nothing say which one.
+        return source is ApiSource.Zhipu or ApiSource.Google ? hint + " " + Loc.Ui("FreeModel" + source) : hint;
+    }
 
     /// <summary>The model list for the current source, plus "other" for typing an id by hand.</summary>
     private static IEnumerable<ChoiceDropdown.Choice> ModelChoices(List<(string Id, string Label)>? fetched)

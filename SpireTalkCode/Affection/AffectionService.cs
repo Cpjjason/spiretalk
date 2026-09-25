@@ -44,19 +44,23 @@ public static class AffectionService
         var record = TalkStore.Instance.Get(npcKey);
         if (delta == 0) return Read(npcKey).value;
 
+        var before = record.Affection;
         if (UsingAncientAffection)
         {
+            before = AncientAffectionBridge.Get(npcKey) ?? before;
             var written = AncientAffectionBridge.Increment(npcKey, delta);
             if (written.HasValue)
             {
                 record.Affection = written.Value;
                 TalkStore.Instance.Save();
+                Ui.AffectionHud.Show(npcKey, kind, written.Value, written.Value - before);
                 return written.Value;
             }
             // Bridge broke mid-run: continue on our own store from the last known value.
         }
         record.Affection = ConversationRules.ClampAffection(record.Affection + delta, kind);
         TalkStore.Instance.Save();
+        Ui.AffectionHud.Show(npcKey, kind, record.Affection, record.Affection - before);
         return record.Affection;
     }
 }

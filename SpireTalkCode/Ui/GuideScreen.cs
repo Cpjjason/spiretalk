@@ -14,7 +14,7 @@ public sealed partial class GuideScreen : Control, IScreenContext
 {
     private const float SheetWidth = 1380f;
     private const float PictureSize = 300f;
-    private static readonly string[] Pages = { "welcome", "talk", "deals", "keepsakes", "road", "memory" };
+    private static readonly string[] Pages = { "welcome", "freekey", "talk", "deals", "keepsakes", "road", "memory" };
 
     /// <summary>The picture beside each page: the mod's own chibi icons (keepsake art falls back to the mushie).</summary>
     private static readonly Dictionary<string, string> Pictures = new()
@@ -156,7 +156,7 @@ public sealed partial class GuideScreen : Control, IScreenContext
         {
             text.AddChild(GameArt.Label(para.Trim(), 25, GameArt.Cream));
         }
-        if (key == "welcome")
+        if (key is "welcome" or "freekey")
         {
             var setup = GameArt.HexButton(Loc.Ui("GuideSetup"), 24, 60);
             setup.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;

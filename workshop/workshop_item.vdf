@@ -14,6 +14,8 @@
 	"title"		"SpireTalk: Living Ancients"
 	"description"		"[b]The Ancients talk back.[/b] Every Ancient and the Merchant answers you in their own voice, remembers what you said last run, asks things of you, and hands you a relic that grows with the friendship. Runs on your own API key, inside the game. No account, no server, nothing to sign up for.
 
+[b]No key? Still playable.[/b] Without a key the NPCs speak written lines and you pick one of three replies; affection, deals, keepsakes and road events all work the same. Add a key (there are free ones, see below) and an AI writes their lines as you go, and you can type your own.
+
 [b]Both art styles supported:[/b] vanilla out of the box; with [b]AncientWaifus[/b] + [b]Merchant2CuteII[/b] installed, the mod's own paintings switch to the waifu look automatically.
 
 [h1]What you get[/h1]
@@ -48,6 +50,7 @@ Relic reroll, gold, healing, a potion, a shop discount. The mod validates every 
 [*] Pick a source: OpenRouter, OpenAI, Anthropic, Google Gemini, DeepSeek, xAI, Mistral, Groq, Moonshot, SiliconFlow, Alibaba Bailian, Zhipu, a local Ollama, or anything that speaks the OpenAI API.
 [*] Paste your key (Ollama needs none), pick a model from the list, press [b]Test[/b]. Start a run. Talk.
 [/olist]
+Free keys: [b]Google AI Studio[/b] (aistudio.google.com/apikey, models with flash in the name have a free allowance; not available in mainland China) or [b]Zhipu[/b] (open.bigmodel.cn, the glm-4.7-flash model is free). Or skip all this and play with the written lines.
 A short in-game guide opens the first time you reach the main menu, and again from the settings any time.
 The NPCs run on the [url=https://github.com/lovetimo0421/yumina-oss]Yumina engine[/url] inside the game, and the mod connects to nothing but the endpoint you configure. Each NPC is a Yumina card (a JSON file); drop your own into [i]%APPDATA%\SlayTheSpire2\spiretalk\cards\[/i] to replace a persona.
 
@@ -59,5 +62,5 @@ The NPCs run on the [url=https://github.com/lovetimo0421/yumina-oss]Yumina engin
 [*] Single player only.
 [*] The cover and the road-encounter paintings are generated art, redrawn from the game's own characters.
 [/list]"
-	"changenote"		"0.5.0 - Deals are now relics in your relic bar (hover for terms and progress; kept ones leave, broken ones grey out). Keepsakes start at your first talk and grow through four stages, the last one a vow; new chibi portrait icons for every keepsake and deal, in vanilla and waifu styles. The Merchant's Favour and Grudge show as relics. New Keepsakes book and How to play pages in the settings. More AI sources: OpenAI, Anthropic, Gemini, DeepSeek, xAI, Mistral, Groq, Moonshot, SiliconFlow, Alibaba Bailian, Zhipu. Hearts and dots instead of raw numbers in conversations, tidier NPC lines, epilogue no longer covers the run summary."
+	"changenote"		"0.5.1 - Playable without an API key: with no key the NPCs speak written lines and you pick one of three replies, and affection, deals, keepsakes and road events all work. The How to play guide shows where to get a free key (Google AI Studio, or Zhipu glm-4.7-flash). Affection changes now show live on the heart in the top right while you talk (Ancient Affection's own heart when it is installed). New painted art for the Merchant's overturned cart in the waifu style."
 }
