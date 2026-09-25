@@ -431,10 +431,8 @@ public sealed class AncientConversation
         if (!offerPending)
         {
             // Vanilla option shape: gold title, the relationship on the line under it.
-            var endInfo = Loc.Event(outOfLines ? "endInfoNoLines" : "endInfo");
-            endInfo.Add("Affection", (decimal)_ctx.Affection);
-            endInfo.Add("Tier", Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)));
-            endInfo.Add("LinesLeft", (decimal)Math.Max(0, ConversationRules.LinesPerVisit - _linesUsed));
+            var linesLeft = Math.Max(0, ConversationRules.LinesPerVisit - _linesUsed);
+            var endInfo = Loc.DynamicMarkup(Ui.RelationshipLine.Build(_ctx.Affection, _ctx.Kind, _ctx.Tier, linesLeft, showLines: !outOfLines));
             options.Add(new EventOption(_ancient, () => { EndConversation(); return Task.CompletedTask; }, Loc.Event(outOfLines ? "endNoLines" : "end"), endInfo, "SPIRETALK_END", Array.Empty<IHoverTip>())
                 .ThatWontSaveToChoiceHistory());
         }

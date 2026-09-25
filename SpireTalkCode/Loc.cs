@@ -16,6 +16,14 @@ public static class Loc
     public const string DynamicKey = "SPIRETALK.dynamic";
 
     /// <summary>A LocString that renders arbitrary runtime text.</summary>
+    /// <summary>Like <see cref="Dynamic"/> but keeps BBCode; only for markup the mod writes itself, never model text.</summary>
+    public static LocString DynamicMarkup(string markup)
+    {
+        var loc = new LocString(AncientsTable, DynamicKey);
+        loc.Add("text", markup.Replace("{", "｛").Replace("}", "｝"));
+        return loc;
+    }
+
     public static LocString Dynamic(string text)
     {
         var loc = new LocString(AncientsTable, DynamicKey);

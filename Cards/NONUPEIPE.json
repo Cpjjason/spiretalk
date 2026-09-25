@@ -99,7 +99,7 @@
     {
       "id": "sts2-keepsake-rules",
       "name": "Keepsake",
-      "content": "KEEPSAKE\n- You have one keepsake, a relic of your own that you give to a climber once you trust them. It grows with the relationship (level I, II, III) and every deal they keep with you leaves an engraving on it. The game decides all of that; keepsake tells you what is true right now.\n- When keepsake says you are giving it right now, say so in this reply, in your own way. When it says it has just grown, mention that. Otherwise you may refer to it or not. Never promise a keepsake, a level or an engraving the game did not announce.",
+      "content": "KEEPSAKE\n- You have one keepsake, a relic of your own that you give to any climber who has not turned you against them. It starts as a small token and grows with the relationship (level I, II, III), and when they become devoted to you it becomes your vow, the last and highest step. Every deal they keep with you leaves an engraving on it. The game decides all of that; keepsake tells you what is true right now.\n- When keepsake says you are giving it right now, say so in this reply, in your own way. When it says it has just grown, mention that. Otherwise you may refer to it or not. Never promise a keepsake, a level or an engraving the game did not announce.",
       "role": "system",
       "position": 4,
       "alwaysSend": true,
@@ -403,7 +403,7 @@
       "type": "json",
       "defaultValue": [],
       "aiAccess": "write",
-      "behaviorRules": "At the END of every reply set this to exactly 3 short things the climber could say next, in the climber's first-person voice, in the reply language, each ≤ 40 characters, no numbering. These are the CLIMBER's words, not yours: plain, whole, natural sentences as a person would say them, never in your speech style (no ellipsis fragments, no shouting, no pet names) and never one of your own lines. Make them genuinely different: one that leans in, one that pushes back or asks something pointed, one that is playful or wants to leave. When lines_left is 0 set a single farewell instead. Never leave it empty."
+      "behaviorRules": "At the END of every reply set this to exactly 3 short things the climber could say next, in the climber's first-person voice, in the reply language, each ≤ 40 characters, no numbering. These are the CLIMBER's words, not yours: plain, whole, natural sentences as a person would say them, never in your speech style (no ellipsis fragments, no shouting, no pet names) and never one of your own lines. Make them genuinely different in tone, and make at least one about THIS moment: the climber's HP, gold, character, a relic or card they carry, the act they are in, or something you just said. Avoid stock filler that fits any conversation (\"Let's go\", \"Tell me more\", \"Stop talking\", \"就这样吧\", \"少说废话\", \"然后呢\"). When lines_left is 0 set a single farewell instead. Never leave it empty."
     },
     {
       "id": "action",

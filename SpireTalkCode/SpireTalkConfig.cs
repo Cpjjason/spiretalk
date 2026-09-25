@@ -61,6 +61,9 @@ public sealed class SpireTalkConfig : SimpleModConfig
 
     public static bool SourceChosen { get; set; } = false;
 
+    /// <summary>The guide has been shown once; after that it opens only from the settings sheet.</summary>
+    public static bool GuideSeen { get; set; } = false;
+
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 300)]
     public static string KeyOpenRouter { get; set; } = "";
 
@@ -78,6 +81,38 @@ public sealed class SpireTalkConfig : SimpleModConfig
 
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 120)]
     public static string ModelCustom { get; set; } = "";
+
+    /// <summary>Key and model per provider preset (OpenAI, DeepSeek, …) as JSON: {"DeepSeek":{"k":"…","m":"…"}}.</summary>
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 8000)]
+    public static string SourceSlots { get; set; } = "";
+
+    private static (string key, string model) ReadSlot(ApiSource source)
+    {
+        try
+        {
+            var node = System.Text.Json.Nodes.JsonNode.Parse(string.IsNullOrWhiteSpace(SourceSlots) ? "{}" : SourceSlots)?[source.ToString()];
+            return (node?["k"]?.GetValue<string>() ?? "", node?["m"]?.GetValue<string>() ?? "");
+        }
+        catch
+        {
+            return ("", "");
+        }
+    }
+
+    private static void WriteSlot(ApiSource source, string key, string model)
+    {
+        System.Text.Json.Nodes.JsonObject root;
+        try
+        {
+            root = System.Text.Json.Nodes.JsonNode.Parse(string.IsNullOrWhiteSpace(SourceSlots) ? "{}" : SourceSlots) as System.Text.Json.Nodes.JsonObject ?? new();
+        }
+        catch
+        {
+            root = new();
+        }
+        root[source.ToString()] = new System.Text.Json.Nodes.JsonObject { ["k"] = key, ["m"] = model };
+        SourceSlots = root.ToJsonString();
+    }
 
     // ── Conversation ─────────────────────────────────────────────────────
 
@@ -197,17 +232,21 @@ public sealed class SpireTalkConfig : SimpleModConfig
         StashKey();
         Source = next;
         OwnBaseUrl = ApiSources.UrlFor(next);
+        var slot = ReadSlot(next);
         OwnKey = next switch
         {
             ApiSource.OpenRouter => KeyOpenRouter,
             ApiSource.Custom => KeyCustom,
-            _ => "",
+            ApiSource.Ollama => "",
+            _ => slot.key,
         };
+        var fixedFirst = ApiSources.FixedModels(next)?.FirstOrDefault().Id ?? "";
         OwnModel = next switch
         {
             ApiSource.OpenRouter => string.IsNullOrWhiteSpace(ModelOpenRouter) ? ApiSources.OpenRouterModels[0].Id : ModelOpenRouter,
             ApiSource.Ollama => ModelOllama,
-            _ => ModelCustom,
+            ApiSource.Custom => ModelCustom,
+            _ => string.IsNullOrWhiteSpace(slot.model) ? fixedFirst : slot.model,
         };
     }
 
@@ -219,6 +258,7 @@ public sealed class SpireTalkConfig : SimpleModConfig
             case ApiSource.OpenRouter: KeyOpenRouter = OwnKey; ModelOpenRouter = OwnModel; break;
             case ApiSource.Ollama: ModelOllama = OwnModel; break;
             case ApiSource.Custom: KeyCustom = OwnKey; ModelCustom = OwnModel; break;
+            default: WriteSlot(Source, OwnKey, OwnModel); break;
         }
         if (Source == ApiSource.Custom) OwnBaseUrl = CustomBaseUrl;
     }

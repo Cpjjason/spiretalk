@@ -30,6 +30,10 @@ public sealed class TalkStore
         [JsonPropertyName("lastDeal")] public string? LastDealType { get; set; }
         /// <summary>Deals kept with this NPC, ever — marks on the keepsake relic.</summary>
         [JsonPropertyName("engravings")] public int Engravings { get; set; }
+        /// <summary>Highest keepsake level ever reached on this profile (0 = never received), for the keepsake book.</summary>
+        [JsonPropertyName("bestKeepsake")] public int BestKeepsakeLevel { get; set; }
+        /// <summary>When the keepsake first became a vow (UTC, ISO), or null.</summary>
+        [JsonPropertyName("vowUtc")] public string? VowUtc { get; set; }
         [JsonPropertyName("history")] public List<HistoryEntry> History { get; set; } = new();
         /// <summary>What the NPC remembers of earlier visits: short notes, never its own old lines.</summary>
         [JsonPropertyName("memories")] public List<MemoryNote> Memories { get; set; } = new();

@@ -25,10 +25,10 @@ A [b]Talk[/b] option on every Ancient's page and a [b]Talk[/b] button in the sho
 What you told Neow stays with Neow, run after run (per save profile; can be switched off). Earlier visits are kept as short notes, and a Memories page in the settings lets you read, edit, add or delete what each of them remembers. Affection moves with every line you say, judged by that NPC's own values: hostile / stranger / friendly / close / devoted.
 
 [h3]Deals[/h3]
-An NPC may ask something of you when you arrive: [i]reach the next act alive[/i], [i]no potions until then[/i], [i]spend 150 gold at my shop[/i]... Answer with a button. The terms come from the mod, so the game can always check them. Kept: affection and gold. Broken: a disappointed line, nothing more. Open deals sit under your relics.
+An NPC may ask something of you when you arrive: [i]reach the next act alive[/i], [i]no potions until then[/i], [i]spend 150 gold at my shop[/i]... Answer with a button, and the deal joins your relic bar as a relic of its own: hover it for the terms and your progress. The terms come from the mod, so the game can always check them. Kept: it flashes and leaves, and you get affection and gold. Broken: it greys out until the run ends, and a disappointed line is all you hear.
 
 [h3]Keepsakes[/h3]
-Once an NPC likes you they press their keepsake into your hands: a relic with levels I / II / III that follow the relationship and rise mid-run the moment the number crosses. Every deal you keep engraves it. Nine of them, one per NPC, each in that NPC's manner: Neow heals you after fights and catches you at 1 HP once per run; Tanx sharpens your first attack; Vakuu lends Strength for blood; the Merchant keeps a ledger of discounts.
+After your first talk an NPC presses their keepsake into your hands (unless you have made an enemy of them): a relic with levels I / II / III that follow the relationship and rise mid-run the moment the number crosses, and at devoted it becomes their [b]vow[/b], the strongest form. Every deal you keep engraves it, and its chibi picture changes at each level. Nine of them, one per NPC, each in that NPC's manner: Neow heals you after fights and catches you at 1 HP once per run; Tanx sharpens your first attack; Vakuu lends Strength for blood; the Merchant keeps a ledger of discounts.
 
 [h3]Ancient relics on the shelf[/h3]
 An Ancient who likes you may leave one of [i]their own[/i] relics with the Merchant for you, relics otherwise found only in their halls, priced like a rare.
@@ -37,7 +37,7 @@ An Ancient who likes you may leave one of [i]their own[/i] relics with the Merch
 When a run ends, the NPC who knew you best says a few words about it on the game-over screen: the deals, where you fell, how you won.
 
 [h3]On the road[/h3]
-Up to two new events per run, each with its own painting. [b]The Overturned Cart[/b]: the Merchant's cart has tipped over; help (and get a potion and a discount), pocket a relic (and pay for it at every shop this run), or walk on. [b]An Ancient by the Road[/b]: an Ancient you have talked to sits by the path, weary; give what they ask or sit with them, and a card gets upgraded. They speak in their own voice, and remember it next time.
+Up to two new events per run, each with its own painting. [b]The Overturned Cart[/b]: the Merchant's cart has tipped over; help (a potion, and [i]The Merchant's Favour[/i] for a cheaper next shop), pocket a relic ([i]The Merchant's Grudge[/i]: every shop costs more this run), or walk on. [b]An Ancient by the Road[/b]: an Ancient you have talked to sits by the path, weary; give what they ask or sit with them, and a card gets upgraded. They speak in their own voice, and remember it next time.
 
 [h3]Real rewards, honest rules[/h3]
 Relic reroll, gold, healing, a potion, a shop discount. The mod validates every reward against fixed rules and applies it through the game's own commands. The AI only ever narrates; it never touches your run directly.
@@ -45,9 +45,10 @@ Relic reroll, gold, healing, a potion, a shop discount. The mod validates every 
 [h1]Setup in one minute[/h1]
 [olist]
 [*] Click the mushie in the top-right corner of the main menu.
-[*] Pick a source: OpenRouter, a local Ollama, or anything that speaks the OpenAI API.
+[*] Pick a source: OpenRouter, OpenAI, Anthropic, Google Gemini, DeepSeek, xAI, Mistral, Groq, Moonshot, SiliconFlow, Alibaba Bailian, Zhipu, a local Ollama, or anything that speaks the OpenAI API.
 [*] Paste your key (Ollama needs none), pick a model from the list, press [b]Test[/b]. Start a run. Talk.
 [/olist]
+A short in-game guide opens the first time you reach the main menu, and again from the settings any time.
 The NPCs run on the [url=https://github.com/lovetimo0421/yumina-oss]Yumina engine[/url] inside the game, and the mod connects to nothing but the endpoint you configure. Each NPC is a Yumina card (a JSON file); drop your own into [i]%APPDATA%\SlayTheSpire2\spiretalk\cards\[/i] to replace a persona.
 
 [h1]Good to know[/h1]
@@ -58,5 +59,5 @@ The NPCs run on the [url=https://github.com/lovetimo0421/yumina-oss]Yumina engin
 [*] Single player only.
 [*] The cover and the road-encounter paintings are generated art, redrawn from the game's own characters.
 [/list]"
-	"changenote"		"0.4.2 - NPCs no longer repeat themselves: earlier visits are remembered as short notes instead of their old lines, and phrases already said are cut; new Memories page in settings to read, edit, add or delete what each NPC remembers; rewards now arrive after the NPC finishes speaking; the Merchant in the overturned-cart art now wears his mask; the deals bar sits below your relics instead of over them"
+	"changenote"		"0.5.0 - Deals are now relics in your relic bar (hover for terms and progress; kept ones leave, broken ones grey out). Keepsakes start at your first talk and grow through four stages, the last one a vow; new chibi portrait icons for every keepsake and deal, in vanilla and waifu styles. The Merchant's Favour and Grudge show as relics. New Keepsakes book and How to play pages in the settings. More AI sources: OpenAI, Anthropic, Gemini, DeepSeek, xAI, Mistral, Groq, Moonshot, SiliconFlow, Alibaba Bailian, Zhipu. Hearts and dots instead of raw numbers in conversations, tidier NPC lines, epilogue no longer covers the run summary."
 }

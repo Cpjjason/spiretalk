@@ -171,7 +171,7 @@ public static class DealService
         store.AddDeal(deal);
         store.Get(offer.Npc).LastDealType = offer.Key;
         store.Save();
-        DealHud.Refresh();
+        _ = Tokens.TokenService.GiveDealAsync(Merchant.MerchantTalk.ResolveLocalPlayer(), offer.Npc);
         if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Deal] accepted {deal.Npc} {deal.Type} param={deal.Param} target={deal.TargetAct}", 1);
         return deal;
     }
@@ -277,7 +277,7 @@ public static class DealService
         if (changed)
         {
             TalkStore.Instance.Save();
-            DealHud.Refresh();
+            Tokens.TokenService.RefreshDeals(player);
         }
     }
 
@@ -298,7 +298,6 @@ public static class DealService
             }
         }
         TalkStore.Instance.Save();
-        DealHud.Refresh();
     }
 
     private static void Settle(TalkStore.DealRecord deal, bool kept, Player? player, bool quiet = false)
@@ -323,7 +322,7 @@ public static class DealService
             if (!quiet) RewardExecutor.Toast(string.Format(Loc.EventText("dealBroken"), name, Describe(deal)));
         }
         TalkStore.Instance.Save();
-        DealHud.Refresh();
+        _ = Tokens.TokenService.SettleDealAsync(player ?? Merchant.MerchantTalk.ResolveLocalPlayer(), deal.Npc, kept);
         if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Deal] {deal.Npc} {deal.Type} → {deal.Status}", 1);
     }
 

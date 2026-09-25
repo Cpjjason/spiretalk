@@ -30,8 +30,9 @@ public static class KeepsakeService
 
     public static int LevelFor(ConversationRules.Tier tier) => tier switch
     {
-        ConversationRules.Tier.Devoted => 3,
-        ConversationRules.Tier.Close => 2,
+        ConversationRules.Tier.Devoted => 4,
+        ConversationRules.Tier.Close => 3,
+        ConversationRules.Tier.Friendly => 2,
         _ => 1,
     };
 
@@ -59,14 +60,14 @@ public static class KeepsakeService
         var name = KeepsakeName(npc.Key);
         if (owned == null)
         {
-            if (tier < ConversationRules.Tier.Friendly)
+            if (tier < ConversationRules.Tier.Stranger)
             {
-                return $"You have a keepsake for climbers you trust (\"{name}\"); this one has not earned it yet.";
+                return $"You have a keepsake for the climbers you meet (\"{name}\"); this one has soured you, and will not get it while that lasts.";
             }
             var relic = await GiveAsync(type, player, tier, npc);
             if (relic == null) return "none";
             var level = relic.Level;
-            return $"You are giving them your keepsake right now: \"{name}\" (level {level}). Say so in this reply, in your own way — it is a gift, and it will grow as they earn your trust.";
+            return $"You are giving them your keepsake right now: \"{name}\" (level {level} of 4). Say so in this reply, in your own way — it is a small token for now, and it will grow as they earn your trust; at the end it becomes your vow.";
         }
 
         var raised = await RefreshAsync(npc, player, quiet: false);
@@ -74,7 +75,7 @@ public static class KeepsakeService
         var engr = owned.Engravings;
         var engraved = engr > 0 ? $" It carries {engr} engraving(s) from deals they kept with you." : "";
         return raised
-            ? $"They carry your keepsake \"{name}\" and it has just grown to level {now} because of how far you two have come. Mention it.{engraved}"
+            ? $"They carry your keepsake \"{name}\" and it has just {Grew(now)} because of how far you two have come. Mention it.{engraved}"
             : $"They carry your keepsake \"{name}\" at level {now}.{engraved}";
     }
 
@@ -88,6 +89,7 @@ public static class KeepsakeService
             relic.Level = LevelFor(tier);
             await RelicCmd.Obtain(relic, player);
             if (relic is KeepsakeTezcatara tez) await tez.GrantSlotIfDue();
+            RecordBest(npc.Key, relic.Level);
             RewardExecutor.Toast(string.Format(Loc.EventText("keepsakeGiven"), npc.DisplayName, KeepsakeName(npc.Key)));
             MainFile.Logger.Info($"[Keepsake] {npc.Key} gave {relic.Id.Entry} at level {relic.Level}", 1);
             return relic;
@@ -114,8 +116,16 @@ public static class KeepsakeService
                 return false;
             }
             owned.Level = level;
+            RecordBest(npc.Key, level);
+            if (level >= KeepsakeRelic.MaxLevel) owned.CelebrateVow();
+            else owned.Flash();
             if (owned is KeepsakeTezcatara tez) await tez.GrantSlotIfDue();
-            if (!quiet) RewardExecutor.Toast(string.Format(Loc.EventText("keepsakeLevel"), KeepsakeName(npc.Key), Roman(level)));
+            if (!quiet)
+            {
+                RewardExecutor.Toast(level >= KeepsakeRelic.MaxLevel
+                    ? string.Format(Loc.EventText("keepsakeVow"), KeepsakeName(npc.Key))
+                    : string.Format(Loc.EventText("keepsakeLevel"), KeepsakeName(npc.Key), Roman(level)));
+            }
             MainFile.Logger.Info($"[Keepsake] {npc.Key} keepsake → level {level}", 1);
             return true;
         }
@@ -141,6 +151,16 @@ public static class KeepsakeService
         RewardExecutor.Toast(string.Format(Loc.EventText("keepsakeEngraved"), KeepsakeName(npcKey), owned.Engravings));
     }
 
+    /// <summary>The keepsake book remembers the best level ever reached and the day it became a vow.</summary>
+    private static void RecordBest(string npcKey, int level)
+    {
+        var record = TalkStore.Instance.Get(npcKey);
+        if (level <= record.BestKeepsakeLevel) return;
+        record.BestKeepsakeLevel = level;
+        if (level >= KeepsakeRelic.MaxLevel && record.VowUtc == null) record.VowUtc = DateTime.UtcNow.ToString("o");
+        TalkStore.Instance.Save();
+    }
+
     public static string KeepsakeName(string npcKey)
     {
         if (!Types.TryGetValue(npcKey, out var type)) return npcKey;
@@ -157,5 +177,10 @@ public static class KeepsakeService
         }
     }
 
-    private static string Roman(int level) => level switch { 3 => "III", 2 => "II", _ => "I" };
+    /// <summary>How the prompt says the keepsake just grew; the last step is the vow.</summary>
+    public static string Grew(int level) => level >= KeepsakeRelic.MaxLevel
+        ? "become your vow keepsake, the highest bond you give. Say one short line that sounds like a vow, in your own voice"
+        : $"grown to level {Roman(level)}";
+
+    private static string Roman(int level) => level switch { >= 4 => "IV", 3 => "III", 2 => "II", _ => "I" };
 }

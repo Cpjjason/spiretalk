@@ -50,7 +50,7 @@ public static class VisitExtras
         if (raised)
         {
             var owned = KeepsakeService.Owned(player, npc.Key);
-            ctx.Variables["keepsake"] = $"Your keepsake \"{KeepsakeService.KeepsakeName(npc.Key)}\" just grew to level {owned?.Level ?? 0} because of what they said. Mention it in this reply.";
+            ctx.Variables["keepsake"] = $"Your keepsake \"{KeepsakeService.KeepsakeName(npc.Key)}\" just {KeepsakeService.Grew(owned?.Level ?? 1)} because of what they said. Mention it in this reply.";
         }
     }
 }

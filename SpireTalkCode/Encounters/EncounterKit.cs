@@ -110,7 +110,8 @@ public static class EncounterVoice
             var delta = 0;
             var action = NpcAction.None;
             var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action).Trim();
-            text = string.Join("\n", RepeatFilter.Apply(Ancients.AncientConversation.SplitIntoLines(text), TalkStore.Instance.RecentNpcTexts(npc.Key)));
+            text = string.Join("\n", RepeatFilter.Apply(Ancients.AncientConversation.SplitIntoLines(text), TalkStore.Instance.RecentNpcTexts(npc.Key))
+                .Select(l => Backend.EngineBackend.TidyDots(l, npc.Key)).Where(l => l.Length > 0));
             if (string.IsNullOrWhiteSpace(text)) return null;
             TalkStore.Instance.AppendHistory(npc.Key, "npc", text, runKey);
             TalkStore.Instance.Save();

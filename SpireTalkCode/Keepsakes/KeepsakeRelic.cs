@@ -13,7 +13,7 @@ namespace SpireTalk.Keepsakes;
 
 /// <summary>
 /// A keepsake: the relic an NPC hands the climber once they are friends, and the thing that grows
-/// with the relationship. Level I / II / III follow the affection tier (friendly / close / devoted)
+/// with the relationship. Levels I / II / III / the vow follow the affection tier (stranger / friendly / close / devoted)
 /// and never fall within a run; each deal kept with that NPC adds an engraving, which the effect
 /// counts and which the profile remembers across runs. Given only through conversation — the relic
 /// lives in the event pool so it is never rolled as a reward and never sold.
@@ -24,7 +24,8 @@ namespace SpireTalk.Keepsakes;
 [Pool(typeof(EventRelicPool))]
 public abstract class KeepsakeRelic : CustomRelicModel
 {
-    public const int MaxLevel = 3;
+    /// <summary>I stranger, II friendly, III close, IV the vow (devoted).</summary>
+    public const int MaxLevel = 4;
     public const int MaxEngravings = 5;
 
     private int _level = 1;
@@ -37,7 +38,33 @@ public abstract class KeepsakeRelic : CustomRelicModel
 
     protected override string IconBaseName => BorrowedIcon;
 
+    /// <summary>The mod's own picture for this level (keepsake_neow_2 …), else the borrowed vanilla sprite.</summary>
+    private string IconName => $"keepsake_{NpcKey.ToLowerInvariant()}_{Level}";
+    private bool IsMerchant => NpcKey == "MERCHANT";
+
+    public override string PackedIconPath => Tokens.RelicArt.Icon(IconName, IsMerchant) ?? base.PackedIconPath;
+    protected override string PackedIconOutlinePath => Tokens.RelicArt.Outline(IconName, IsMerchant) ?? base.PackedIconOutlinePath;
+    protected override string BigIconPath => Tokens.RelicArt.Big(IconName, IsMerchant) ?? base.BigIconPath;
+
     public override RelicRarity Rarity => RelicRarity.Event;
+
+    /// <summary>The engravings show on the icon's counter, the way a relic's charges do.</summary>
+    public override bool ShowCounter => Engravings > 0;
+
+    public override int DisplayAmount => Engravings;
+
+    private bool _vowMoment;
+
+    public override string FlashSfx => _vowMoment ? "event:/sfx/ui/timeline/ui_timeline_unlock" : base.FlashSfx;
+
+    /// <summary>The keepsake just became a vow: flash it with the sound the timeline uses for an unlock.</summary>
+    public void CelebrateVow()
+    {
+        _vowMoment = true;
+        Flash();
+        if (Godot.Engine.GetMainLoop() is Godot.SceneTree tree) tree.CreateTimer(1.5).Timeout += () => _vowMoment = false;
+        else _vowMoment = false;
+    }
 
     public override bool IsAllowedInShops => false;
 
@@ -50,9 +77,15 @@ public abstract class KeepsakeRelic : CustomRelicModel
         set
         {
             AssertMutable();
+            var before = _level;
             _level = Math.Clamp(value, 1, MaxLevel);
             ApplyValues();
             InvokeDisplayAmountChanged();
+            if (before != _level)
+            {
+                RelicIconChanged();
+                Tokens.RelicArt.Redraw(this);
+            }
         }
     }
 
@@ -63,6 +96,7 @@ public abstract class KeepsakeRelic : CustomRelicModel
     {
         get
         {
+            if (Level >= MaxLevel) return new LocString("relics", Id.Entry + ".vowTitle");
             var title = new LocString("relics", Id.Entry + ".title");
             title.Add("Level", Level switch { 3 => "III", 2 => "II", _ => "I" });
             return title;
@@ -78,8 +112,20 @@ public abstract class KeepsakeRelic : CustomRelicModel
         {
             var vars = new List<DynamicVar> { new("Level", 1m), new("Engravings", 0m) };
             foreach (var (key, value) in Values(1, 0)) vars.Add(MakeVar(key, value));
+            foreach (var key in TextVars) vars.Add(new StringVar(key));
             return vars;
         }
+    }
+
+    /// <summary>Text parts of the description that depend on the level (set in <see cref="ApplyText"/>).</summary>
+    protected virtual IEnumerable<string> TextVars => Array.Empty<string>();
+
+    /// <summary>Fill the <see cref="TextVars"/> for the current level.</summary>
+    protected virtual void ApplyText() { }
+
+    protected void SetText(string key, string value)
+    {
+        if (DynamicVars.TryGetValue(key, out var v) && v is StringVar sv) sv.StringValue = value;
     }
 
     /// <summary>The game formats some vars specially (energy icons, card counts); those need their own type.</summary>
@@ -95,6 +141,8 @@ public abstract class KeepsakeRelic : CustomRelicModel
         {
             DynamicVars[key].BaseValue = value;
         }
+        ApplyText();
+        if (IsMutable) InvokeDisplayAmountChanged();
     }
 
     /// <summary>The value behind a description var, for the hooks.</summary>

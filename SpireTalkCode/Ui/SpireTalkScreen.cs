@@ -167,15 +167,15 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         {
             _connection.AddChild(Row(Loc.Ui("OwnKey"), _config.MakeLineEdit(nameof(SpireTalkConfig.OwnKey), secret: true, width: FieldWidth)));
         }
-        if (source == ApiSource.OpenRouter)
+        if (ApiSources.PresetOf(source) is { KeysPage: { } keysPage } preset)
         {
             var get = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End };
             var getLabel = GameArt.Label(Loc.Ui("GetKey"), 21, GameArt.Muted, wrap: false);
             getLabel.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
             getLabel.SizeFlagsVertical = SizeFlags.ShrinkCenter;
             get.AddChild(getLabel);
-            var link = GameArt.LinkButton("OpenRouter", GameArt.Gold, 21);
-            link.Pressed += () => { try { OS.ShellOpen(ApiSources.OpenRouterKeysPage); } catch { /* best effort */ } };
+            var link = GameArt.LinkButton(preset.KeysSite, GameArt.Gold, 21);
+            link.Pressed += () => { try { OS.ShellOpen(keysPage); } catch { /* best effort */ } };
             get.AddChild(link);
             _connection.AddChild(get);
         }
@@ -200,17 +200,22 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         actions.AddChild(_config.MakeButton(Loc.Ui("TestBtn"), () => _ = RunOwnKeyTest(), "#4a9d7a"));
         _connection.AddChild(actions);
 
-        _ownStatus = GameArt.Label(Loc.Ui("SourceHint" + source), 22, GameArt.Muted);
+        _ownStatus = GameArt.Label(SourceHint(source), 22, GameArt.Muted);
         _connection.AddChild(_ownStatus);
 
         // A custom endpoint has nothing to ask until its address is in; Test connection asks later.
-        if (source == ApiSource.Ollama || (source == ApiSource.Custom && !string.IsNullOrWhiteSpace(SpireTalkConfig.CustomBaseUrl))) _ = LoadModels(source);
+        if (ApiSources.ShouldFetch(source)) _ = LoadModels(source);
     }
+
+    /// <summary>OpenRouter, Ollama and "other" have their own words; the provider presets share one line.</summary>
+    private static string SourceHint(ApiSource source) => source is ApiSource.OpenRouter or ApiSource.Ollama or ApiSource.Custom
+        ? Loc.Ui("SourceHint" + source)
+        : string.Format(Loc.Ui("SourceHintPreset"), Loc.Ui("Source" + source), ApiSources.PresetOf(source)?.KeysSite ?? "");
 
     /// <summary>The model list for the current source, plus "other" for typing an id by hand.</summary>
     private static IEnumerable<ChoiceDropdown.Choice> ModelChoices(List<(string Id, string Label)>? fetched)
     {
-        var list = SpireTalkConfig.Source == ApiSource.OpenRouter ? ApiSources.OpenRouterModels.ToList() : fetched ?? new();
+        var list = ApiSources.FixedModels(SpireTalkConfig.Source) ?? fetched ?? new();
         foreach (var (id, label) in list) yield return new ChoiceDropdown.Choice(label, id);
         yield return new ChoiceDropdown.Choice(Loc.Ui("ModelOther"), OtherModel);
     }
@@ -230,7 +235,11 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         }
         _modelDropdown.SetChoices(ModelChoices(models), current);
         ShowModelId(_modelDropdown.SelectedValue == OtherModel);
-        if (models.Count == 0 && IsInstanceValid(_ownStatus)) SetStatus(_ownStatus, Loc.Ui("ModelsUnavailable" + source), ok: false);
+        if (models.Count == 0 && IsInstanceValid(_ownStatus))
+        {
+            var why = source is ApiSource.Ollama or ApiSource.Custom ? Loc.Ui("ModelsUnavailable" + source) : Loc.Ui("ModelsUnavailablePreset");
+            SetStatus(_ownStatus, why, ok: false);
+        }
     }
 
     private void ShowModelId(bool show)
@@ -247,15 +256,17 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var grid = new GridContainer { Columns = 2 };
         grid.AddThemeConstantOverride("h_separation", 40);
         grid.AddThemeConstantOverride("v_separation", 2);
-        foreach (var (key, prop) in new[]
-                 {
-                     ("EnableAncients", nameof(SpireTalkConfig.EnableAncients)),
-                     ("EnableMerchant", nameof(SpireTalkConfig.EnableMerchant)),
-                     ("FreeTextInput", nameof(SpireTalkConfig.FreeTextInput)),
-                     ("RememberAcrossRuns", nameof(SpireTalkConfig.RememberAcrossRuns)),
-                     ("UseAncientAffection", nameof(SpireTalkConfig.UseAncientAffection)),
-                     ("DebugLogging", nameof(SpireTalkConfig.DebugLogging)),
-                 })
+        // Detailed logging stays in the config file for bug reports; players never need the switch.
+        // The Ancient Affection switch only means something when that mod is installed.
+        var toggles = new List<(string key, string prop)>
+        {
+            ("EnableAncients", nameof(SpireTalkConfig.EnableAncients)),
+            ("EnableMerchant", nameof(SpireTalkConfig.EnableMerchant)),
+            ("FreeTextInput", nameof(SpireTalkConfig.FreeTextInput)),
+            ("RememberAcrossRuns", nameof(SpireTalkConfig.RememberAcrossRuns)),
+        };
+        if (Affection.AncientAffectionBridge.Available) toggles.Add(("UseAncientAffection", nameof(SpireTalkConfig.UseAncientAffection)));
+        foreach (var (key, prop) in toggles)
         {
             var cell = new HBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
             cell.AddThemeConstantOverride("separation", 14);
@@ -287,7 +298,23 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var mood = _config.MakeDropdown(nameof(SpireTalkConfig.Temperament));
         mood.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         bottom.AddChild(mood);
-        bottom.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
+        block.AddChild(bottom);
+
+        // The buttons get their own row; next to the dropdowns they pushed the sheet off-screen.
+        var buttons = new HBoxContainer();
+        buttons.AddThemeConstantOverride("separation", 20);
+        buttons.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
+        bottom = buttons;
+        bottom.AddChild(_config.MakeButton(Loc.Ui("GuideBtn"), () =>
+        {
+            Close();
+            MemoryScreen.OpenLater(() => GuideScreen.Open());
+        }, "#7d6a4a"));
+        bottom.AddChild(_config.MakeButton(Loc.Ui("BookBtn"), () =>
+        {
+            Close();
+            MemoryScreen.OpenLater(KeepsakeBook.Open);
+        }, "#8a6a2e"));
         bottom.AddChild(_config.MakeButton(Loc.Ui("MemoryBtn"), () =>
         {
             Close();
@@ -337,7 +364,7 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var (ok, text) = await SpireTalkConfig.TestOwnKeyAsync();
         SetStatus(_ownStatus, text, ok);
         // A custom endpoint's list needs its address and key; they may have just been typed.
-        if (ok && SpireTalkConfig.Source == ApiSource.Custom) _ = LoadModels(ApiSource.Custom);
+        if (ok && ApiSources.ShouldFetch(SpireTalkConfig.Source)) _ = LoadModels(SpireTalkConfig.Source);
     }
 
     // Esc: the press is swallowed and the sheet closes on the RELEASE, so neither half of the key

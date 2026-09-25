@@ -37,7 +37,7 @@ public sealed partial class TalkPanel : Control
         MouseFilter = MouseFilterEnum.Stop;
         ZIndex = 200;
 
-        var dim = new ColorRect { Color = new Color(0f, 0f, 0f, 0.6f), MouseFilter = MouseFilterEnum.Stop };
+        var dim = new ColorRect { Color = new Color(0.02f, 0.02f, 0.03f, 0.88f), MouseFilter = MouseFilterEnum.Stop };
         dim.SetAnchorsPreset(LayoutPreset.FullRect);
         dim.GuiInput += OnDimInput;
         AddChild(dim);
@@ -84,7 +84,7 @@ public sealed partial class TalkPanel : Control
                 AddAnimated(input);
             }
         }
-        AddOption(Loc.EventText(linesLeft > 0 ? "leaveShop" : "leaveShopDone"), Loc.Sanitize(footer), () => _onClose?.Invoke());
+        AddOption(Loc.EventText(linesLeft > 0 ? "leaveShop" : "leaveShopDone"), footer, () => _onClose?.Invoke()); // footer is our own BBCode
     }
 
     /// <summary>The merchant proposed a deal: the answer comes before the usual choices.</summary>

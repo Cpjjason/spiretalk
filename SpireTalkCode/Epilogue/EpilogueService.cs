@@ -131,6 +131,7 @@ internal static class EpilogueService
             var delta = 0;
             var action = NpcAction.None;
             var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action).Trim();
+            text = string.Join("\n", text.Split('\n').Select(l => Backend.EngineBackend.TidyDots(l, npc.Key)).Where(l => l.Length > 0));
             if (string.IsNullOrWhiteSpace(text)) return;
 
             TalkStore.Instance.AddEpilogue(new TalkStore.EpilogueRecord
@@ -241,6 +242,32 @@ internal sealed partial class EpiloguePanel : Control
 
         var tween = CreateTween();
         tween.TweenProperty(this, "modulate:a", 1f, 0.6).SetDelay(1.2);
+    }
+
+    private Control? _continueButton;
+    private bool _sawContinue;
+    private bool _leaving;
+
+    /// <summary>
+    /// The farewell belongs to the death screen. Its Continue button is shown there and hidden once
+    /// pressed (the run summary takes over), so the bubble fades out the moment that happens.
+    /// </summary>
+    public override void _Process(double delta)
+    {
+        if (_leaving) return;
+        _continueButton ??= GetParent()?.FindChild("ContinueButton", true, false) as Control;
+        if (_continueButton == null || !GodotObject.IsInstanceValid(_continueButton)) return;
+        var shown = _continueButton.Visible && _continueButton.Modulate.A > 0.5f;
+        if (shown)
+        {
+            _sawContinue = true;
+            return;
+        }
+        if (!_sawContinue) return;
+        _leaving = true;
+        var tween = CreateTween();
+        tween.TweenProperty(this, "modulate:a", 0f, 0.25);
+        tween.TweenCallback(Callable.From(QueueFree));
     }
 
     public void Fill(string text)

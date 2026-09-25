@@ -241,6 +241,45 @@ public sealed partial class TestBridge : Node
                 WriteResult(true, $"{key}: {current} -> {after} (source={(Affection.AffectionService.UsingAncientAffection ? "AA" : "own")})");
                 break;
             }
+            case "deal":
+            {
+                // Accept a deal of a chosen type without the conversation: deal npc=NEOW type=no_potion [param=N]
+                var npc = cmd["npc"]?.GetValue<string>() ?? "NEOW";
+                var type = Deals.DealService.ParseType(cmd["type"]?.GetValue<string>() ?? "reach_next_act") ?? Deals.DealService.DealType.ReachNextAct;
+                var player = Merchant.MerchantTalk.ResolveLocalPlayer();
+                if (player == null) { WriteResult(false, "no player"); break; }
+                var act = player.RunState.CurrentActIndex;
+                var param = cmd["param"]?.GetValue<int?>() ?? 0;
+                var target = type == Deals.DealService.DealType.SpendAtShop ? act : act + 1;
+                var offer = new Deals.DealService.Offer(npc, type, param, target, Rewards.RewardExecutor.RunKey(player), act);
+                Deals.DealService.Accept(offer);
+                WriteResult(true, $"deal {npc} {offer.Key} param={param} target act {target + 1}");
+                break;
+            }
+            case "keepsake":
+            {
+                // Hand over or level a keepsake the way a visit would: keepsake npc=NEOW
+                var key = cmd["npc"]?.GetValue<string>() ?? "NEOW";
+                var npc = Npc.NpcCatalog.Get(key);
+                var player = Merchant.MerchantTalk.ResolveLocalPlayer();
+                if (npc == null || player == null) { WriteResult(false, "no npc or player"); break; }
+                var (value, married) = Affection.AffectionService.Read(key);
+                var tier = Npc.ConversationRules.TierOf(value, married);
+                async Task Visit()
+                {
+                    try
+                    {
+                        var line = await Keepsakes.KeepsakeService.OnVisitAsync(npc, player, tier);
+                        WriteResult(true, $"{key} tier={tier}: {line}");
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteResult(false, ex.GetType().Name + ": " + ex.Message);
+                    }
+                }
+                _ = Visit();
+                break;
+            }
             case "relics":
             {
                 var player = Merchant.MerchantTalk.ResolveLocalPlayer();

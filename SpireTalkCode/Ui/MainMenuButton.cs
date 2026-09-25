@@ -95,6 +95,7 @@ internal static class MainMenuReadyPatch
         {
             if (__instance.GetNodeOrNull<Control>("SpireTalkMenuButton") != null) return;
             __instance.AddChild(MainMenuButton.Create());
+            GuideScreen.OpenOnceWhenIdle();
         }
         catch (Exception ex)
         {

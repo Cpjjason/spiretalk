@@ -56,6 +56,7 @@ public sealed class MerchantWreck : EncounterEvent
         run.MerchantFavor = true;
         run.MerchantGrudge = false;
         TalkStore.Instance.Save();
+        await Tokens.TokenService.GiveFavorAsync(Owner);
 
         var potionName = "";
         try
@@ -97,6 +98,7 @@ public sealed class MerchantWreck : EncounterEvent
         run.MerchantGrudge = true;
         run.MerchantFavor = false;
         TalkStore.Instance.Save();
+        await Tokens.TokenService.GiveGrudgeAsync(Owner);
 
         EncounterVoice.Remember(npc, Owner, "memory.wreckStole", relicName);
         await ReactAndFinish(

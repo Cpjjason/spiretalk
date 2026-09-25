@@ -119,6 +119,7 @@ internal static class MerchantTalk
         if (run.MerchantGrudge)
         {
             DiscountPercent = -SpireTalk.Encounters.MerchantWreck.GrudgeMarkup;
+            Tokens.TokenService.GrudgeCharged(owner);
             RewardExecutor.Toast(string.Format(Loc.EventText("roadGrudge"), SpireTalk.Encounters.MerchantWreck.GrudgeMarkup));
         }
         else if (run.MerchantFavor)
@@ -126,6 +127,7 @@ internal static class MerchantTalk
             DiscountPercent = SpireTalk.Encounters.MerchantWreck.FavorDiscount;
             run.MerchantFavor = false;
             TalkStore.Instance.Save();
+            Tokens.TokenService.FavorSpent(owner);
             RewardExecutor.Toast(string.Format(Loc.EventText("roadFavor"), SpireTalk.Encounters.MerchantWreck.FavorDiscount));
         }
         else return;
@@ -453,7 +455,7 @@ internal sealed class MerchantConversation
         if (_panel == null || !GodotObject.IsInstanceValid(_panel) || _ctx == null) return;
         var linesLeft = ConversationRules.LinesPerVisit - _linesUsed;
         var lines = turn.Lines.Count > 0 ? turn.Lines : new[] { Loc.EventText("silence") };
-        var footer = string.Format(Loc.EventText("merchantFooter"), _ctx.Affection, Loc.EventText("tier." + ConversationRules.TierName(_ctx.Tier)), linesLeft,
+        var footer = Ui.RelationshipLine.Build(_ctx.Affection, _ctx.Kind, _ctx.Tier, linesLeft, showLines: linesLeft > 0,
             MerchantTalk.DiscountPercent > 0 ? string.Format(Loc.EventText("merchantDiscountNote"), MerchantTalk.DiscountPercent) : "");
         if (_offer != null && !_offerAnswered)
         {

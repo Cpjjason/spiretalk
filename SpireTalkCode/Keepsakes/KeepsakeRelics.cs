@@ -34,7 +34,7 @@ public sealed class KeepsakeNeow : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("Heal", (level >= 2 ? 6 : 3) + engravings),
+        ("Heal", level switch { >= 4 => 8, 3 => 6, 2 => 3, _ => 2 } + engravings),
     };
 
     public override async Task AfterCombatVictory(CombatRoom _)
@@ -46,7 +46,7 @@ public sealed class KeepsakeNeow : KeepsakeRelic
 
     public override bool ShouldDieLate(Creature creature)
     {
-        if (creature != Owner.Creature || Level < 3 || LifeUsed) return true;
+        if (creature != Owner.Creature || Level < MaxLevel || LifeUsed) return true;
         return false;
     }
 
@@ -66,8 +66,8 @@ public sealed class KeepsakeOrobas : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("Gold", (level >= 2 ? 25 : 15) + engravings * 5),
-        ("Chance", (level >= 2 ? 35 : 20) + engravings * 5),
+        ("Gold", level switch { >= 4 => 30, 3 => 25, 2 => 15, _ => 10 } + engravings * 5),
+        ("Chance", level switch { >= 4 => 40, 3 => 35, 2 => 20, _ => 10 } + engravings * 5),
     };
 
     public override async Task AfterCombatVictory(CombatRoom _)
@@ -84,7 +84,7 @@ public sealed class KeepsakeOrobas : KeepsakeRelic
 
     public override bool TryModifyRewards(Player player, List<Reward> rewards, AbstractRoom? room)
     {
-        if (player != Owner || Level < 3) return false;
+        if (player != Owner || Level < MaxLevel) return false;
         if (room == null || room.RoomType != RoomType.Elite) return false;
         rewards.Add(new RelicReward(player));
         return true;
@@ -99,8 +99,8 @@ public sealed class KeepsakeNonupeipe : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("Block", (level >= 2 ? 5 : 3) + engravings),
-        ("Dexterity", level >= 3 ? 1 : 0),
+        ("Block", level switch { >= 4 => 6, 3 => 5, 2 => 3, _ => 2 } + engravings),
+        ("Dexterity", level >= 4 ? 1 : 0),
     };
 
     public override async Task BeforeCombatStart()
@@ -131,8 +131,8 @@ public sealed class KeepsakePael : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("MaxHp", level),
-        ("Cap", 10 + engravings * 2),
+        ("MaxHp", level switch { >= 4 => 3, 3 => 2, _ => 1 }),
+        ("Cap", (level <= 1 ? 6 : 10) + engravings * 2),
     };
 
     public override async Task AfterCombatVictory(CombatRoom _)
@@ -160,7 +160,7 @@ public sealed class KeepsakeDarv : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("Cards", level >= 2 ? 2 : 1),
+        ("Cards", level switch { >= 4 => 3, 3 or 2 => 2, _ => 1 }),
         ("Energy", 1), // the III bonus; the text names it, the level gates it
     };
 
@@ -179,7 +179,7 @@ public sealed class KeepsakeDarv : KeepsakeRelic
 
     public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
-        if (Level < 3) return;
+        if (Level < 3) return; // the energy arrives with level III (close)
         if (!participants.Contains(Owner.Creature) || Owner.PlayerCombatState.TurnNumber > 1) return;
         Flash();
         await PlayerCmd.GainEnergy(V("Energy"), Owner);
@@ -196,8 +196,8 @@ public sealed class KeepsakeTanx : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("Damage", (level >= 2 ? 8 : 4) + engravings),
-        ("Strength", level >= 3 ? 1 : 0),
+        ("Damage", level switch { >= 4 => 10, 3 => 8, 2 => 4, _ => 3 } + engravings),
+        ("Strength", level >= 4 ? 1 : 0),
     };
 
     public override async Task BeforeCombatStart()
@@ -236,8 +236,8 @@ public sealed class KeepsakeTezcatara : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("Heal", (level >= 2 ? 20 : 10) + engravings * 2),
-        ("PotionSlots", level >= 3 ? 1 : 0),
+        ("Heal", level switch { >= 4 => 24, 3 => 20, 2 => 10, _ => 6 } + engravings * 2),
+        ("PotionSlots", level >= 4 ? 1 : 0),
     };
 
     public override decimal ModifyRestSiteHealAmount(Creature creature, decimal amount)
@@ -269,9 +269,17 @@ public sealed class KeepsakeVakuu : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("Strength", level >= 2 ? 2 : 1),
-        ("HpLoss", level >= 3 ? 0 : 2),
+        ("Strength", level >= 3 ? 2 : 1),
+        ("HpLoss", level switch { >= 4 => 0, 1 => 3, _ => 2 }),
     };
+
+    protected override IEnumerable<string> TextVars => new[] { "Blood" };
+
+    protected override void ApplyText()
+    {
+        var loss = VI("HpLoss");
+        SetText("Blood", loss > 0 ? string.Format(Loc.EventText("vakuuBlood"), loss) : "");
+    }
 
     public override async Task BeforeCombatStart()
     {
@@ -292,8 +300,8 @@ public sealed class KeepsakeMerchant : KeepsakeRelic
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
     {
-        ("Discount", (level >= 3 ? 20 : level >= 2 ? 10 : 5) + engravings * 2),
-        ("FreeRemoval", level >= 2 ? 1 : 0),
+        ("Discount", level switch { >= 4 => 20, 3 => 10, 2 => 5, _ => 3 } + engravings * 2),
+        ("FreeRemoval", level >= 3 ? 1 : 0),
     };
 
     public override decimal ModifyMerchantPrice(Player player, MerchantEntry entry, decimal originalPrice)

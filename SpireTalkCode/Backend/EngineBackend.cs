@@ -81,10 +81,10 @@ public sealed class EngineBackend : INpcBackend
         {
             MainFile.Logger.Info($"[Engine] dropped AI writes: {result.DroppedEffects.ToJsonString()}", 1);
         }
-        return ToTurn(result, raw, TalkStore.Instance.RecentNpcTexts(ctx.NpcKey));
+        return ToTurn(result, raw, TalkStore.Instance.RecentNpcTexts(ctx.NpcKey), ctx.NpcKey);
     }
 
-    private static NpcTurn ToTurn(YuminaRuntime.TurnResult result, string raw, List<string> saidBefore)
+    private static NpcTurn ToTurn(YuminaRuntime.TurnResult result, string raw, List<string> saidBefore, string npcKey)
     {
         var vars = result.Variables;
         var delta = 0;
@@ -120,9 +120,35 @@ public sealed class EngineBackend : INpcBackend
         // Models that ignore the directive syntax often still write the fields as loose
         // "key: value" lines. Recover them from the raw output and keep them off screen.
         var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action);
-        var lines = RepeatFilter.Apply(Ancients.AncientConversation.SplitIntoLines(text), saidBefore);
+        var lines = RepeatFilter.Apply(Ancients.AncientConversation.SplitIntoLines(text), saidBefore).Select(l => TidyDots(l, npcKey)).Where(l => l.Length > 0).ToList();
         choices = choices.Select(PlainChoice).Where(c => c.Length > 0).ToList();
         return new NpcTurn(lines, choices, delta, null, action, OpenAiClient.Model);
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex DotRun = new(@"\.{4,}|…{2,}|(?:\.\s*){4,}");
+    private static readonly System.Text.RegularExpressions.Regex AnyDots = new(@"\.{2,}|…+");
+
+    /// <summary>
+    /// Models pile up dots ("....... ..") far past how anyone writes. Runs longer than three become
+    /// "..." for everyone. Neow really does talk in fragments, so she keeps her pauses; everyone else
+    /// keeps at most two per bubble and the rest become plain commas or full stops.
+    /// </summary>
+    internal static string TidyDots(string line, string npcKey)
+    {
+        var s = DotRun.Replace(line, "...");
+        if (!string.Equals(npcKey, "NEOW", StringComparison.OrdinalIgnoreCase))
+        {
+            var cjk = s.Any(c => c >= 0x3000 && c <= 0x9fff);
+            var kept = 0;
+            s = AnyDots.Replace(s, m =>
+            {
+                kept++;
+                if (kept <= 2) return m.Value;
+                var atEnd = m.Index + m.Length >= s.TrimEnd().Length;
+                return atEnd ? (cjk ? "。" : ".") : (cjk ? "，" : ",");
+            });
+        }
+        return System.Text.RegularExpressions.Regex.Replace(s, @"\s{2,}", " ").Trim();
     }
 
     private static readonly System.Text.RegularExpressions.Regex Ellipsis = new(@"\s*(?:\.{2,}|…+)\s*");
