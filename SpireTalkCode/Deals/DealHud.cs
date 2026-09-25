@@ -78,13 +78,30 @@ public sealed partial class DealHud : PanelContainer
     {
         Name = "SpireTalkDealHud";
         MouseFilter = MouseFilterEnum.Ignore;
-        // Left, just under the top bar, out of the way of the map and the event art.
+        // Left, just under the relic row, out of the way of the map and the event art.
         SetAnchorsPreset(LayoutPreset.TopLeft);
-        OffsetLeft = 104; // right of the ascension flame
-        OffsetTop = 116;
+        OffsetLeft = 12;
+        OffsetTop = RelicRowBottom;
         AddThemeStyleboxOverride("panel", GameArt.Navy(16, 6));
         _label = GameArt.Label("", 20, GameArt.Gold, wrap: false);
         _label.MouseFilter = MouseFilterEnum.Ignore;
         AddChild(_label);
+    }
+
+    // The relic bar starts at y=82 with 68px icons and wraps into more rows as relics pile up.
+    private const float RelicRowBottom = 82 + 68 + 6;
+    private int _frame;
+
+    public override void _Process(double delta)
+    {
+        if (!Visible || ++_frame % 20 != 0) return;
+        var relics = GetParent()?.GetNodeOrNull<Control>("RelicInventory");
+        if (relics == null) return;
+        var bottom = RelicRowBottom;
+        foreach (var child in relics.GetChildren())
+        {
+            if (child is Control c && c.Visible) bottom = Math.Max(bottom, c.Position.Y + relics.Position.Y + c.Size.Y + 6);
+        }
+        if (Math.Abs(OffsetTop - bottom) > 0.5f) OffsetTop = bottom;
     }
 }

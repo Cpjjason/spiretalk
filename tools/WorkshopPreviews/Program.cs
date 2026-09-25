@@ -129,6 +129,17 @@ static int QueryPreviewCount(PublishedFileId_t fileId)
         if (!ioFailure && r.m_eResult == EResult.k_EResultOK && r.m_unNumResultsReturned > 0)
         {
             count = (int)SteamUGC.GetQueryUGCNumAdditionalPreviews(r.m_handle, 0);
+            if (SteamUGC.GetQueryUGCPreviewURL(r.m_handle, 0, out var cover, 1024))
+                Console.WriteLine($"  cover: {cover}");
+            for (uint i = 0; i < count; i++)
+            {
+                if (SteamUGC.GetQueryUGCAdditionalPreview(r.m_handle, 0, i, out var url, 1024, out var name, 260, out var type))
+                    Console.WriteLine($"  [{i}] {type} {name} {url}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"  query failed: io={ioFailure} result={r.m_eResult}");
         }
         SteamUGC.ReleaseQueryUGCRequest(r.m_handle);
         done = true;
