@@ -1,6 +1,8 @@
+[img]https://yumina.io/cdn/aeed0626-4874-442d-97b9-4221f25d6fbc[/img]
+
 让八位先民和商人可以对话。先民事件里多一个「交谈」选项，商店右上角多一个「聊聊」按钮。
 
-[h2]功能[/h2]
+[img]https://yumina.io/cdn/6ce1de99-3f58-4315-a1a0-30dc8ec3bd4b[/img]
 每次见面能说三句，说的话会改变好感（敌意 / 陌生 / 友好 / 亲近 / 挚爱）。
 
 聊过一次会得到这位角色的信物，是一件遗物，好感升档时当场升级，挚爱时变成誓约信物。设置里有信物图鉴。
@@ -15,7 +17,7 @@
 
 一局结束时，好感最高的那位会在结算页说几句。
 
-[h2]AI[/h2]
+[img]https://yumina.io/cdn/a0a89ddf-4841-416a-84e7-bff6be1754c9[/img]
 不需要 API 密钥也能玩。不填密钥时角色说预先写好的台词，从三个回复里选，其他功能不变。
 
 填了密钥后台词由 AI 生成，会结合这一局的血量、卡组、遗物，也可以自己打字。支持 OpenRouter、OpenAI、Anthropic、Gemini、DeepSeek、智谱、硅基流动、阿里云百炼、本地 Ollama 等。
@@ -24,7 +26,7 @@
 
 两种模式可以在设置最上面的「对话方式」里随时切换。
 
-[h2]其他[/h2]
+[img]https://yumina.io/cdn/1b6b58e2-1654-4b97-8949-ed86aa1e47a8[/img]
 需要 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url]。
 只支持单人模式。支持简体中文和英文。
 默认原版画风，装了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] 和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] 会自动换成对应画风。
@@ -33,7 +35,7 @@
 
 遇到 bug 请在讨论区反馈。
 
-[h2]致谢[/h2]
+[img]https://yumina.io/cdn/0ae8fc17-4ccf-4766-9efa-f9f762e0916b[/img]
 感谢 Yumina 开源。
 开源地址：[url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 原网站：[url=https://yumina.io]yumina.io[/url]
