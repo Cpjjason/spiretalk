@@ -1,4 +1,4 @@
-[img]https://yumina.io/cdn/aeed0626-4874-442d-97b9-4221f25d6fbc[/img]
+[img]https://yumina.io/cdn/8dbda56a-fc35-4065-b9b9-78aa16dfae71[/img]
 
 Lets you talk to the eight Ancients and the Merchant. Ancient events get a Talk option, and the shop gets a Talk button in the top right.
 

@@ -11,8 +11,8 @@
 		"1"		"English"
 		"2"		"Simplified Chinese"
 	}
-	"title"		"SpireTalk: Living Ancients"
-	"description"		"[img]https://yumina.io/cdn/aeed0626-4874-442d-97b9-4221f25d6fbc[/img]
+	"title"		"SpireTalk: Talk Before You Take"
+	"description"		"[img]https://yumina.io/cdn/8dbda56a-fc35-4065-b9b9-78aa16dfae71[/img]
 
 Lets you talk to the eight Ancients and the Merchant. Ancient events get a Talk option, and the shop gets a Talk button in the top right.
 
@@ -53,5 +53,5 @@ Please report bugs in the discussion section.
 Thanks to Yumina for open-sourcing their engine.
 Source: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]"
-	"changenote"		"0.5.4 - Keepsake book no longer shows a second, differently translated name when skin mods rename the Ancients. Settings footer links to yumina.io. New description and screenshots."
+	"changenote"		"0.5.5 - New name: SpireTalk: Talk Before You Take. Redrawn Neow for the roadside event (waifu art) and a new cover."
 }

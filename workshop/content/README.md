@@ -1,4 +1,4 @@
-# SpireTalk: Living Ancients
+# SpireTalk: Talk Before You Take
 
 *Slay the Spire 2* mod — talk to the eight Ancients and the Merchant. Every NPC answers in character, remembers what you said (even across runs), and a good relationship can earn you something real: a fresh set of relics, gold, healing, a potion, a shop discount, or one of Ancient Affection's keepsake relics.
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dewnc1exq5r7o"
-path="res://.godot/imported/01-eng-styles.jpg-34b58ceb8fb4f05bb9a8c53f4faa6782.ctex"
+uid="uid://dmrccfyqp6enj"
+path="res://.godot/imported/15-zhs-vanilla-rest-c.jpg-3386a73b6cafd1d93e50be44f64a7d38.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://workshop/screenshots/01-eng-styles.jpg"
-dest_files=["res://.godot/imported/01-eng-styles.jpg-34b58ceb8fb4f05bb9a8c53f4faa6782.ctex"]
+source_file="res://workshop/screenshots/15-zhs-vanilla-rest-c.jpg"
+dest_files=["res://.godot/imported/15-zhs-vanilla-rest-c.jpg-3386a73b6cafd1d93e50be44f64a7d38.ctex"]
 
 [params]
 

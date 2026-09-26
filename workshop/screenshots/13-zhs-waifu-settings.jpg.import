@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://vd8j2oi81g7b"
-path="res://.godot/imported/01-zhs-styles.jpg-de5fc7f8d4125bec298e0f57633dee60.ctex"
+uid="uid://bd6nkws6yojpa"
+path="res://.godot/imported/13-zhs-waifu-settings.jpg-ec4fd9bcc8c6cf5cd68a431857f915d3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://workshop/screenshots/01-zhs-styles.jpg"
-dest_files=["res://.godot/imported/01-zhs-styles.jpg-de5fc7f8d4125bec298e0f57633dee60.ctex"]
+source_file="res://workshop/screenshots/13-zhs-waifu-settings.jpg"
+dest_files=["res://.godot/imported/13-zhs-waifu-settings.jpg-ec4fd9bcc8c6cf5cd68a431857f915d3.ctex"]
 
 [params]
 
