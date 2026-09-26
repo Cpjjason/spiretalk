@@ -37,7 +37,7 @@
 [*] 贴上密钥（Ollama 不需要），从列表里选一个模型，点「测试连接」。开一局，去聊天。
 [/olist]
 免费密钥：国内用[b]智谱开放平台[/b]（open.bigmodel.cn，glm-4.7-flash 模型不收费，注册要手机号和实名）；国外用 [b]Google AI Studio[/b]（aistudio.google.com/apikey，名字带 flash 的模型有免费额度）。不想折腾也可以直接玩写好的台词。
-第一次进主菜单会弹出一份简短的新手指南，之后在设置里也能随时再看。
+第一次进主菜单会问你：已经有密钥、教你免费拿一个、还是先不用 AI。设置最上面的「对话方式」随时能切，有密钥也可以选只用写好的台词。
 这些角色由 [url=https://github.com/lovetimo0421/yumina-oss]Yumina 引擎[/url] 在游戏内运行，模组只连接你自己配置的接口地址。每位角色都是一张 Yumina 角色卡（一个 JSON 文件），把你自己的卡放进 [i]%APPDATA%\SlayTheSpire2\spiretalk\cards\[/i] 就能替换对应的人设。
 
 [h1]须知[/h1]

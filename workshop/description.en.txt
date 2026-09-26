@@ -37,7 +37,7 @@ Relic reroll, gold, healing, a potion, a shop discount. The mod validates every 
 [*] Paste your key (Ollama needs none), pick a model from the list, press [b]Test[/b]. Start a run. Talk.
 [/olist]
 Free keys: [b]Google AI Studio[/b] (aistudio.google.com/apikey, models with flash in the name have a free allowance; not available in mainland China) or [b]Zhipu[/b] (open.bigmodel.cn, the glm-4.7-flash model is free). Or skip all this and play with the written lines.
-A short in-game guide opens the first time you reach the main menu, and again from the settings any time.
+The first time you reach the main menu, the mod asks: you already have a key, you want help getting a free one, or no AI for now. The Conversation switch at the top of the settings changes it any time; with a key you can still choose the written lines.
 The NPCs run on the [url=https://github.com/lovetimo0421/yumina-oss]Yumina engine[/url] inside the game, and the mod connects to nothing but the endpoint you configure. Each NPC is a Yumina card (a JSON file); drop your own into [i]%APPDATA%\SlayTheSpire2\spiretalk\cards\[/i] to replace a persona.
 
 [h1]Good to know[/h1]
