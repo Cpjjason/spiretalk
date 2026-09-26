@@ -158,6 +158,7 @@ public sealed class KeepsakePael : KeepsakeRelic
 public sealed class KeepsakeDarv : KeepsakeRelic
 {
     public override string NpcKey => "DARV";
+    protected override int UnlockLevel => 3;
     protected override string BorrowedIcon => "dusty_tome";
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]
@@ -306,6 +307,7 @@ public sealed class KeepsakeVakuu : KeepsakeRelic
 public sealed class KeepsakeMerchant : KeepsakeRelic
 {
     public override string NpcKey => "MERCHANT";
+    protected override int UnlockLevel => 3;
     protected override string BorrowedIcon => "membership_card";
 
     protected override IEnumerable<(string, decimal)> Values(int level, int engravings) => new (string, decimal)[]

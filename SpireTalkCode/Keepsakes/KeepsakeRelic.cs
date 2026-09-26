@@ -113,6 +113,7 @@ public abstract class KeepsakeRelic : CustomRelicModel
             var vars = new List<DynamicVar> { new("Level", 1m), new("Engravings", 0m) };
             foreach (var (key, value) in Values(1, 0)) vars.Add(MakeVar(key, value));
             foreach (var key in TextVars) vars.Add(new StringVar(key));
+            vars.Add(new StringVar("Extra"));
             return vars;
         }
     }
@@ -128,6 +129,20 @@ public abstract class KeepsakeRelic : CustomRelicModel
         if (DynamicVars.TryGetValue(key, out var v) && v is StringVar sv) sv.StringValue = value;
     }
 
+    /// <summary>The level at which the extra effect (".extra" in the text) switches on: the vow, or III for a few.</summary>
+    protected virtual int UnlockLevel => MaxLevel;
+
+    /// <summary>
+    /// The extra effect: in normal colours once it is unlocked; before that, greyed on a line of its
+    /// own with the relationship it needs, so a stranger's keepsake does not read as if it had it.
+    /// </summary>
+    private void ApplyExtra()
+    {
+        var unlocked = Level >= UnlockLevel;
+        var text = LocString.GetIfExists("relics", Id.Entry + (unlocked ? ".extra" : ".extraLocked"))?.GetRawText() ?? "";
+        SetText("Extra", text.Length == 0 ? "" : unlocked ? text : "\n[color=#8a9898]" + text + "[/color]");
+    }
+
     /// <summary>The game formats some vars specially (energy icons, card counts); those need their own type.</summary>
     protected virtual DynamicVar MakeVar(string key, decimal value) => new(key, value);
 
@@ -141,6 +156,7 @@ public abstract class KeepsakeRelic : CustomRelicModel
         {
             DynamicVars[key].BaseValue = value;
         }
+        ApplyExtra();
         ApplyText();
         if (IsMutable) InvokeDisplayAmountChanged();
     }

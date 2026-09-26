@@ -63,7 +63,7 @@ public abstract class EncounterEvent : CustomEventModel
     protected List<EventOption> Page()
     {
         var options = new List<EventOption>();
-        if (!_talked && MainFile.Backend.IsConfigured) options.Add(Option(Talk, "INITIAL"));
+        if (!_talked && Backend.Backends.AiReady) options.Add(Option(Talk, "INITIAL"));
         options.AddRange(Choices());
         return options;
     }
@@ -103,7 +103,7 @@ public abstract class EncounterEvent : CustomEventModel
         if (Finished) return;
         Finished = true;
         var marks = Text("pages.WAITING.description").GetFormattedText();
-        var speaks = Owner != null && Npc != null && MainFile.Backend.IsConfigured;
+        var speaks = Owner != null && Npc != null && Backend.Backends.AiReady;
         SetEventFinished(Page(speaks ? pageKey : pageKey + "Silent", speaks ? marks : "", fill));
         if (!speaks) return;
         ThinkingTicker.Attach(Node, marks, asSuffix: true);

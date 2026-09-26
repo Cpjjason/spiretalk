@@ -49,7 +49,7 @@ internal static class EpilogueService
 
             var runKey = RewardExecutor.RunKey(player);
             var run = TalkStore.Instance.GetRun(runKey);
-            if (run.EpilogueDone || !MainFile.Backend.IsConfigured) return;
+            if (run.EpilogueDone || !Backend.Backends.AiReady) return;
 
             var npc = PickNarrator(runKey);
             if (npc == null) return;

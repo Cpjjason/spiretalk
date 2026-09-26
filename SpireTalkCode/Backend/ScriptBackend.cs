@@ -160,7 +160,10 @@ public sealed class ScriptBackend : INpcBackend
 /// <summary>Which backend plays the NPCs: the player's AI when a key is set, the written script otherwise.</summary>
 public static class Backends
 {
-    public static bool Scripted => !MainFile.Backend.IsConfigured;
+    /// <summary>The player wants the AI and a key is in: lines are written by the model.</summary>
+    public static bool AiReady => SpireTalkConfig.UseAi && MainFile.Backend.IsConfigured;
+
+    public static bool Scripted => !AiReady;
 
     public static INpcBackend Active => Scripted ? ScriptBackend.Instance : MainFile.Backend;
 }

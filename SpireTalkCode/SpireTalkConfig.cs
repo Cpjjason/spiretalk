@@ -61,8 +61,17 @@ public sealed class SpireTalkConfig : SimpleModConfig
 
     public static bool SourceChosen { get; set; } = false;
 
-    /// <summary>The guide has been shown once; after that it opens only from the settings sheet.</summary>
+    /// <summary>The first-launch welcome has been shown once; after that the guide opens only from the settings sheet.</summary>
     public static bool GuideSeen { get; set; } = false;
+
+    /// <summary>
+    /// How NPCs talk: true = the AI writes their lines (once a key works; until then the written
+    /// script stands in), false = always the written script, key or not.
+    /// </summary>
+    public static bool UseAi { get; set; } = true;
+
+    /// <summary>Players from before the mode switch get a dot on the mushie until they open the settings once.</summary>
+    public static bool ModeNoticeSeen { get; set; } = false;
 
     [ConfigTextInput(TextInputPreset.Anything, MaxLength = 300)]
     public static string KeyOpenRouter { get; set; } = "";

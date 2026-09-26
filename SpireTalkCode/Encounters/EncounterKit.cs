@@ -78,7 +78,7 @@ public static class EncounterVoice
     {
         try
         {
-            if (!MainFile.Backend.IsConfigured) return null;
+            if (!Backend.Backends.AiReady) return null;
             var card = CardLibrary.For(npc.Key);
             if (card == null) return null;
             var runtime = YuminaRuntime.Instance;

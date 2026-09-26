@@ -36,7 +36,36 @@ public sealed partial class MainMenuButton : TextureButton
         b.MouseEntered += b.OnHover;
         b.MouseExited += b.OnUnhover;
         b.Pressed += SpireTalkScreen.Open;
+        b.AddDot();
         return b;
+    }
+
+    private static MainMenuButton? _current;
+
+    /// <summary>A red dot for players who had the mod before the conversation-mode switch: something new in the settings.</summary>
+    private void AddDot()
+    {
+        _current = this;
+        var style = new StyleBoxFlat { BgColor = new Color("d8433a"), BorderColor = new Color("2a0f0c"), };
+        style.SetBorderWidthAll(2);
+        style.SetCornerRadiusAll(9);
+        var dot = new Panel
+        {
+            Name = "Dot",
+            MouseFilter = MouseFilterEnum.Ignore,
+            Position = new Vector2(ButtonSize - 20, 4),
+            Size = new Vector2(18, 18),
+        };
+        dot.AddThemeStyleboxOverride("panel", style);
+        AddChild(dot);
+        RefreshDot();
+    }
+
+    public static void RefreshDot()
+    {
+        if (_current == null || !IsInstanceValid(_current)) return;
+        var dot = _current.GetNodeOrNull<Control>("Dot");
+        if (dot != null) dot.Visible = SpireTalkConfig.GuideSeen && !SpireTalkConfig.ModeNoticeSeen;
     }
 
     private void PlaceAt(float top)

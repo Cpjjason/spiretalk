@@ -28,6 +28,12 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var screen = new SpireTalkScreen { _config = config };
         screen.Build();
         NModalContainer.Instance.Add(screen, true);
+        if (!SpireTalkConfig.ModeNoticeSeen)
+        {
+            SpireTalkConfig.ModeNoticeSeen = true;
+            config.SaveDebounced(200);
+            MainMenuButton.RefreshDot();
+        }
     }
 
     private void Close()
@@ -85,23 +91,102 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
 
     // ── The slate well: provider card + conversation switches ────────────
 
+    private VBoxContainer _column = null!;
+
     private Control BuildWell()
     {
         var well = new PanelContainer();
         well.AddThemeStyleboxOverride("panel", GameArt.Slate(34, 16));
 
-        var column = new VBoxContainer();
-        column.AddThemeConstantOverride("separation", 14);
-        well.AddChild(column);
-
-        column.AddChild(BuildOwnKeyCard());
-
-        column.AddChild(GameArt.Spacer(4));
-        column.AddChild(GameArt.Rule(new Color(1f, 1f, 1f, 0.12f)));
-        column.AddChild(GameArt.Spacer(4));
-
-        column.AddChild(BuildConversationBlock());
+        _column = new VBoxContainer();
+        _column.AddThemeConstantOverride("separation", 10);
+        well.AddChild(_column);
+        FillWell();
         return well;
+    }
+
+    /// <summary>Mode first; the AI connection only when the AI is wanted; then the conversation switches.</summary>
+    private void FillWell()
+    {
+        foreach (var child in _column.GetChildren()) child.QueueFree();
+        _modelFetch?.Cancel();
+
+        _column.AddChild(BuildModeBlock());
+        _column.AddChild(GameArt.Spacer(2));
+        if (SpireTalkConfig.UseAi)
+        {
+            _column.AddChild(BuildOwnKeyCard());
+        }
+        else
+        {
+            // Nothing to show; the reset button still reports into this label.
+            _ownStatus = GameArt.Label("", 22, GameArt.Muted);
+            _ownStatus.Visible = false;
+            _column.AddChild(_ownStatus);
+        }
+
+        _column.AddChild(GameArt.Spacer(4));
+        _column.AddChild(GameArt.Rule(new Color(1f, 1f, 1f, 0.12f)));
+        _column.AddChild(GameArt.Spacer(4));
+
+        _column.AddChild(BuildConversationBlock());
+    }
+
+    // ── Conversation mode: the AI writes the lines, or the written script plays them ──
+
+    private Control BuildModeBlock()
+    {
+        var block = new VBoxContainer();
+        block.AddThemeConstantOverride("separation", 8);
+        var head = new HBoxContainer();
+        head.AddThemeConstantOverride("separation", 24);
+        head.AddChild(SectionTitle(Loc.Ui("ModeTitle")));
+        block.AddChild(head);
+
+        var row = new HBoxContainer();
+        row.AddThemeConstantOverride("separation", 16);
+        row.AddChild(ModeOption(true));
+        row.AddChild(ModeOption(false));
+        block.AddChild(row);
+
+        // Only worth saying when the choice is not in effect: the AI is picked but not connected.
+        if (SpireTalkConfig.UseAi && !MainFile.Backend.IsConfigured)
+        {
+            var missing = GameArt.Label(Loc.Ui("ModeNowAiMissing"), 21, new Color("f0c080"), wrap: false);
+            missing.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+            head.AddChild(missing);
+        }
+        return block;
+    }
+
+    private Control ModeOption(bool ai)
+    {
+        var selected = SpireTalkConfig.UseAi == ai;
+        var b = GameArt.HexButton("", 24, 64);
+        b.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        if (selected)
+        {
+            b.AddThemeStyleboxOverride("normal", GameArt.EventButton(new Color(1.35f, 1.3f, 1.05f)));
+        }
+        else
+        {
+            b.Modulate = new Color(1, 1, 1, 0.62f);
+        }
+        // One line: the name, then what it means in smaller type (the sheet is already near full height).
+        var text = GameArt.Label($"[center][b]{Loc.Ui(ai ? "ModeAi" : "ModeScript")}[/b][/center]", 25, selected ? GameArt.Gold : GameArt.Cream, wrap: false);
+        text.MouseFilter = MouseFilterEnum.Ignore;
+        text.SetAnchorsPreset(LayoutPreset.FullRect);
+        text.OffsetLeft = 30; text.OffsetRight = -24; text.OffsetTop = 14; text.OffsetBottom = -6;
+        b.AddChild(text);
+        b.Pressed += () =>
+        {
+            if (SpireTalkConfig.UseAi == ai) return;
+            SpireTalkConfig.StashKey();
+            SpireTalkConfig.UseAi = ai;
+            _config.SaveDebounced(200);
+            Callable.From(FillWell).CallDeferred();
+        };
+        return b;
     }
 
     private static Control SectionTitle(string text)
@@ -147,7 +232,6 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         _modelFetch?.Cancel();
         var source = SpireTalkConfig.Source;
 
-        _connection.AddChild(SectionTitle(Loc.Ui("OwnKeyTitle")));
 
         var sources = Enum.GetValues<ApiSource>().Select(s => new ChoiceDropdown.Choice(Loc.Ui("Source" + s), s.ToString()));
         _connection.AddChild(Row(Loc.Ui("SourceLabel"), ChoiceDropdown.Create(FieldWidth, sources, source.ToString(), c =>
@@ -167,9 +251,18 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         {
             _connection.AddChild(Row(Loc.Ui("OwnKey"), _config.MakeLineEdit(nameof(SpireTalkConfig.OwnKey), secret: true, width: FieldWidth)));
         }
+        var tutorial = GameArt.LinkButton(Loc.Ui("KeyTutorialLink"), GameArt.Gold, 21);
+        tutorial.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        tutorial.Alignment = HorizontalAlignment.Left;
+        tutorial.Pressed += () =>
+        {
+            Close();
+            MemoryScreen.OpenLater(() => GuideScreen.OpenKeyTutorial(backToSettings: true));
+        };
         if (ApiSources.PresetOf(source) is { KeysPage: { } keysPage } preset)
         {
             var get = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End };
+            get.AddChild(tutorial);
             var getLabel = GameArt.Label(Loc.Ui("GetKey"), 21, GameArt.Muted, wrap: false);
             getLabel.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
             getLabel.SizeFlagsVertical = SizeFlags.ShrinkCenter;
@@ -194,14 +287,20 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         _connection.AddChild(_modelIdRow);
         ShowModelId(modelDropdown.SelectedValue == OtherModel);
 
+        // The hint (later the test result) and the test button share a row.
         var actions = new HBoxContainer();
-        actions.AddThemeConstantOverride("separation", 16);
-        actions.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
-        actions.AddChild(_config.MakeButton(Loc.Ui("TestBtn"), () => _ = RunOwnKeyTest(), "#4a9d7a"));
+        actions.AddThemeConstantOverride("separation", 24);
+        _ownStatus = GameArt.Label(SourceHint(source), 21, GameArt.Muted);
+        _ownStatus.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        _ownStatus.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        actions.AddChild(_ownStatus);
+        var test = _config.MakeButton(Loc.Ui("TestBtn"), () => _ = RunOwnKeyTest(), "#4a9d7a");
+        test.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        actions.AddChild(test);
         _connection.AddChild(actions);
 
-        _ownStatus = GameArt.Label(SourceHint(source), 22, GameArt.Muted);
-        _connection.AddChild(_ownStatus);
+        // Ollama / custom have no "get a key" row; the tutorial link goes under the hint instead.
+        if (tutorial.GetParent() == null) _connection.AddChild(tutorial);
 
         // A custom endpoint has nothing to ask until its address is in; Test connection asks later.
         if (ApiSources.ShouldFetch(source)) _ = LoadModels(source);
@@ -282,6 +381,7 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
             var label = GameArt.Label(Loc.Ui(key), 24, GameArt.Cream, wrap: false);
             label.SizeFlagsVertical = SizeFlags.ShrinkCenter;
             cell.AddChild(label);
+            if (key == "FreeTextInput" && !SpireTalkConfig.UseAi) cell.Modulate = new Color(1, 1, 1, 0.4f);
             grid.AddChild(cell);
         }
         block.AddChild(grid);
@@ -313,7 +413,7 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         bottom.AddChild(_config.MakeButton(Loc.Ui("GuideBtn"), () =>
         {
             Close();
-            MemoryScreen.OpenLater(() => GuideScreen.Open());
+            MemoryScreen.OpenLater(GuideScreen.OpenTour);
         }, "#7d6a4a"));
         bottom.AddChild(_config.MakeButton(Loc.Ui("BookBtn"), () =>
         {
@@ -358,6 +458,7 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
     private static void SetStatus(MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel label, string text, bool ok)
     {
         if (!GodotObject.IsInstanceValid(label)) return;
+        label.Visible = true;
         label.Text = Loc.Sanitize(text);
         label.AddThemeColorOverride("default_color", ok ? new Color("9fd8a8") : new Color("f0a0a0"));
     }
