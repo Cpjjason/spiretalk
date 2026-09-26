@@ -58,6 +58,56 @@ if (args[1] == "--text")
     }
 }
 
+// WorkshopPreviews <id> --deps [add <required id>]
+// Lists the item's required items (Steam subscribes users to them too), or adds one.
+if (args[1] == "--deps")
+{
+    File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "steam_appid.txt"), AppIdValue.ToString(CultureInfo.InvariantCulture));
+    if (!SteamAPI.Init())
+    {
+        Console.Error.WriteLine("SteamAPI.Init failed: is the Steam client running and logged in?");
+        return 1;
+    }
+    try
+    {
+        if (args.Length >= 4 && args[2] == "add")
+        {
+            var child = new PublishedFileId_t(ulong.Parse(args[3], CultureInfo.InvariantCulture));
+            var added = false;
+            var addResult = EResult.k_EResultFail;
+            var addCr = CallResult<AddUGCDependencyResult_t>.Create((r, io) => { addResult = io ? EResult.k_EResultIOFailure : r.m_eResult; added = true; });
+            addCr.Set(SteamUGC.AddDependency(fileId, child));
+            var t0 = DateTime.UtcNow;
+            while (!added && DateTime.UtcNow - t0 < TimeSpan.FromSeconds(30)) { SteamAPI.RunCallbacks(); Thread.Sleep(100); }
+            Console.WriteLine($"add dependency {args[3]}: {addResult}");
+        }
+        var q = SteamUGC.CreateQueryUGCDetailsRequest(new[] { fileId }, 1);
+        SteamUGC.SetReturnChildren(q, true);
+        var qdone = false;
+        var qcr = CallResult<SteamUGCQueryCompleted_t>.Create((r, io) =>
+        {
+            if (!io && r.m_eResult == EResult.k_EResultOK && r.m_unNumResultsReturned > 0 &&
+                SteamUGC.GetQueryUGCResult(r.m_handle, 0, out var details))
+            {
+                var kids = new PublishedFileId_t[details.m_unNumChildren];
+                if (kids.Length > 0) SteamUGC.GetQueryUGCChildren(r.m_handle, 0, kids, (uint)kids.Length);
+                Console.WriteLine($"required items: {(kids.Length == 0 ? "none" : string.Join(", ", kids.Select(k => k.m_PublishedFileId)))}");
+            }
+            else Console.WriteLine($"query failed: io={io} result={r.m_eResult}");
+            SteamUGC.ReleaseQueryUGCRequest(r.m_handle);
+            qdone = true;
+        });
+        qcr.Set(SteamUGC.SendQueryUGCRequest(q));
+        var t1 = DateTime.UtcNow;
+        while (!qdone && DateTime.UtcNow - t1 < TimeSpan.FromSeconds(30)) { SteamAPI.RunCallbacks(); Thread.Sleep(100); }
+        return 0;
+    }
+    finally
+    {
+        SteamAPI.Shutdown();
+    }
+}
+
 var listOnly = args[1] == "--list";
 var folder = listOnly ? "" : Path.GetFullPath(args[1]);
 var replace = args.Contains("--replace");
