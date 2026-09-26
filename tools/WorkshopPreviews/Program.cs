@@ -159,6 +159,12 @@ try
         }
         Console.WriteLine($"  queued removal of {existing} preview(s)");
     }
+    // Steam stores previews by content hash. Re-uploading the same bytes while removing the old previews
+    // lets Steam's later cleanup of the removed ones delete the shared file too, and the whole gallery goes
+    // blank hours afterwards (9/24, 9/26). Each upload gets a unique JPEG comment so its bytes are new.
+    var stampDir = Path.Combine(Path.GetTempPath(), "WorkshopPreviews-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture));
+    Directory.CreateDirectory(stampDir);
+    images = images.Select(img => StampJpeg(img, stampDir)).ToList();
     foreach (var img in images)
     {
         if (!SteamUGC.AddItemPreviewFile(handle, img, EItemPreviewType.k_EItemPreviewType_Image))
@@ -177,6 +183,28 @@ try
 finally
 {
     SteamAPI.Shutdown();
+}
+
+// Copies a JPEG into dir with a COM segment right after SOI; other formats are copied unchanged.
+static string StampJpeg(string path, string dir)
+{
+    var bytes = File.ReadAllBytes(path);
+    var dest = Path.Combine(dir, Path.GetFileName(path));
+    if (bytes.Length < 2 || bytes[0] != 0xFF || bytes[1] != 0xD8)
+    {
+        Console.WriteLine($"  (not a JPEG, uploading {Path.GetFileName(path)} unstamped)");
+        File.Copy(path, dest, true);
+        return dest;
+    }
+    var text = System.Text.Encoding.ASCII.GetBytes("upload " + Guid.NewGuid().ToString("N"));
+    var segLen = text.Length + 2;
+    using var ms = new MemoryStream();
+    ms.Write(bytes, 0, 2);
+    ms.Write(new byte[] { 0xFF, 0xFE, (byte)(segLen >> 8), (byte)(segLen & 0xFF) });
+    ms.Write(text);
+    ms.Write(bytes, 2, bytes.Length - 2);
+    File.WriteAllBytes(dest, ms.ToArray());
+    return dest;
 }
 
 static EResult SubmitAndWait(UGCUpdateHandle_t handle, string note)

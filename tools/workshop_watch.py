@@ -30,11 +30,30 @@ def stats(item):
     return {k: f.get(k) for k in ("subscriptions", "lifetime_subscriptions", "favorited", "views", "visibility", "time_updated")}
 
 
-def rating(item):
-    page = get(f"https://steamcommunity.com/sharedfiles/filedetails/?id={item}")
+def item_page(item):
+    return get(f"https://steamcommunity.com/sharedfiles/filedetails/?id={item}")
+
+
+def rating(page):
     stars = re.search(r"(\d)-star_large\.png", page) or re.search(r"(not-yet)_large\.png", page)
     votes = re.search(r'class="numRatings">\s*([\d,]+)', page)
     return (stars.group(1) if stars else "?"), (votes.group(1).replace(",", "") if votes else "0")
+
+
+def gallery(page):
+    """Every image on the item page (cover + screenshots) and the ones that no longer load.
+    The gallery has gone blank twice without anyone touching it, so this is checked every poll."""
+    urls = sorted(set(re.findall(r"https://images\.steamusercontent\.com/ugc/\d+/[0-9A-F]{40}/", page)))
+    broken = []
+    for u in urls:
+        try:
+            req = urllib.request.Request(u, headers={**UA, "Range": "bytes=0-0"})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                if r.status not in (200, 206):
+                    broken.append(u)
+        except Exception:
+            broken.append(u)
+    return urls, broken
 
 
 def comments(creator, item, count=50):
@@ -90,7 +109,15 @@ def main():
                     delta = "" if not old else " (" + ", ".join(f"{k} {s[k] - old.get(k, 0):+d}" for k in ("subscriptions", "favorited", "views") if s[k] != old.get(k)) + ")"
                     emit(f"stats: subscribers {s['subscriptions']} · lifetime {s['lifetime_subscriptions']} · favorites {s['favorited']} · views {s['views']}{delta}")
                     state["stats"] = {k: s[k] for k in s if k != "time_updated"}
-                r = rating(a.id)
+                page = item_page(a.id)
+                urls, broken = gallery(page)
+                g = [len(urls), len(broken)]
+                if broken or (state.get("gallery") and len(urls) < state["gallery"][0]):
+                    emit(f"GALLERY BROKEN: {len(broken)} of {len(urls)} images fail to load" + (f" (was {state['gallery'][0]} images)" if state.get("gallery") else "") + "; rerun workshop/upload-screenshots.cmd")
+                elif state.get("gallery") != g:
+                    emit(f"gallery: {len(urls)} images, all load")
+                state["gallery"] = g
+                r = rating(page)
                 if state.get("rating") != list(r):
                     emit(f"rating: {r[0]} stars from {r[1]} votes")
                     state["rating"] = list(r)
