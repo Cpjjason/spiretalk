@@ -1,5 +1,5 @@
 {
-  "SPIRETALK.mod_title": "SpireTalk: Talk Before You Take",
+  "SPIRETALK.mod_title": "SpireTalk: Living Ancients",
   "SPIRETALK-OWN_KEY_SETUP.title": "Own API key",
   "SPIRETALK-OWN_BASE_URL.title": "API base URL (OpenRouter, OpenAI, local Ollama…)",
   "SPIRETALK-OWN_KEY.title": "API key (leave empty for a local Ollama)",
@@ -31,7 +31,7 @@
   "SPIRETALK-MSG.ErrNotFound": "The server did not recognise this session or world.",
   "SPIRETALK-MSG.ErrNoCard": "No card for {0}. Drop a Yumina card for this NPC into %APPDATA%\\SlayTheSpire2\\spiretalk\\cards or reinstall the mod.",
   "SPIRETALK-MSG.ScreenTitle": "SpireTalk",
-  "SPIRETALK-MSG.ScreenSubtitle": "Talk Before You Take",
+  "SPIRETALK-MSG.ScreenSubtitle": "Living Ancients",
   "SPIRETALK-MSG.ModListBlurb": "Talk to the Ancients and the Merchant. Settings open in their own sheet.",
   "SPIRETALK-MSG.OpenSettingsBtn": "Open SpireTalk settings",
   "SPIRETALK-MSG.OwnKeyTitle": "AI connection",

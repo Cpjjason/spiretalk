@@ -11,8 +11,8 @@
 		"1"		"English"
 		"2"		"Simplified Chinese"
 	}
-	"title"		"SpireTalk: Talk Before You Take"
-	"description"		"[img]https://yumina.io/cdn/8dbda56a-fc35-4065-b9b9-78aa16dfae71[/img]
+	"title"		"SpireTalk: Living Ancients"
+	"description"		"[img]https://yumina.io/cdn/150c040f-b38e-4906-88f4-57c3e174a9bd[/img]
 
 Lets you talk to the eight Ancients and the Merchant. Ancient events get a Talk option, and the shop gets a Talk button in the top right.
 
@@ -53,5 +53,5 @@ Please report bugs in the discussion section.
 Thanks to Yumina for open-sourcing their engine.
 Source: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]"
-	"changenote"		"0.5.5 - New name: SpireTalk: Talk Before You Take. Redrawn Neow for the roadside event (waifu art) and a new cover."
+	"changenote"		"0.5.6 - Redrawn Neow for the roadside event (waifu art) and a new cover."
 }

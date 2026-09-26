@@ -1,5 +1,5 @@
 {
-  "SPIRETALK.mod_title": "SpireTalk：拿遗物前，先聊两句",
+  "SPIRETALK.mod_title": "SpireTalk：先民有话说",
   "SPIRETALK-OWN_KEY_SETUP.title": "自备 API Key",
   "SPIRETALK-OWN_BASE_URL.title": "API 地址（OpenRouter / OpenAI / 本机 Ollama 均可）",
   "SPIRETALK-OWN_KEY.title": "API Key（本机 Ollama 可留空）",
@@ -31,7 +31,7 @@
   "SPIRETALK-MSG.ErrNotFound": "服务器不认识这个会话或世界。",
   "SPIRETALK-MSG.ErrNoCard": "没有 {0} 的卡。把这位 NPC 的 Yumina 卡放进 %APPDATA%\\SlayTheSpire2\\spiretalk\\cards，或者重装模组。",
   "SPIRETALK-MSG.ScreenTitle": "SpireTalk",
-  "SPIRETALK-MSG.ScreenSubtitle": "拿遗物前，先聊两句",
+  "SPIRETALK-MSG.ScreenSubtitle": "先民有话说",
   "SPIRETALK-MSG.ModListBlurb": "和远古先民、商人聊天。设置在它自己的页面里。",
   "SPIRETALK-MSG.OpenSettingsBtn": "打开 SpireTalk 设置",
   "SPIRETALK-MSG.OwnKeyTitle": "AI 连接",
