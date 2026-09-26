@@ -450,6 +450,12 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var link = GameArt.LinkButton("github.com/lovetimo0421/yumina-oss", GameArt.Ink, 21);
         link.Pressed += () => { try { OS.ShellOpen("https://github.com/lovetimo0421/yumina-oss"); } catch { /* best effort */ } };
         row.AddChild(link);
+        var dot = GameArt.Label("·", 21, GameArt.InkSoft, wrap: false);
+        dot.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        row.AddChild(dot);
+        var site = GameArt.LinkButton("yumina.io", GameArt.Ink, 21);
+        site.Pressed += () => { try { OS.ShellOpen("https://yumina.io"); } catch { /* best effort */ } };
+        row.AddChild(site);
         return row;
     }
 
