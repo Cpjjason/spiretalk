@@ -124,7 +124,9 @@ public sealed partial class KeepsakeBook : Control, IScreenContext
 
         var name = best == 0 ? "???" : (vow ? KeepsakeVowName(npc) : KeepsakeService.KeepsakeName(npc.Key));
         text.AddChild(GameArt.Label("[b]" + name + "[/b]", 26, vow ? GameArt.Gold : GameArt.Cream));
-        text.AddChild(GameArt.Label(npc.DisplayName, 20, GameArt.Muted, wrap: false));
+        // The keepsake's name already says whose it is; the owner's name only helps on a "???" card.
+        // (Skin mods rename the Ancients in the game's own table, so the two could disagree.)
+        if (best == 0) text.AddChild(GameArt.Label(npc.DisplayName, 20, GameArt.Muted, wrap: false));
 
         // I · II · III · vow, the reached ones lit
         var stages = string.Join("  ", Enumerable.Range(1, KeepsakeRelic.MaxLevel).Select(i =>

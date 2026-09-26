@@ -1,0 +1,30 @@
+[b]Talk to the Ancients and the Merchant.[/b] They chat with you, remember you, ask things of you, and give you keepsakes.
+
+[h2]Features[/h2]
+[list]
+[*] Talk: Ancient events have a Talk option; the shop has a Talk button. Three lines per visit.
+[*] Affection: what you say raises or lowers it. Hostile, stranger, friendly, close, devoted.
+[*] Deals: an Ancient may ask something, like "reach act 2 alive". Keep it for affection and gold.
+[*] Keepsakes: talk once and you get a relic. It gets stronger as affection rises and becomes a vow at devoted. The settings have a keepsake book.
+[*] Memory: they remember earlier runs. You can read and edit it in the settings.
+[*] Road events: the overturned cart, and an Ancient resting by the road.
+[*] Ancient relics in the shop: an Ancient who likes you may put one of their relics up for sale.
+[*] Epilogue: when a run ends, the one who knows you best says a few words.
+[/list]
+
+[h2]AI or not[/h2]
+[list]
+[*] No AI: written lines, pick one of three replies. Everything else works the same.
+[*] AI: lines written on the spot, and you can type your own. Needs your own API key.
+[*] Free keys: Google AI Studio, or Zhipu glm-4.7-flash in mainland China. The game shows you how the first time you open it.
+[/list]
+
+[h2]Notes[/h2]
+[list]
+[*] Requires BaseLib.
+[*] Vanilla art by default. With AncientWaifus and Merchant2CuteII installed, the mod's art switches to the waifu style.
+[*] Works with Ancient Affection and shares its affection.
+[*] English and Chinese. Single player only.
+[*] Road event paintings and relic icons are generated art.
+[*] Built on the open-source Yumina engine: github.com/lovetimo0421/yumina-oss
+[/list]
