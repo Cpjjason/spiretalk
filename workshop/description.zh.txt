@@ -28,7 +28,7 @@
 
 [img]https://yumina.io/cdn/1b6b58e2-1654-4b97-8949-ed86aa1e47a8[/img]
 需要 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url]。
-只支持单人模式。支持简体中文和英文。
+只支持单人模式。界面和写好的台词有简体中文和英文。填了 API 密钥后，角色会用你游戏设置的语言说话（游戏支持的 16 种语言都行）。
 正式版（v0.107）和测试版 public-beta（v0.111）都能用，订阅同一个就行，不用分版本。
 默认原版画风，装了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] 和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] 会自动换成对应画风。
 兼容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]，装了会直接用它的好感度。

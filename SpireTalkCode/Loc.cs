@@ -96,19 +96,47 @@ public static class Loc
         return own != null ? own.GetFormattedText() : npc.Name;
     }
 
+    // The game's own language codes (LocManager._supportedLanguages), as the AI should read them.
+    private static readonly Dictionary<string, string> GameLanguageNames = new()
+    {
+        ["eng"] = "English",
+        ["zhs"] = "Simplified Chinese (简体中文)",
+        ["zht"] = "Traditional Chinese (繁體中文)",
+        ["deu"] = "German (Deutsch)",
+        ["esp"] = "Latin American Spanish (español de Latinoamérica)",
+        ["spa"] = "Spanish (español de España)",
+        ["fra"] = "French (français)",
+        ["ind"] = "Indonesian (Bahasa Indonesia)",
+        ["ita"] = "Italian (italiano)",
+        ["jpn"] = "Japanese (日本語)",
+        ["kor"] = "Korean (한국어)",
+        ["pol"] = "Polish (polski)",
+        ["ptb"] = "Brazilian Portuguese (português do Brasil)",
+        ["rus"] = "Russian (русский)",
+        ["tha"] = "Thai (ไทย)",
+        ["tur"] = "Turkish (Türkçe)",
+    };
+
     /// <summary>
-    /// Language the AI should answer in. Only English and Simplified Chinese are supported;
-    /// following the game means Chinese for zhs and English for everything else.
+    /// Language the AI should answer in. Following the game covers every language the game ships;
+    /// the two explicit picks force English or Simplified Chinese whatever the game is set to.
+    /// Only the AI's words follow it: the mod's own interface and the written lines stay English/Chinese.
     /// </summary>
     public static string ReplyLanguageName()
     {
-        var pick = SpireTalkConfig.Language;
-        if (pick == ReplyLanguage.FollowGame)
+        return SpireTalkConfig.Language switch
         {
-            pick = LocManager.Instance?.Language == "zhs" ? ReplyLanguage.ChineseSimplified : ReplyLanguage.English;
-        }
-        return pick == ReplyLanguage.ChineseSimplified ? "Simplified Chinese (简体中文)" : "English";
+            ReplyLanguage.English => "English",
+            ReplyLanguage.ChineseSimplified => GameLanguageNames["zhs"],
+            _ => GameLanguageNames.GetValueOrDefault(LocManager.Instance?.Language ?? "eng", "English"),
+        };
     }
+
+    /// <summary>
+    /// Which set of the NPC's in-game lines goes into the prompt as their voice: the game's own
+    /// Chinese lines for either Chinese, the English ones for every other reply language.
+    /// </summary>
+    public static string CanonLanguage() => ReplyLanguageName().Contains("Chinese") ? "Chinese" : "English";
 
     public static string DescribeError(Exception ex)
     {

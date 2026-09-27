@@ -54,6 +54,7 @@ public sealed class EngineBackend : INpcBackend
         vars["lines_left"] = ctx.LinesLeft;
         vars["allowed_actions"] = ctx.AllowedActions.Count == 0 ? "none" : string.Join(", ", ctx.AllowedActions);
         vars["language"] = ctx.Language;
+        vars["canon_language"] = ctx.Language.Contains("Chinese") ? "Chinese" : "English";
         vars["affection_delta"] = 0;
         vars["action"] = new JsonObject { ["type"] = "none", ["amount"] = 0 };
         vars["choices"] = new JsonArray();

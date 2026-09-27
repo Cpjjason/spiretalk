@@ -21,6 +21,7 @@ public static class GameContext
         {
             ["npc"] = ancient.Id.Entry,
             ["language"] = Loc.ReplyLanguageName(),
+            ["canon_language"] = Loc.CanonLanguage(),
         };
 
         var owner = ancient.Owner;
@@ -50,6 +51,7 @@ public static class GameContext
         {
             ["npc"] = "MERCHANT",
             ["language"] = Loc.ReplyLanguageName(),
+            ["canon_language"] = Loc.CanonLanguage(),
         };
         AddPlayer(vars, owner);
         return vars;

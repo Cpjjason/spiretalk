@@ -23,7 +23,9 @@ function contextVariables(npc) {
   const merchant = npc.kind === "merchant";
   return [
     { id: "language", name: "Reply language", type: "string", defaultValue: "English", aiAccess: "read",
-      behaviorRules: "The language every reply and every choice must be written in. Never answer in another language." },
+      behaviorRules: "The language every reply and every choice must be written in. Never answer in another language, even when your own words below are written in a different one: keep their voice, not their language." },
+    { id: "canon_language", name: "Language of your own words", type: "string", defaultValue: "English", aiAccess: "read",
+      behaviorRules: "Chinese or English: which of your in-game lines are shown to you. Set by the game; ignore it when choosing the reply language." },
     { id: "character", name: "Player character", type: "string", defaultValue: "The Ironclad", aiAccess: "read",
       behaviorRules: "Who is standing in front of you. Address them by this name or their class, never as 'player'." },
     { id: "character_id", name: "Character id", type: "string", defaultValue: "IRONCLAD", aiAccess: "read",
@@ -159,12 +161,12 @@ function entriesFor(npc) {
   const scene = catalog.shared_rules.replace("{language}", "{{language}}").trim();
   const base = { alwaysSend: true, keywords: [], conditions: [], conditionLogic: "all", enabled: true, section: "system-presets" };
   const k = npc.key.toLowerCase();
-  // Only the block in the reply language reaches the prompt (the language variable reads
-  // "English" or "Simplified Chinese (简体中文)"); condition-gated entries go through the matcher.
+  // Only one block reaches the prompt: the game's Chinese lines for either Chinese, its English
+  // lines for every other reply language (canon_language is set by the mod next to language).
   const canonEntry = (lang, needle, label) => ({
     id: `sts2-${k}-canon-${lang}`, name: `${npc.name} — own words (${label})`, content: canonBlock(npc, lang),
     role: "character", position: 0, ...base, alwaysSend: false,
-    conditions: [{ variableId: "language", operator: "contains", value: needle }],
+    conditions: [{ variableId: "canon_language", operator: "eq", value: needle }],
   });
   return [
     { id: `sts2-${k}-persona`, name: `${npc.name} — persona`, content: persona, role: "character", position: 0, ...base },

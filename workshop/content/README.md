@@ -66,7 +66,7 @@ dotnet build -c Release -p:SpireTalkDev=true   # dev build: compiles in the file
 
 Delete the old `SpireTalk.pck` before publishing if the export step is skipped as up-to-date.
 
-NPC personas and the affection rules live in `SpireTalk/npcs.json`; `node tools/build-cards.mjs` compiles them into the cards under `Cards/`. The engine itself is `Engine/yumina-runtime.js` — `packages/engine` from the Yumina repo bundled into one file (`pnpm build` there produces `dist/yumina-runtime.js`; copy it over to update). It runs in-game through Jint. Localization: `SpireTalk/localization/{eng,zhs}/` (English and Simplified Chinese; other game languages fall back to English).
+NPC personas and the affection rules live in `SpireTalk/npcs.json`; `node tools/build-cards.mjs` compiles them into the cards under `Cards/`. The engine itself is `Engine/yumina-runtime.js` — `packages/engine` from the Yumina repo bundled into one file (`pnpm build` there produces `dist/yumina-runtime.js`; copy it over to update). It runs in-game through Jint. Localization: `SpireTalk/localization/{eng,zhs}/` (English and Simplified Chinese; other game languages fall back to English). AI replies follow the game language for all 16 languages the game ships (`Loc.ReplyLanguageName`); the NPC's own English lines are the voice reference for every language except Chinese.
 
 ## Source
 
