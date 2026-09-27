@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Random;
+using MegaCrit.Sts2.Core.Runs;
 using SpireTalk.Npc;
 using SpireTalk.Store;
 
@@ -18,12 +19,16 @@ public static class RewardExecutor
 {
     public sealed record Outcome(bool Applied, string ToastText, string Summary);
 
+    // RunRngSet.Seed is uint on 0.107 (public) and ulong on 0.111 (public-beta). Reading it by name keeps one
+    // DLL loadable on both branches, and the key text is the same number either way.
+    private static readonly System.Reflection.PropertyInfo? SeedProperty = HarmonyLib.AccessTools.Property(typeof(RunRngSet), "Seed");
+
     /// <summary>Stable key for "this run": seed + character, so a new run resets one-per-run rewards.</summary>
     public static string RunKey(Player player)
     {
         try
         {
-            return $"{player.RunState.Rng.Seed}:{player.Character.Id.Entry}";
+            return $"{SeedProperty!.GetValue(player.RunState.Rng)}:{player.Character.Id.Entry}";
         }
         catch
         {

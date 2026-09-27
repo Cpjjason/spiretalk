@@ -10,3 +10,6 @@ packages/
 .editorconfig
 *.user
 obj/
+tools/__pycache__/
+tools/BranchCheck/bin/
+tools/BranchCheck/obj/

@@ -4,7 +4,7 @@
 	"publishedfileid"		"3806015083"
 	"contentfolder"		"C:\Users\peiji\Downloads\Slay the spire Mod\SpireTalk\workshop\content"
 	"previewfile"		"C:\Users\peiji\Downloads\Slay the spire Mod\SpireTalk\workshop\preview.jpg"
-	"visibility"		"2"
+	"visibility"		"0"
 	"tags"
 	{
 		"0"		"Ancients"
@@ -43,6 +43,7 @@ You can switch between the two at any time with the Mode setting at the top of t
 [img]https://yumina.io/cdn/1b6b58e2-1654-4b97-8949-ed86aa1e47a8[/img]
 Requires [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url].
 Single player only. English and Simplified Chinese.
+Works on both the default branch (v0.107) and public-beta (v0.111); the same download picks the right one.
 Vanilla art by default. With [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] installed, the mod's art switches to match.
 Compatible with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url] and uses its affection when installed.
 Road event paintings and keepsake icons are generated art.
@@ -53,5 +54,5 @@ Please report bugs in the discussion section.
 Thanks to Yumina for open-sourcing their engine.
 Source: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]"
-	"changenote"		"0.5.6 - Redrawn Neow for the roadside event (waifu art) and a new cover."
+	"changenote"		"0.5.7 - Works on both the default branch (v0.107) and public-beta (v0.111). One download, no need to pick a version."
 }

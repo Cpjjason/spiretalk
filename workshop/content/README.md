@@ -43,6 +43,7 @@
 - **Temperament** — a setting: lenient / normal / strict. Strict caps each line at ±2, a visit at ±5, hands rewards out only from *close*, and sizes the deals harder.
 - **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile, and showing up to talk earns +2 by itself.
 - **Single player only.** In multiplayer the Talk option is not offered.
+- **Works on both Steam branches:** the default branch (v0.107) and public-beta (v0.111).
 
 ## Setup
 
@@ -116,6 +117,7 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 - **先民脾气** — 一个设置：宽容 / 正常 / 严苛。严苛档每句最多 ±2、每次拜访最多 ±5、只有亲近以上才给奖励、约定也出得更狠。
 - **和 Ancient Affection 联动** — 装了那个模组时，SpireTalk 直接读写它的好感度，聊天推动的就是它解锁好感遗物和结婚的那个数字。没装时，SpireTalk 自己按档案记好感度，来聊一次本身就 +2。
 - **仅单人模式。** 多人局不提供交谈选项。
+- **正式版和测试版都能用：** 默认分支 v0.107 和 public-beta v0.111。
 
 ### 设置
 

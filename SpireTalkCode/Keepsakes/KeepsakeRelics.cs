@@ -298,7 +298,9 @@ public sealed class KeepsakeVakuu : KeepsakeRelic
         await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, V("Strength"), Owner.Creature, null);
         if (VI("HpLoss") > 0 && Owner.Creature.CurrentHp > VI("HpLoss"))
         {
-            await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), Owner.Creature, V("HpLoss"), ValueProp.Unblockable | ValueProp.Unpowered, null, null, null);
+            // This overload has the same signature on 0.107 (public) and 0.111 (public-beta); the one with a
+            // CardPlay parameter only exists on 0.111, and one DLL has to run on both branches.
+            await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), Owner.Creature, V("HpLoss"), ValueProp.Unblockable | ValueProp.Unpowered, (Creature?)null);
         }
     }
 }

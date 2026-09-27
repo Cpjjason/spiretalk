@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Factories;
@@ -50,7 +51,8 @@ public sealed class MerchantWreck : EncounterEvent
     {
         if (Owner == null || Finished) return;
         var npc = Npc!;
-        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), Owner.Creature, HelpHpLoss, ValueProp.Unblockable | ValueProp.Unpowered, null, null);
+        // Same overload on 0.107 and 0.111 (see KeepsakeVakuu); the CardModel/CardPlay ones differ between branches.
+        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), Owner.Creature, HelpHpLoss, ValueProp.Unblockable | ValueProp.Unpowered, (Creature?)null);
         AffectionService.Apply(npc.Key, NpcKind.Merchant, HelpAffection);
         var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner));
         run.MerchantFavor = true;
