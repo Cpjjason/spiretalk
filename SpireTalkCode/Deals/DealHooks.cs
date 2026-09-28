@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 
@@ -37,7 +38,12 @@ internal static class DealHooks
     private static void AfterPotionUsed(IRunState runState) => Guard("potion", () => DealService.OnPotionUsed(runState));
 
     [HarmonyPostfix, HarmonyPatch(typeof(Hook), nameof(Hook.BeforeCardRemoved))]
-    private static void BeforeCardRemoved(IRunState runState) => Guard("remove", () => DealService.OnCardRemoved(runState));
+    private static void BeforeCardRemoved(IRunState runState, CardModel card) => Guard("remove", () => DealService.OnCardRemoved(runState, card));
+
+    // The Thieving Hopper takes the card out of the deck through the same removal path; mark it first
+    // so a theft doesn't count against a no-removal deal.
+    [HarmonyPrefix, HarmonyPatch(typeof(SwipePower), nameof(SwipePower.Steal))]
+    private static void BeforeSteal(CardModel card) => Guard("steal", () => DealService.OnCardStolen(card));
 
     [HarmonyPostfix, HarmonyPatch(typeof(Hook), nameof(Hook.AfterItemPurchased))]
     private static void AfterItemPurchased(IRunState runState, Player player, int goldSpent) => Guard("purchase", () => DealService.OnItemPurchased(runState, player, goldSpent));

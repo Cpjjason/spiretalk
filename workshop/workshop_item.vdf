@@ -54,5 +54,5 @@ Please report bugs in the discussion section.
 Thanks to Yumina for open-sourcing their engine.
 Source: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]"
-	"changenote"		"0.5.8 - All 16 game languages: menus, relics, events and written lines are translated, and with an API key the characters answer in your game language."
+	"changenote"		"0.5.9 - A card stolen by the Thieving Hopper no longer breaks a no-card-removal deal (thanks for the report). Spoils Map, Guilty wearing off and placeholder cards don't count either; removing a card yourself still does."
 }

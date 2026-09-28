@@ -1,5 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using SpireTalk.Affection;
@@ -253,8 +255,23 @@ public static class DealService
         }
     }
 
-    public static void OnCardRemoved(IRunState run)
+    private static readonly HashSet<CardModel> Stolen = new();
+
+    public static void OnCardStolen(CardModel card)
     {
+        if (card.DeckVersion != null) Stolen.Add(card.DeckVersion);
+    }
+
+    /// <summary>
+    /// Removals the climber didn't choose: a Thieving Hopper's theft (the card comes back if it dies),
+    /// Spoils Map spent on its treasure, Guilty wearing off after five fights, a placeholder card.
+    /// </summary>
+    private static bool IsInvoluntary(CardModel card) =>
+        Stolen.Remove(card) || card is SpoilsMap or Guilty or DeprecatedCard;
+
+    public static void OnCardRemoved(IRunState run, CardModel card)
+    {
+        if (IsInvoluntary(card)) return;
         var runKey = RunKeyOf(run);
         var player = run.Players.FirstOrDefault();
         foreach (var deal in PendingInRun(runKey).Where(d => d.Type == "no_card_removal").ToList())
