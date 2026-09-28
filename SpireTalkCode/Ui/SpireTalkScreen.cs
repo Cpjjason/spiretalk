@@ -431,6 +431,9 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
             SetStatus(_ownStatus, Loc.Ui("ResetDoneBody"), ok: true);
         }, "#b03f3f");
         bottom.AddChild(reset);
+        // The sheet has room for four slightly wider buttons; German/Russian/Polish labels need it.
+        foreach (var b in bottom.GetChildren().OfType<Control>().Where(c => c is not null && c.GetType() != typeof(Control)))
+            b.CustomMinimumSize = new Vector2(252f, b.CustomMinimumSize.Y);
         block.AddChild(bottom);
         return block;
     }

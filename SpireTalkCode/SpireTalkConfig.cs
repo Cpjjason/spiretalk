@@ -214,6 +214,17 @@ public sealed class SpireTalkConfig : SimpleModConfig
     {
         var button = CreateRawButtonControl(label, onPressed);
         button.CustomMinimumSize = new Vector2(220f, button.CustomMinimumSize.Y);
+        // Long labels (German "Erinnerungen löschen", Russian "Стереть воспоминания") ran past the
+        // hexagon and off the sheet. The game's own label can shrink its font to fit; BaseLib turns
+        // that off, so turn it back on and keep the text inside the pointed ends.
+        if (button.GetNodeOrNull<MegaCrit.Sts2.addons.mega_text.MegaLabel>("Label") is { } text)
+        {
+            text.MaxFontSize = 28;
+            text.MinFontSize = 18;
+            text.AutoSizeEnabled = true;
+            text.OffsetLeft = 22f;
+            text.OffsetRight = -22f;
+        }
         if (!string.IsNullOrEmpty(color)) button.SetColor(Color.FromHtml(color));
         return button;
     }

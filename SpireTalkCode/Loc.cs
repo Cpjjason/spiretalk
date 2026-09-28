@@ -122,13 +122,16 @@ public static class Loc
     /// the two explicit picks force English or Simplified Chinese whatever the game is set to.
     /// Only the AI's words follow it: the mod's own interface and the written lines stay English/Chinese.
     /// </summary>
-    public static string ReplyLanguageName()
+    public static string ReplyLanguageName() => GameLanguageNames[ReplyLanguageCode()];
+
+    /// <summary>The game language code (eng, zhs, jpn…) the NPCs speak in; picks the written lines too.</summary>
+    public static string ReplyLanguageCode()
     {
         return SpireTalkConfig.Language switch
         {
-            ReplyLanguage.English => "English",
-            ReplyLanguage.ChineseSimplified => GameLanguageNames["zhs"],
-            _ => GameLanguageNames.GetValueOrDefault(LocManager.Instance?.Language ?? "eng", "English"),
+            ReplyLanguage.English => "eng",
+            ReplyLanguage.ChineseSimplified => "zhs",
+            _ => LocManager.Instance?.Language is { } game && GameLanguageNames.ContainsKey(game) ? game : "eng",
         };
     }
 

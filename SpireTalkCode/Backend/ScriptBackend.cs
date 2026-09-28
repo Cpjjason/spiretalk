@@ -29,7 +29,7 @@ public sealed class ScriptBackend : INpcBackend
     {
         var script = Load().GetValueOrDefault(ctx.NpcKey.ToUpperInvariant())
             ?? throw new BackendException(string.Format(Loc.Ui("ErrNoCard"), ctx.NpcKey), null, "NO_SCRIPT");
-        var zh = ctx.Language.Contains("Chinese", StringComparison.OrdinalIgnoreCase);
+        var lang = Loc.ReplyLanguageCode();
         var lines = new List<string>();
         var delta = 0;
         var action = NpcAction.None;
@@ -38,12 +38,12 @@ public sealed class ScriptBackend : INpcBackend
         {
             _used[ctx.NpcKey] = new HashSet<Exchange>();
             var pool = script.Open.GetValueOrDefault(ConversationRules.TierName(ctx.Tier)) ?? script.Open.Values.First();
-            var greeting = PickFresh(pool.Select(t => t.In(zh)).ToList(), _lastOpener.GetValueOrDefault(ctx.NpcKey));
+            var greeting = PickFresh(pool.Select(t => t.In(lang)).ToList(), _lastOpener.GetValueOrDefault(ctx.NpcKey));
             _lastOpener[ctx.NpcKey] = greeting;
             lines.AddRange(Bubbles(greeting));
             if (ctx.Variables["deal_offer"]?.ToString() is { } offer && offer != "none")
             {
-                lines.Add(Pick(script.Deal).In(zh));
+                lines.Add(Pick(script.Deal).In(lang));
             }
         }
         else
@@ -52,7 +52,7 @@ public sealed class ScriptBackend : INpcBackend
             if (picked != null)
             {
                 _used.GetValueOrDefault(ctx.NpcKey)?.Add(picked);
-                lines.AddRange(Bubbles(picked.Reply.In(zh)));
+                lines.AddRange(Bubbles(picked.Reply.In(lang)));
                 delta = picked.Tag switch
                 {
                     "warm" => 3,
@@ -65,13 +65,13 @@ public sealed class ScriptBackend : INpcBackend
                 if (picked.Tag == "warm" && gifts.Count > 0 && (ctx.LinesLeft == 0 || _rng.NextDouble() < 0.4))
                 {
                     action = new NpcAction(gifts[_rng.Next(gifts.Count)], 0);
-                    lines.Add(Pick(script.Gift).In(zh));
+                    lines.Add(Pick(script.Gift).In(lang));
                 }
             }
             else
             {
                 // Not one of the written replies (shouldn't happen: there is no typing offline).
-                lines.AddRange(Bubbles(Pick(script.Exchanges.Where(e => e.Tag == "plain").ToList()).Reply.In(zh)));
+                lines.AddRange(Bubbles(Pick(script.Exchanges.Where(e => e.Tag == "plain").ToList()).Reply.In(lang)));
             }
         }
 
@@ -84,7 +84,7 @@ public sealed class ScriptBackend : INpcBackend
             if (pool.Count == 0) pool = script.Exchanges.Where(e => e.Tag == tag).ToList();
             if (pool.Count == 0) continue;
             var ex = Pick(pool);
-            var text = ex.Choice.In(zh);
+            var text = ex.Choice.In(lang);
             if (onScreen.TryAdd(text, ex)) choices.Add(text);
         }
         _offered[ctx.NpcKey] = onScreen;
@@ -116,11 +116,21 @@ public sealed class ScriptBackend : INpcBackend
 
     // ── Data ────────────────────────────────────────────────────────────
 
+    /// <summary>One written line: "en" and "zh" (Simplified), plus the other game languages under their
+    /// game codes ("jpn", "deu"…). A language without the line falls back to English.</summary>
     public sealed class Text
     {
         [JsonPropertyName("en")] public string En { get; set; } = "";
         [JsonPropertyName("zh")] public string Zh { get; set; } = "";
-        public string In(bool zh) => zh && Zh.Length > 0 ? Zh : En;
+        [JsonExtensionData] public Dictionary<string, JsonElement>? Other { get; set; }
+
+        public string In(string lang)
+        {
+            if (lang == "zhs") return Zh.Length > 0 ? Zh : En;
+            if (lang != "eng" && Other != null && Other.TryGetValue(lang, out var v) && v.ValueKind == JsonValueKind.String
+                && v.GetString() is { Length: > 0 } s) return s;
+            return En;
+        }
     }
 
     public sealed class Exchange

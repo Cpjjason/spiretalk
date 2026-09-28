@@ -28,7 +28,7 @@
 
 [img]https://yumina.io/cdn/1b6b58e2-1654-4b97-8949-ed86aa1e47a8[/img]
 需要 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url]。
-只支援單人模式。介面和寫好的臺詞有簡體中文和英文。填了 API 金鑰後，角色會用你遊戲設定的語言說話（遊戲支援的 16 種語言都行）。
+只支援單人模式。跟隨遊戲語言，遊戲支援的 16 種語言全部涵蓋：介面、遺物、事件、寫好的臺詞，以及填了 API 金鑰後角色說的話。
 正式版（v0.107）和測試版 public-beta（v0.111）都能用，訂閱同一個就行，不用分版本。
 預設原版畫風，裝了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] 和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] 會自動換成對應畫風。
 相容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]，裝了會直接用它的好感度。
