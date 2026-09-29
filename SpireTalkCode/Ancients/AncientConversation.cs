@@ -176,13 +176,6 @@ public sealed class AncientConversation
             var backend = Backends.Active;
 
             ShowThinking();
-            // Showing up counts for something when the mod keeps its own ledger (Ancient
-            // Affection has its own ways of earning); once per room.
-            if (!_visitBonusGiven)
-            {
-                _visitBonusGiven = true;
-                AffectionService.VisitBonus(_key, NpcKind.Ancient);
-            }
             TalkStore.Instance.BeginVisit(_key, _runKey);
             _ctx = BuildContext();
             _record.Talks++;
@@ -197,6 +190,14 @@ public sealed class AncientConversation
             var opener = BuildOpener();
             var turn = await backend.ExchangeAsync(_ctx, opener, true, cts.Token);
             if (Gone) return;
+            // Showing up counts for something when the mod keeps its own ledger (Ancient
+            // Affection has its own ways of earning) — once the NPC has actually answered.
+            if (!_visitBonusGiven)
+            {
+                _visitBonusGiven = true;
+                AffectionService.VisitBonus(_key, NpcKind.Ancient, _runKey, _ancient.Owner?.RunState.TotalFloor ?? 0);
+                _ctx.Affection = AffectionService.Read(_key).value;
+            }
             await HandleTurnAsync(turn, opener, isOpener: true);
         }
         catch (OperationCanceledException) when (Gone)

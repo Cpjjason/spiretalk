@@ -307,11 +307,6 @@ internal sealed class MerchantConversation
         var backend = Backends.Active;
         try
         {
-            if (!_visitBonusGiven)
-            {
-                _visitBonusGiven = true;
-                AffectionService.VisitBonus(MerchantTalk.NpcKey, NpcKind.Merchant);
-            }
             TalkStore.Instance.BeginVisit(MerchantTalk.NpcKey, _runKey);
             _ctx = BuildContext();
             _record.Talks++;
@@ -325,6 +320,13 @@ internal sealed class MerchantConversation
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
             var opener = BuildOpener();
             var turn = await backend.ExchangeAsync(_ctx, opener, true, cts.Token);
+            // Paid only once the merchant has actually answered, once per shop per run.
+            if (!_visitBonusGiven)
+            {
+                _visitBonusGiven = true;
+                AffectionService.VisitBonus(MerchantTalk.NpcKey, NpcKind.Merchant, _runKey, _owner.RunState.TotalFloor);
+                _ctx.Affection = AffectionService.Read(MerchantTalk.NpcKey).value;
+            }
             _lastTurn = turn;
             TalkStore.Instance.AppendHistory(MerchantTalk.NpcKey, "player", opener, _runKey);
             if (!string.IsNullOrWhiteSpace(turn.JoinedText))

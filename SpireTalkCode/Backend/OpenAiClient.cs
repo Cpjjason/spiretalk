@@ -63,10 +63,53 @@ public sealed class OpenAiClient
     /// <summary>One completion for the messages the engine assembled; one retry on the failures that usually clear themselves.</summary>
     public async Task<string> CompleteAsync(JsonArray messages, int maxTokens, double temperature, CancellationToken ct)
     {
+        // An NPC line needs no chain of thought, and the reply only shows once it is complete, so
+        // thinking is pure waiting: Qwen on OpenRouter spends 10-20 s on it even at "low". Ask every
+        // source that has a switch to skip it; models that refuse (Gemini, GLM: "Reasoning is
+        // mandatory") answer 400, and are asked again the old way and remembered for the session.
+        var thinkingKey = BaseUrl + "|" + Model;
+        var skipThinking = !ThinkingRequired.ContainsKey(thinkingKey);
+        var body = BuildBody(messages, maxTokens, temperature, skipThinking);
+
+        try
+        {
+            return await PostAsync(body, ct);
+        }
+        catch (BackendException ex) when (!ct.IsCancellationRequested && skipThinking && ex.StatusCode is 400 or 422 && SkipsThinking(body))
+        {
+            MainFile.Logger.Info($"[LLM] {Model} will not skip thinking ({ex.Message}); asking with light thinking instead", 1);
+            ThinkingRequired[thinkingKey] = true;
+            return await CompleteAsync(messages, maxTokens, temperature, ct);
+        }
+        catch (BackendException ex) when (!ct.IsCancellationRequested && IsTransient(ex))
+        {
+            MainFile.Logger.Warn($"[LLM] {ex.Code ?? "?"} {ex.Message} — retrying once", 1);
+            await Task.Delay(TimeSpan.FromSeconds(2), ct);
+            return await PostAsync(body, ct);
+        }
+    }
+
+    /// <summary>Endpoint|model pairs that rejected "no thinking" this session.</summary>
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, bool> ThinkingRequired = new();
+
+    private static readonly string[] EnableThinkingHosts = { "dashscope.aliyuncs.com", "api.siliconflow.cn" };
+    private static readonly string[] ThinkingTypeHosts = { "open.bigmodel.cn", "api.deepseek.com", "api.moonshot.cn" };
+
+    private static bool HostIs(params string[] hosts) => hosts.Any(h => BaseUrl.Contains(h, StringComparison.OrdinalIgnoreCase));
+
+    private static bool SkipsThinking(JsonObject body) =>
+        body["reasoning"]?["effort"]?.GetValue<string>() == "none"
+        || body.ContainsKey("enable_thinking")
+        || body.ContainsKey("thinking")
+        || body["reasoning_effort"]?.GetValue<string>() == "none";
+
+    private static JsonObject BuildBody(JsonArray messages, int maxTokens, double temperature, bool skipThinking)
+    {
         var body = new JsonObject
         {
+            // The same messages may be sent twice (the thinking fallback); a node can only have one parent.
             ["model"] = Model,
-            ["messages"] = messages,
+            ["messages"] = messages.DeepClone(),
             ["temperature"] = temperature,
             ["max_tokens"] = maxTokens,
         };
@@ -91,8 +134,8 @@ public sealed class OpenAiClient
         }
         else if (LooksLikeOpenRouter)
         {
-            // Same problem with reasoning models behind OpenRouter: keep the tokens for the reply.
-            body["reasoning"] = new JsonObject { ["exclude"] = true, ["effort"] = "low" };
+            // Keep the tokens for the reply; models that must think, think lightly.
+            body["reasoning"] = new JsonObject { ["exclude"] = true, ["effort"] = skipThinking ? "none" : "low" };
         }
         else if (LooksLikeGoogleGemini)
         {
@@ -102,16 +145,27 @@ public sealed class OpenAiClient
             body["reasoning_effort"] = "low";
             body["max_tokens"] = maxTokens + 2048;
         }
-
-        try
+        else if (skipThinking && HostIs(EnableThinkingHosts))
         {
-            return await PostAsync(body, ct);
+            body["enable_thinking"] = false; // Qwen 3 on Bailian / SiliconFlow
         }
-        catch (BackendException ex) when (!ct.IsCancellationRequested && IsTransient(ex))
+        else if (skipThinking && HostIs(ThinkingTypeHosts))
         {
-            MainFile.Logger.Warn($"[LLM] {ex.Code ?? "?"} {ex.Message} — retrying once", 1);
-            await Task.Delay(TimeSpan.FromSeconds(2), ct);
-            return await PostAsync(body, ct);
+            body["thinking"] = new JsonObject { ["type"] = "disabled" }; // GLM, DeepSeek, Kimi
+        }
+        else if (skipThinking && HostIs("api.openai.com") && LooksLikeOpenAiReasoner)
+        {
+            body["reasoning_effort"] = "none";
+        }
+        return body;
+    }
+
+    private static bool LooksLikeOpenAiReasoner
+    {
+        get
+        {
+            var m = Model.ToLowerInvariant();
+            return m.StartsWith("gpt-5") || m.StartsWith("gpt-6") || (m.Length > 1 && m[0] == 'o' && char.IsDigit(m[1]));
         }
     }
 

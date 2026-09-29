@@ -285,6 +285,11 @@ public sealed class SpireTalkConfig : SimpleModConfig
 
     public static void ResetMemories()
     {
+        // With Ancient Affection the number lives in its store; "strangers again" means that one too.
+        if (Affection.AffectionService.UsingAncientAffection)
+        {
+            foreach (var npc in Npc.NpcCatalog.All) Affection.AffectionService.ResetToZero(npc.Key, npc.Kind);
+        }
         TalkStore.Instance.ResetAll();
     }
 

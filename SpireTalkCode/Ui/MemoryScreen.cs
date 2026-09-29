@@ -229,8 +229,16 @@ public sealed partial class MemoryScreen : Control, IScreenContext
                 FillDetail();
                 FillList();
             }, "#b03f3f"));
+            bottom.AddChild(config.MakeButton(Loc.Ui("MemoryResetAffection"), () =>
+            {
+                Affection.AffectionService.ResetToZero(npc.Key, npc.Kind);
+                FillDetail();
+                FillList();
+                if (_lastStatus != null && IsInstanceValid(_lastStatus)) _lastStatus.Text = Loc.Ui("MemoryResetAffectionDone");
+            }, "#8a6a2e"));
         }
         bottom.AddChild(status);
+        _lastStatus = status;
         _detail.AddChild(bottom);
 
         if (_pendingFocusNew)
@@ -245,6 +253,7 @@ public sealed partial class MemoryScreen : Control, IScreenContext
     }
 
     private bool _pendingFocusNew;
+    private MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel? _lastStatus;
 
     private Control NoteRow(NpcDefinition npc, TalkStore.MemoryNote note, string? runKey)
     {

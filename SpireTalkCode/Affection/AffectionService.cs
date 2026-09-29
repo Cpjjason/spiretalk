@@ -31,11 +31,26 @@ public static class AffectionService
     /// <summary>
     /// A small "you came to see me" gain, only when the mod keeps its own ledger. Ancient
     /// Affection has its own sources of affection, so its number is left alone here.
+    /// Paid once per room per run, and only after the NPC actually answered: a failed call or
+    /// quitting and reloading into the same room must not farm it.
     /// </summary>
-    public static void VisitBonus(string npcKey, NpcKind kind)
+    public static void VisitBonus(string npcKey, NpcKind kind, string runKey, int floor)
     {
         if (UsingAncientAffection) return;
+        var paid = TalkStore.Instance.GetRun(runKey).VisitBonusPaid;
+        var mark = $"{npcKey}@{floor}";
+        if (paid.Contains(mark, StringComparer.OrdinalIgnoreCase)) return;
+        paid.Add(mark);
         Apply(npcKey, kind, ConversationRules.VisitBonus);
+    }
+
+    /// <summary>Put one NPC back to zero, in whichever store holds the number.</summary>
+    public static void ResetToZero(string npcKey, NpcKind kind)
+    {
+        var current = Read(npcKey).value;
+        if (UsingAncientAffection && current != 0) AncientAffectionBridge.Increment(npcKey, -current);
+        TalkStore.Instance.Get(npcKey).Affection = 0;
+        TalkStore.Instance.Save();
     }
 
     /// <summary>Apply an already-clamped delta. Returns the new value.</summary>
