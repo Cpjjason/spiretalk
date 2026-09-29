@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "AI writes the lines",
   "SPIRETALK-MSG.ModeScript": "Written lines",
   "SPIRETALK-MSG.ModeNowAiMissing": "The AI is not connected yet; written lines for now.",
-  "SPIRETALK-MSG.KeyTutorialLink": "Get a free key →"
+  "SPIRETALK-MSG.KeyTutorialLink": "Get a free key →",
+  "SPIRETALK-MSG.ErrEmpty": "The model sent back an empty reply. Models that think before answering (Gemini Pro and similar) can use up the whole budget thinking: try a Flash model."
 }

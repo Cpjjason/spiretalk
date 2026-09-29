@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "AI 现写",
   "SPIRETALK-MSG.ModeScript": "写好的台词",
   "SPIRETALK-MSG.ModeNowAiMissing": "还没连上 AI，先用写好的台词。",
-  "SPIRETALK-MSG.KeyTutorialLink": "免费拿密钥 →"
+  "SPIRETALK-MSG.KeyTutorialLink": "免费拿密钥 →",
+  "SPIRETALK-MSG.ErrEmpty": "模型返回了空回复。先思考再回答的模型（Gemini Pro 等）可能把额度全用在思考上了，换个 Flash 模型试试。"
 }

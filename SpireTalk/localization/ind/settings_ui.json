@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "AI yang menulis dialog",
   "SPIRETALK-MSG.ModeScript": "Dialog tertulis",
   "SPIRETALK-MSG.ModeNowAiMissing": "AI belum terhubung; sementara memakai dialog tertulis.",
-  "SPIRETALK-MSG.KeyTutorialLink": "Dapatkan key gratis →"
+  "SPIRETALK-MSG.KeyTutorialLink": "Dapatkan key gratis →",
+  "SPIRETALK-MSG.ErrEmpty": "Model mengirim balasan kosong. Model yang berpikir dulu sebelum menjawab (Gemini Pro dan sejenisnya) bisa menghabiskan seluruh anggaran untuk berpikir: coba model Flash."
 }

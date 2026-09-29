@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "계속 나아갑니다. 등 뒤에서 [gold]{Npc}[/gold]의 목소리가 들립니다.\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "계속 나아갑니다.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "다음에",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "계속 나아갑니다."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "계속 나아갑니다.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold]이(가) 당신의 덱에 손을 뻗다가 멈춥니다. 더 강해질 카드가 남아 있지 않습니다.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold]이(가) 당신의 덱에 손을 뻗다가 멈춥니다. 더 강해질 카드가 남아 있지 않습니다.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

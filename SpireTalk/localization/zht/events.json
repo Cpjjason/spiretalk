@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "你繼續趕路。身後傳來[gold]{Npc}[/gold]的聲音：\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "你繼續趕路。",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "改天再陪",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "繼續趕路。"
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "繼續趕路。",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold]把手伸向你的牌組，又停住了——裡面已經沒有能再變強的牌了。\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold]把手伸向你的牌組，又停住了——裡面已經沒有能再變強的牌了。",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

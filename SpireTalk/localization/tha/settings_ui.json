@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "ให้ AI เขียนบทพูด",
   "SPIRETALK-MSG.ModeScript": "บทพูดสำเร็จรูป",
   "SPIRETALK-MSG.ModeNowAiMissing": "ยังไม่ได้เชื่อมต่อ AI ตอนนี้ใช้บทพูดสำเร็จรูปไปก่อน",
-  "SPIRETALK-MSG.KeyTutorialLink": "รับคีย์ฟรี →"
+  "SPIRETALK-MSG.KeyTutorialLink": "รับคีย์ฟรี →",
+  "SPIRETALK-MSG.ErrEmpty": "โมเดลส่งคำตอบว่างกลับมา โมเดลที่คิดก่อนตอบ (เช่น Gemini Pro) อาจใช้โควตาหมดไปกับการคิด ลองใช้โมเดล Flash แทน"
 }

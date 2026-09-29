@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "Vous poursuivez votre route. Derrière vous, la voix de [gold]{Npc}[/gold] :\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "Vous poursuivez votre route.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "Une autre fois",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Continuez votre route."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Continuez votre route.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold] tend la main vers votre deck, puis s'arrête : il n'y reste plus rien à renforcer.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold] tend la main vers votre deck, puis s'arrête : il n'y reste plus rien à renforcer.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

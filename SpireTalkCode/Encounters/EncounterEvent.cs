@@ -1,9 +1,12 @@
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Nodes.Events;
+using MegaCrit.Sts2.Core.Saves;
 using SpireTalk.Npc;
 using SpireTalk.Rewards;
 using SpireTalk.Store;
@@ -53,11 +56,28 @@ public abstract class EncounterEvent : CustomEventModel
     {
         if (Owner != null)
         {
-            EncounterBudget.Spend(Owner, Id.Entry);
             var npc = Npc;
             if (npc != null) TalkStore.Instance.BeginVisit(npc.Key, RewardExecutor.RunKey(Owner));
         }
         return Page();
+    }
+
+    /// <summary>
+    /// A reload after the choice lands back on the result, as the game does for Ancients: the
+    /// outcome is already in the save and in the NPC's memory, so it cannot be chosen twice.
+    /// </summary>
+    protected override void SetInitialEventState(bool isPreFinished)
+    {
+        if (!isPreFinished || Owner == null)
+        {
+            base.SetInitialEventState(isPreFinished);
+            return;
+        }
+        Finished = true;
+        TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner)).EncounterResults.TryGetValue(Id.Entry, out var result);
+        var page = Text("pages.DONE.description");
+        page.Add("Words", result ?? "");
+        SetEventFinished(page);
     }
 
     protected List<EventOption> Page()
@@ -105,6 +125,7 @@ public abstract class EncounterEvent : CustomEventModel
         var marks = Text("pages.WAITING.description").GetFormattedText();
         var speaks = Owner != null && Npc != null && Backend.Backends.AiReady;
         SetEventFinished(Page(speaks ? pageKey : pageKey + "Silent", speaks ? marks : "", fill));
+        SaveOutcome(Page(pageKey + "Silent", "", fill).GetFormattedText());
         if (!speaks) return;
         ThinkingTicker.Attach(Node, marks, asSuffix: true);
 
@@ -113,6 +134,31 @@ public abstract class EncounterEvent : CustomEventModel
         if (Node is not NEventLayout layout || !Godot.GodotObject.IsInstanceValid(layout)) return;
         var final = words != null ? Page(pageKey, words, fill) : Page(pageKey + "Silent", "", fill);
         layout.SetDescription(final.GetFormattedText());
+    }
+
+    /// <summary>
+    /// The choice is made: count the encounter against the run, keep the result for a reload, and
+    /// save the game on the finished room. Without the save a reload would roll the room back to
+    /// before the choice while the NPC's affection and memory (kept by the mod) stay moved.
+    /// </summary>
+    private void SaveOutcome(string result)
+    {
+        if (Owner == null) return;
+        try
+        {
+            EncounterBudget.Spend(Owner, Id.Entry);
+            TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner)).EncounterResults[Id.Entry] = result;
+            TalkStore.Instance.Save();
+            if (Owner.RunState.CurrentRoom is EventRoom room)
+            {
+                room.MarkPreFinished();
+                TaskHelper.RunSafely(SaveManager.Instance.SaveRun(room));
+            }
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Encounter] saving the outcome failed: {ex.GetType().Name}: {ex.Message}", 1);
+        }
     }
 
     private LocString Page(string key, string words, Action<LocString>? fill)

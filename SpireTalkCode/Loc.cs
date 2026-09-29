@@ -152,6 +152,7 @@ public static class Loc
                 "RATE_LIMITED" => "ErrRateLimited",
                 "NETWORK" => "ErrNetwork",
                 "TIMEOUT" => "ErrTimeout",
+                "EMPTY" => "ErrEmpty",
                 "NOT_FOUND" => "ErrNotFound",
                 "NOT_CONFIGURED" => "ErrNotConfigured",
                 _ => null,

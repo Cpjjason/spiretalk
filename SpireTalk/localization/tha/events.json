@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "คุณเดินต่อไป เสียงของ[gold]{Npc}[/gold]ดังตามหลังมา:\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "คุณเดินต่อไป",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "ไว้คราวหน้า",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "เดินต่อไป"
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "เดินต่อไป",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold]เอื้อมมือไปที่กองการ์ดของคุณ แล้วหยุดไว้ ไม่เหลือการ์ดใบไหนให้เสริมพลังอีกแล้ว\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold]เอื้อมมือไปที่กองการ์ดของคุณ แล้วหยุดไว้ ไม่เหลือการ์ดใบไหนให้เสริมพลังอีกแล้ว",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

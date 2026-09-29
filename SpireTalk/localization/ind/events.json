@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "Kamu melanjutkan perjalanan. Di belakangmu, terdengar suara [gold]{Npc}[/gold]:\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "Kamu melanjutkan perjalanan.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "Lain Kali",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Terus berjalan."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Terus berjalan.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold] meraih dekmu, lalu berhenti: tidak ada lagi yang bisa diperkuat di dalamnya.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold] meraih dekmu, lalu berhenti: tidak ada lagi yang bisa diperkuat di dalamnya.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

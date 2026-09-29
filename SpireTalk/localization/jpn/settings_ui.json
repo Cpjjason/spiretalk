@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "AIがセリフを書く",
   "SPIRETALK-MSG.ModeScript": "台本のセリフ",
   "SPIRETALK-MSG.ModeNowAiMissing": "AIがまだ接続されていません。当面は台本のセリフを使います。",
-  "SPIRETALK-MSG.KeyTutorialLink": "無料キーを取得 →"
+  "SPIRETALK-MSG.KeyTutorialLink": "無料キーを取得 →",
+  "SPIRETALK-MSG.ErrEmpty": "モデルから空の返答が返ってきました。答える前に考えるモデル（Gemini Pro など）は、考えるだけで上限を使い切ることがあります。Flash モデルを試してください。"
 }

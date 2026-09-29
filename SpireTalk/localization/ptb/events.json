@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "Você segue em frente. Atrás de você, a voz de [gold]{Npc}[/gold]:\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "Você segue em frente.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "Outra Hora",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Siga em frente."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Siga em frente.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold] estende a mão para o seu baralho e para: não resta nada nele para fortalecer.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold] estende a mão para o seu baralho e para: não resta nada nele para fortalecer.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

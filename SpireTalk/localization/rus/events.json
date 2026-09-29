@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "Вы идете дальше. Вслед вам [gold]{Npc}[/gold] говорит:\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "Вы идете дальше.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "В другой раз",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Идти дальше."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Идти дальше.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold] тянется к вашей колоде и замирает: усиливать в ней больше нечего.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold] тянется к вашей колоде и замирает: усиливать в ней больше нечего.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

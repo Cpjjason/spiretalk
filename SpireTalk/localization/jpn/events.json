@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "先へ進む。背後から[gold]{Npc}[/gold]の声がした：\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "先へ進んだ。",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "またいつか",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "先へ進む。"
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "先へ進む。",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold]はあなたのデッキに手を伸ばし、止めた。もう強くできるカードは残っていない。\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold]はあなたのデッキに手を伸ばし、止めた。もう強くできるカードは残っていない。",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "Du ziehst weiter. Hinter dir die Stimme von [gold]{Npc}[/gold]:\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "Du ziehst weiter.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "Ein andermal",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Geh weiter."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Geh weiter.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold] greift nach deinem Deck und hält inne: Darin gibt es nichts mehr zu verstärken.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold] greift nach deinem Deck und hält inne: Darin gibt es nichts mehr zu verstärken.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

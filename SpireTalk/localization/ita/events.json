@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "Prosegui. Alle tue spalle, la voce di [gold]{Npc}[/gold]:\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "Prosegui.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "Un'altra volta",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Prosegui per la tua strada."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Prosegui per la tua strada.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold] allunga la mano verso il tuo mazzo, poi si ferma: non c'è più nulla da rafforzare.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold] allunga la mano verso il tuo mazzo, poi si ferma: non c'è più nulla da rafforzare.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

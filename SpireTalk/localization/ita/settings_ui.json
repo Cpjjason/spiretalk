@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "L'IA scrive le battute",
   "SPIRETALK-MSG.ModeScript": "Battute scritte",
   "SPIRETALK-MSG.ModeNowAiMissing": "L'IA non è ancora connessa; per ora, battute scritte.",
-  "SPIRETALK-MSG.KeyTutorialLink": "Ottieni una chiave gratis →"
+  "SPIRETALK-MSG.KeyTutorialLink": "Ottieni una chiave gratis →",
+  "SPIRETALK-MSG.ErrEmpty": "Il modello ha restituito una risposta vuota. I modelli che ragionano prima di rispondere (Gemini Pro e simili) possono esaurire tutto il budget nel ragionamento: prova un modello Flash."
 }

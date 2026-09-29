@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "Реплики пишет ИИ",
   "SPIRETALK-MSG.ModeScript": "Готовые реплики",
   "SPIRETALK-MSG.ModeNowAiMissing": "ИИ еще не подключен; пока что — готовые реплики.",
-  "SPIRETALK-MSG.KeyTutorialLink": "Получить бесплатный ключ →"
+  "SPIRETALK-MSG.KeyTutorialLink": "Получить бесплатный ключ →",
+  "SPIRETALK-MSG.ErrEmpty": "Модель прислала пустой ответ. Модели, которые думают перед ответом (Gemini Pro и подобные), могут потратить весь лимит на размышления: попробуйте модель Flash."
 }

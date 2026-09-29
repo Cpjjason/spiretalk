@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "Kwestie pisze AI",
   "SPIRETALK-MSG.ModeScript": "Gotowe kwestie",
   "SPIRETALK-MSG.ModeNowAiMissing": "AI nie jest jeszcze połączone; na razie gotowe kwestie.",
-  "SPIRETALK-MSG.KeyTutorialLink": "Zdobądź darmowy klucz →"
+  "SPIRETALK-MSG.KeyTutorialLink": "Zdobądź darmowy klucz →",
+  "SPIRETALK-MSG.ErrEmpty": "Model zwrócił pustą odpowiedź. Modele, które myślą przed odpowiedzią (Gemini Pro i podobne), mogą zużyć cały limit na myślenie: spróbuj modelu Flash."
 }

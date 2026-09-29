@@ -56,6 +56,9 @@ public sealed class OpenAiClient
 
     private static bool LooksLikeOllama => BaseUrl.Contains(":11434", StringComparison.Ordinal) || BaseUrl.Contains("ollama", StringComparison.OrdinalIgnoreCase);
     private static bool LooksLikeOpenRouter => BaseUrl.Contains("openrouter.ai", StringComparison.OrdinalIgnoreCase);
+    // Gemma on the same endpoint does not take reasoning_effort.
+    private static bool LooksLikeGoogleGemini => BaseUrl.Contains("generativelanguage.googleapis.com", StringComparison.OrdinalIgnoreCase)
+        && Model.Contains("gemini", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>One completion for the messages the engine assembled; one retry on the failures that usually clear themselves.</summary>
     public async Task<string> CompleteAsync(JsonArray messages, int maxTokens, double temperature, CancellationToken ct)
@@ -90,6 +93,14 @@ public sealed class OpenAiClient
         {
             // Same problem with reasoning models behind OpenRouter: keep the tokens for the reply.
             body["reasoning"] = new JsonObject { ["exclude"] = true, ["effort"] = "low" };
+        }
+        else if (LooksLikeGoogleGemini)
+        {
+            // Google's own endpoint: Gemini 3 and 2.5 Pro always think, at the model's default depth
+            // unless told otherwise, and the thinking counts against max_tokens, so the reply can come
+            // back empty. Think lightly, and leave room for it on top of the reply's own budget.
+            body["reasoning_effort"] = "low";
+            body["max_tokens"] = maxTokens + 2048;
         }
 
         try

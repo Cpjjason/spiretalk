@@ -180,7 +180,7 @@ public sealed class AncientRest : EncounterEvent
         await Grateful(SitAffection, "The climber sat down beside you on the stone for a while and asked for nothing.", "memory.restSat");
     }
 
-    /// <summary>The thanks: affection, a blessing on one card, the keepsake catching up, and their reply.</summary>
+    /// <summary>The thanks: affection, a blessing on one card (if any can still be upgraded), the keepsake catching up, and their reply.</summary>
     private async Task Grateful(int affection, string whatHappened, string memoryKey, params object[] memoryArgs)
     {
         var npc = Npc!;
@@ -195,10 +195,18 @@ public sealed class AncientRest : EncounterEvent
             MainFile.Logger.Warn($"[Encounter] keepsake refresh failed: {ex.Message}", 1);
         }
         EncounterVoice.Remember(npc, Owner!, memoryKey, memoryArgs);
+        if (card != null)
+        {
+            await ReactAndFinish(
+                whatHappened + $" You touched their deck and strengthened {card} in thanks.",
+                "pages.THANKS.description",
+                page => page.Add("Card", card));
+            return;
+        }
+        // Every card already upgraded: nothing left to strengthen, so the thanks is only the words.
         await ReactAndFinish(
-            whatHappened + (card != null ? $" You touched their deck and strengthened {card} in thanks." : ""),
-            "pages.THANKS.description",
-            page => page.Add("Card", card ?? ""));
+            whatHappened + " You reached for their deck to strengthen a card in thanks, but every card in it is already as strong as it can be.",
+            "pages.THANKS_NOCARD.description");
     }
 
     private async Task Decline()

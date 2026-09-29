@@ -54,5 +54,5 @@ Please report bugs in the discussion section.
 Thanks to Yumina for open-sourcing their engine.
 Source: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]"
-	"changenote"		"0.5.9 - A card stolen by the Thieving Hopper no longer breaks a no-card-removal deal (thanks for the report). Spoils Map, Guilty wearing off and placeholder cards don't count either; removing a card yourself still does."
+	"changenote"		"0.5.10 - An Ancient by the Road: if every card in your deck is already upgraded, the page now says so instead of naming an empty card. Road encounters now save the game once you choose, like the Ancients do: reloading lands back on the result instead of letting you choose again. Gemini through Google AI Studio no longer comes back empty (it now thinks lightly), and an empty reply shows a clear message."
 }

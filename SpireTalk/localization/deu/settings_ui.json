@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "KI schreibt die Sätze",
   "SPIRETALK-MSG.ModeScript": "Vorgefertigte Sätze",
   "SPIRETALK-MSG.ModeNowAiMissing": "Die KI ist noch nicht verbunden; vorerst gibt es vorgefertigte Sätze.",
-  "SPIRETALK-MSG.KeyTutorialLink": "Kostenlosen Schlüssel holen →"
+  "SPIRETALK-MSG.KeyTutorialLink": "Kostenlosen Schlüssel holen →",
+  "SPIRETALK-MSG.ErrEmpty": "Das Modell hat eine leere Antwort geschickt. Modelle, die vor der Antwort nachdenken (Gemini Pro u. a.), können dabei das ganze Budget verbrauchen: Versuch ein Flash-Modell."
 }

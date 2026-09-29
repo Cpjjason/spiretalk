@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "Replikleri yapay zekâ yazar",
   "SPIRETALK-MSG.ModeScript": "Hazır replikler",
   "SPIRETALK-MSG.ModeNowAiMissing": "Yapay zekâ henüz bağlı değil; şimdilik hazır replikler kullanılıyor.",
-  "SPIRETALK-MSG.KeyTutorialLink": "Ücretsiz anahtar al →"
+  "SPIRETALK-MSG.KeyTutorialLink": "Ücretsiz anahtar al →",
+  "SPIRETALK-MSG.ErrEmpty": "Model boş bir yanıt gönderdi. Yanıtlamadan önce düşünen modeller (Gemini Pro vb.) tüm bütçeyi düşünmeye harcayabilir: bir Flash modeli deneyin."
 }

@@ -155,5 +155,6 @@
   "SPIRETALK-MSG.ModeAi": "L'IA écrit les répliques",
   "SPIRETALK-MSG.ModeScript": "Répliques prédéfinies",
   "SPIRETALK-MSG.ModeNowAiMissing": "L'IA n'est pas encore connectée ; répliques prédéfinies en attendant.",
-  "SPIRETALK-MSG.KeyTutorialLink": "Obtenir une clé gratuite →"
+  "SPIRETALK-MSG.KeyTutorialLink": "Obtenir une clé gratuite →",
+  "SPIRETALK-MSG.ErrEmpty": "Le modèle a renvoyé une réponse vide. Les modèles qui réfléchissent avant de répondre (Gemini Pro, etc.) peuvent épuiser tout leur budget en réflexion : essayez un modèle Flash."
 }

@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "You move on. Behind you, [gold]{Npc}[/gold]'s voice:\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "You move on.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "Another Time",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Keep going."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Keep going.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold] reaches for your deck, then stops: there is nothing left in it to strengthen.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold] reaches for your deck, then stops: there is nothing left in it to strengthen.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }

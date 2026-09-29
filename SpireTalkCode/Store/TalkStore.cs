@@ -79,6 +79,8 @@ public sealed class TalkStore
         [JsonPropertyName("epilogueDone")] public bool EpilogueDone { get; set; }
         /// <summary>Road encounters (event ids) met this run; a run gets at most a couple.</summary>
         [JsonPropertyName("encounters")] public List<string> Encounters { get; set; } = new();
+        /// <summary>Result page of each road encounter met this run, shown again when a reload lands on the finished room.</summary>
+        [JsonPropertyName("encounterResults")] public Dictionary<string, string> EncounterResults { get; set; } = new();
         /// <summary>The Ancient met resting by the road this run, so a reload meets the same one.</summary>
         [JsonPropertyName("restAncient")] public string? RestAncient { get; set; }
         /// <summary>Helped the merchant on the road: his next shop this run is cheaper, once.</summary>

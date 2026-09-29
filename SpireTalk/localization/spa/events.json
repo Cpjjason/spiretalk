@@ -41,5 +41,9 @@
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.description": "Sigues adelante. A tu espalda, la voz de [gold]{Npc}[/gold]:\n\n{Words}",
   "SPIRETALK-ANCIENT_REST.pages.DECLINE.descriptionSilent": "Sigues adelante.",
   "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.title": "En otro momento",
-  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Sigues tu camino."
+  "SPIRETALK-ANCIENT_REST.pages.INITIAL.options.LEAVE.description": "Sigues tu camino.",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.description": "[gold]{Npc}[/gold] alarga la mano hacia tu mazo y se detiene: ya no queda nada en él que fortalecer.\n\n{Words}",
+  "SPIRETALK-ANCIENT_REST.pages.THANKS_NOCARD.descriptionSilent": "[gold]{Npc}[/gold] alarga la mano hacia tu mazo y se detiene: ya no queda nada en él que fortalecer.",
+  "SPIRETALK-ANCIENT_REST.pages.DONE.description": "{Words}",
+  "SPIRETALK-MERCHANT_WRECK.pages.DONE.description": "{Words}"
 }
