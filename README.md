@@ -4,6 +4,10 @@
 
 [中文说明在下面](#中文说明)
 
+## Install
+
+Download **[SpireTalk-0.5.11.zip](https://github.com/Cpjjason/spiretalk/releases/latest)** and drag its `mods` folder into the game folder (Steam → right-click Slay the Spire 2 → Manage → Browse local files; merge if asked). You should end up with `Slay the Spire 2/mods/SpireTalk/` and `Slay the Spire 2/mods/BaseLib/`. Start the game, choose *Play Modded*, then click the mushie in the top-right of the main menu. BaseLib ([Alchyr](https://github.com/Alchyr/BaseLib-StS2), MIT) is bundled; if you already have it, keep the newer one (3.4.0+). Details in `安装说明 INSTALL.txt` inside the zip.
+
 ## What it does
 
 - **Talk** — a new option on every Ancient's page and a **Talk** button in the shop. Three lines per visit: pick one of three suggested replies or type your own. The AI is only called when you actually talk (the shop's own greeting stays vanilla).
@@ -75,6 +79,10 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 ---
 
 ## 中文说明
+
+### 安装
+
+下载 **[SpireTalk-0.5.11.zip](https://github.com/Cpjjason/spiretalk/releases/latest)**，把里面的 `mods` 文件夹整个拖进游戏目录（Steam 库里右键《杀戮尖塔 2》→ 管理 → 浏览本地文件；提示合并就选合并）。放好后是 `Slay the Spire 2/mods/SpireTalk/` 和 `Slay the Spire 2/mods/BaseLib/`。启动游戏选带模组的模式（Play Modded），再点主菜单右上角的 mushie。前置 BaseLib（[Alchyr](https://github.com/Alchyr/BaseLib-StS2) 制作，MIT 协议）已经带在包里；装过的话留版本新的那个（3.4.0 以上）。详细步骤见压缩包里的 `安装说明 INSTALL.txt`。
 
 《杀戮尖塔 2》模组：和八位远古先民、以及商人聊天。每个 NPC 都有自己的性格，记得你说过的话（跨局也记得），关系够好还能换来实打实的东西：换一批遗物、金币、治疗、药水、商店折扣，或者 Ancient Affection 的信物遗物。
 
