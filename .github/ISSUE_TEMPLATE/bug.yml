@@ -1,0 +1,34 @@
+name: 报错 / Bug report
+description: 装不上、闪退、NPC 不说话 / won't load, crashes, NPCs don't answer
+body:
+  - type: input
+    id: game
+    attributes:
+      label: 游戏版本 / Game version
+      description: 主菜单左下角 / bottom-left of the main menu (e.g. v0.111.0)
+    validations:
+      required: true
+  - type: input
+    id: mod
+    attributes:
+      label: SpireTalk 版本 / SpireTalk version
+      placeholder: "0.5.11"
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: AI 来源和模型 / Provider and model
+      placeholder: "DeepSeek / deepseek-chat，或没填密钥 / or no key"
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么 / What happened
+      description: 在哪一步、看到了什么；有截图就贴上 / which step, what you saw; screenshots help
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: godot.log
+      description: 把 %APPDATA%\SlayTheSpire2\logs\godot.log 拖进这里 / drag the file in here
