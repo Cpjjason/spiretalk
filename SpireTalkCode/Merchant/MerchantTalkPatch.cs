@@ -388,6 +388,7 @@ internal sealed class MerchantConversation
     public void Dispose()
     {
         ClosePanel();
+        Backend.ModService.FlushVisit();
     }
 
     private async Task TurnAsync(string playerLine)

@@ -1,0 +1,78 @@
+SpireTalk: Living Ancients {ver}，《杀戮尖塔 2》模组
+https://github.com/Cpjjason/spiretalk
+
+【安装】
+最省事：解压后双击「点我安装.bat」。它会自己找到游戏，把模组和前置 BaseLib 放进去。
+（游戏开着会等你退出；找不到游戏会弹窗让你选游戏目录。）
+
+想手动装也行：
+1. Steam 库里右键《杀戮尖塔 2》→ 管理 → 浏览本地文件，打开游戏目录。
+2. 把压缩包里的 mods 文件夹整个拖进游戏目录，提示合并就选合并。放好后应该是：
+     Slay the Spire 2\mods\SpireTalk\SpireTalk.dll（还有 .pck .json Jint.dll Acornima.dll）
+     Slay the Spire 2\mods\BaseLib\BaseLib.dll（还有 .pck .json）
+
+【开始玩】
+1. 启动游戏，选带模组游玩（Play Modded）。
+2. 第一次会弹出欢迎页，选「用 Yumina 账号」。浏览器会打开 Yumina，注册或登录后点「允许」，
+   游戏里就连上了。每个账号每月有免费蘑菇币，不用自己找 API Key。
+3. 有自己的 Key 也可以：点主菜单右上角的蘑菇，「来源」里选 DeepSeek、智谱、OpenRouter 等，
+   贴上 Key，点「测试连接」。
+4. 什么都不设置也能玩：NPC 说写好的台词，你从三个回复里选。
+
+【更新】
+有新版本时，主菜单的蘑菇上会出现小红点，设置页顶上写「有新版本 · 一键更新」。
+点一下就会下载，退出游戏后自动装上。
+
+【存档】
+带模组和不带模组的存档是分开的，第一次开模组看到进度是空的属于正常。
+新版本的游戏第一次进模组模式会自动把原版存档复制过去。没复制的话手动复制：
+  1. 先关游戏，把整个 %APPDATA%\SlayTheSpire2 文件夹备份一份。
+  2. 打开 %APPDATA%\SlayTheSpire2\steam\（一串数字）\profile1\saves
+  3. 把里面的文件复制到 %APPDATA%\SlayTheSpire2\steam\（同一串数字）\modded\profile1\saves，覆盖。
+  用的是第 2、3 个存档位就把 profile1 换成 profile2、profile3。
+
+【卸载】删掉游戏目录里的 mods\SpireTalk 文件夹。NPC 的记忆跟着模组存档走，删 mod 不会清掉。
+
+【遇到问题】
+- 设置页底部有「反馈」，写下来就能直接发给我们，可以附上最近一次对话。
+- 启动时没问用不用模组：mods 文件夹要和 SlayTheSpire2.exe 在同一层。
+- 主菜单右上角没有蘑菇：检查是不是多套了一层文件夹（mods\SpireTalk\SpireTalk\… 是错的）。
+- 只支持单人模式。
+
+BaseLib 由 Alchyr 制作（MIT 协议，https://github.com/Alchyr/BaseLib-StS2），原样附带，许可见 mods\BaseLib\LICENSE。
+Jint（BSD-2-Clause）、Acornima（BSD-3-Clause）随模组附带。
+
+------------------------------------------------------------
+
+SpireTalk: Living Ancients {ver}, a Slay the Spire 2 mod
+https://github.com/Cpjjason/spiretalk
+
+INSTALL
+Easiest: extract the zip and double-click 点我安装.bat. It finds the game and copies the mod and
+BaseLib in (it waits if the game is running, and asks for the folder if it can't find it).
+By hand: drag the zip's mods folder into the game folder (Steam → right-click the game → Manage →
+Browse local files), merging if asked.
+
+PLAY
+1. Start the game and choose Play Modded.
+2. The first launch shows a welcome page: choose "Use a Yumina account". Your browser opens Yumina;
+   sign up or sign in and press Allow, and the game connects. Every account gets free mushies each
+   month, no API key needed.
+3. Your own key works too: click the mushie at the top right of the main menu, pick a source
+   (OpenRouter, OpenAI, DeepSeek, Ollama…), paste the key and press Test.
+4. With nothing set up the NPCs speak written lines and you pick from three replies.
+
+UPDATES
+When a new version is out, the mushie gets a red dot and the settings say "New version · Update".
+One click downloads it; it installs when you quit the game.
+
+SAVES
+Modded and unmodded saves are kept apart, so an empty profile on the first modded launch is normal.
+Recent game versions copy your saves over on the first modded launch. If yours didn't, close the
+game, back up %APPDATA%\SlayTheSpire2, and copy steam\<id>\profile1\saves into
+steam\<id>\modded\profile1\saves.
+
+UNINSTALL: delete mods\SpireTalk. NPC memories live with the modded save and are kept.
+TROUBLE: the settings have a Feedback page that reaches us directly. Single player only.
+
+BaseLib is by Alchyr (MIT, https://github.com/Alchyr/BaseLib-StS2), bundled unchanged; see mods\BaseLib\LICENSE.

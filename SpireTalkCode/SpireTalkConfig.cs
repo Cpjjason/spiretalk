@@ -29,7 +29,8 @@ public enum ReplyLanguage
 /// Mod settings. BaseLib owns persistence (mod_configs/SpireTalk.cfg) and the themed controls;
 /// the screen the player actually sees is <see cref="SpireTalkScreen"/>, opened from the mushie
 /// on the main menu or from the one button this class puts on the vanilla mod list.
-/// Everything runs on the player's own model key; there is no account of any kind.
+/// Replies come from the player's own model key, or from their Yumina account (sign in once in the
+/// browser; no key to find).
 /// Labels live in localization/&lt;lang&gt;/settings_ui.json under the SPIRETALK- prefix.
 /// </summary>
 public sealed class SpireTalkConfig : SimpleModConfig
@@ -58,6 +59,33 @@ public sealed class SpireTalkConfig : SimpleModConfig
     // forth loses nothing.
 
     public static ApiSource Source { get; set; } = ApiSource.OpenRouter;
+
+    // ── Yumina account (Backend/YuminaAccount.cs) ──
+
+    /// <summary>The account's OAuth refresh token, rotated on every use; empty = not signed in. Never shown.</summary>
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 4000)]
+    public static string YuminaToken { get; set; } = "";
+
+    /// <summary>The model picked on the Yumina line; empty = the account's default.</summary>
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 200)]
+    public static string YuminaModel { get; set; } = "";
+
+    /// <summary>The site the account lives on (tests point it at a staging copy).</summary>
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 200)]
+    public static string YuminaSite { get; set; } = "https://yumina.io";
+
+    // ── Updates, feedback, anonymous counts (Backend/ModService.cs) ──
+
+    /// <summary>Random per install; ties anonymous counts together without saying who.</summary>
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 64)]
+    public static string InstallId { get; set; } = "";
+
+    /// <summary>Anonymous per-visit counts (no text, no account). The feedback page can turn them off.</summary>
+    public static bool SendStats { get; set; } = true;
+
+    /// <summary>The version whose "what's new" the player has already seen.</summary>
+    [ConfigTextInput(TextInputPreset.Anything, MaxLength = 32)]
+    public static string SeenVersion { get; set; } = "";
 
     public static bool SourceChosen { get; set; } = false;
 
@@ -257,7 +285,7 @@ public sealed class SpireTalkConfig : SimpleModConfig
         {
             ApiSource.OpenRouter => KeyOpenRouter,
             ApiSource.Custom => KeyCustom,
-            ApiSource.Ollama => "",
+            ApiSource.Ollama or ApiSource.Yumina => "",
             _ => slot.key,
         };
         var fixedFirst = ApiSources.FixedModels(next)?.FirstOrDefault().Id ?? "";
@@ -266,8 +294,25 @@ public sealed class SpireTalkConfig : SimpleModConfig
             ApiSource.OpenRouter => string.IsNullOrWhiteSpace(ModelOpenRouter) ? ApiSources.OpenRouterModels[0].Id : ModelOpenRouter,
             ApiSource.Ollama => ModelOllama,
             ApiSource.Custom => ModelCustom,
+            // The Yumina line keeps its own pick (YuminaModel); the client reads that one.
+            ApiSource.Yumina => "",
             _ => string.IsNullOrWhiteSpace(slot.model) ? fixedFirst : slot.model,
         };
+        if (next == ApiSource.Yumina) YuminaAccount.Refresh();
+    }
+
+    /// <summary>
+    /// A fresh install has nothing set: it starts on the Yumina line (sign in, no key to find).
+    /// Configs that already have a key, or picked a source, are left alone.
+    /// </summary>
+    public static void ChooseFirstSource()
+    {
+        if (SourceChosen || !string.IsNullOrWhiteSpace(OwnKey) || !string.IsNullOrWhiteSpace(KeyOpenRouter)) return;
+        SourceChosen = true;
+        Source = ApiSource.Yumina;
+        OwnBaseUrl = ApiSources.UrlFor(ApiSource.Yumina);
+        OwnKey = "";
+        OwnModel = "";
     }
 
     /// <summary>Copy the live key and model into the current source's slots (the page edits the live ones).</summary>
@@ -277,6 +322,7 @@ public sealed class SpireTalkConfig : SimpleModConfig
         {
             case ApiSource.OpenRouter: KeyOpenRouter = OwnKey; ModelOpenRouter = OwnModel; break;
             case ApiSource.Ollama: ModelOllama = OwnModel; break;
+            case ApiSource.Yumina: break;
             case ApiSource.Custom: KeyCustom = OwnKey; ModelCustom = OwnModel; break;
             default: WriteSlot(Source, OwnKey, OwnModel); break;
         }
@@ -300,7 +346,7 @@ public sealed class SpireTalkConfig : SimpleModConfig
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
             var probe = await MainFile.Backend.Client.ProbeAsync(cts.Token);
-            return (true, string.Format(Loc.Ui("TestOwnOkBody"), OwnBaseUrl, OwnModel, probe));
+            return (true, string.Format(Loc.Ui("TestOwnOkBody"), OpenAiClient.BaseUrl, OpenAiClient.Model, probe));
         }
         catch (Exception ex)
         {

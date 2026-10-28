@@ -402,6 +402,9 @@ public sealed partial class TestBridge : Node
             if (force != null)
             {
                 force.Invoke(clickable, null);
+                // ForceClick skips the button's own click sound; note it so the audio replay has it.
+                var sfx = clickable.GetType().GetProperty("ClickedSfx", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)?.GetValue(clickable) as string;
+                if (sfx != null) AudioTap.Synthetic(sfx);
                 WriteResult(true, $"ForceClick {clickable.GetType().Name} '{clickable.Name}'");
                 return;
             }

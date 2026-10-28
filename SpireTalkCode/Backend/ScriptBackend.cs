@@ -27,6 +27,21 @@ public sealed class ScriptBackend : INpcBackend
 
     public Task<NpcTurn> ExchangeAsync(VisitContext ctx, string playerLine, bool isOpener, CancellationToken ct)
     {
+        try
+        {
+            var turn = ExchangeCore(ctx, playerLine, isOpener, ct);
+            ModService.Count(ctx, scripted: true, null);
+            return turn;
+        }
+        catch (Exception ex)
+        {
+            ModService.Count(ctx, scripted: true, ex);
+            throw;
+        }
+    }
+
+    private Task<NpcTurn> ExchangeCore(VisitContext ctx, string playerLine, bool isOpener, CancellationToken ct)
+    {
         var script = Load().GetValueOrDefault(ctx.NpcKey.ToUpperInvariant())
             ?? throw new BackendException(string.Format(Loc.Ui("ErrNoCard"), ctx.NpcKey), null, "NO_SCRIPT");
         var lang = Loc.ReplyLanguageCode();

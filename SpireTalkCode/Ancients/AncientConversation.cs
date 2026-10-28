@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using SpireTalk.Affection;
 using SpireTalk.Deals;
+using SpireTalk.Keepsakes;
 using SpireTalk.Npc;
 using SpireTalk.Rewards;
 using SpireTalk.Store;
@@ -72,6 +73,13 @@ public sealed class AncientConversation
     private bool _offerAnswered;
     /// <summary>Cancelled when the room goes away, so a late reply never touches a dead layout.</summary>
     private readonly CancellationTokenSource _lifetime = new();
+    /// <summary>The line being waited on; "stop waiting" cancels it.</summary>
+    private CancellationTokenSource? _turn;
+    private int _thinkingGen;
+    private bool _gaveUp;
+
+    /// <summary>How long a reply may take before the player is offered a way out.</summary>
+    private const double GiveUpAfterSeconds = 25;
 
     private AncientConversation(AncientEventModel ancient, NpcDefinition npc, IReadOnlyList<EventOption> vanillaOptions)
     {
@@ -83,6 +91,8 @@ public sealed class AncientConversation
         _sfx = PickSfx(ancient);
         _record = TalkStore.Instance.Get(_key);
         _runKey = ancient.Owner != null ? RewardExecutor.RunKey(ancient.Owner) : "no-run";
+        // A reroll made before a reload is still spent: the page was regenerated to match it.
+        _rerollUsed = WasRerolled(ancient);
     }
 
     // ── Entry points ─────────────────────────────────────────────────────
@@ -140,6 +150,7 @@ public sealed class AncientConversation
     {
         if (Active.Remove(ancient, out var convo))
         {
+            ModService.FlushVisit();
             convo.DisposeInput();
             try { convo._lifetime.Cancel(); } catch { /* already disposed */ }
         }
@@ -152,6 +163,8 @@ public sealed class AncientConversation
     {
         var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
         cts.CancelAfter(TimeSpan.FromSeconds(seconds));
+        _turn = cts;
+        _gaveUp = false;
         return cts;
     }
 
@@ -181,7 +194,9 @@ public sealed class AncientConversation
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
             _ctx.Talks = _record.Talks;
+            var keepsakeBefore = KeepsakeLevel();
             _offer = _ancient.Owner != null ? await VisitExtras.PrepareAsync(_ctx, _npc, _ancient.Owner, _runKey) : null;
+            if (KeepsakeLevel() != keepsakeBefore) AncientRunSave.Request(_ancient.Owner);
             _offerAnswered = false;
             _ctx.SyncRelationshipVariables();
             TalkStore.Instance.Save();
@@ -275,7 +290,12 @@ public sealed class AncientConversation
             _netDeltaThisVisit += appliedDelta;
             _ctx.Affection = AffectionService.Apply(_key, NpcKind.Ancient, appliedDelta);
             _previousPlayerLine = playerLine;
-            if (appliedDelta != 0 && _ancient.Owner != null) await VisitExtras.AfterAffectionChangedAsync(_ctx, _npc, _ancient.Owner);
+            if (appliedDelta != 0 && _ancient.Owner != null)
+            {
+                var keepsakeBefore = KeepsakeLevel();
+                await VisitExtras.AfterAffectionChangedAsync(_ctx, _npc, _ancient.Owner);
+                if (KeepsakeLevel() != keepsakeBefore) AncientRunSave.Request(_ancient.Owner);
+            }
         }
 
         // 3. Reward — validate against the rules now; the game hands it over once the player has
@@ -328,6 +348,7 @@ public sealed class AncientConversation
                 else
                 {
                     _rerollUsed = true;
+                    if (RoomKey(_ancient) is { } room) TalkStore.Instance.GetRun(_runKey).Rerolled.Add(room);
                     rewardSummary = "reroll";
                     RewardExecutor.Toast(string.Format(Loc.EventText("rewardReroll"), _npc.DisplayName));
                 }
@@ -336,6 +357,7 @@ public sealed class AncientConversation
             {
                 var outcome = await RewardExecutor.ApplyAsync(reward, _ancient.Owner, _key, _ancient.Title.GetFormattedText(), _runKey, _ancient, _ctx.Affection);
                 if (!outcome.Applied) _rewardsThisVisit--;
+                else AncientRunSave.Request(_ancient.Owner);
                 rewardSummary = outcome.Summary;
             }
         }
@@ -392,6 +414,39 @@ public sealed class AncientConversation
         catch (Exception ex)
         {
             MainFile.Logger.Warn($"[Talk] thinking UI failed: {ex.Message}", 1);
+        }
+        // A stalled line (a dropped connection, a model that hangs) used to keep the room locked
+        // until the two-minute timeout. After a while, offer a way out instead.
+        var gen = ++_thinkingGen;
+        if (Godot.Engine.GetMainLoop() is SceneTree tree)
+        {
+            tree.CreateTimer(GiveUpAfterSeconds).Timeout += () =>
+            {
+                if (gen == _thinkingGen && _busy && !Gone && !_gaveUp) OfferGiveUp();
+            };
+        }
+    }
+
+    private void OfferGiveUp()
+    {
+        var layout = Layout;
+        if (layout == null) return;
+        try
+        {
+            var giveUp = new EventOption(_ancient, () =>
+            {
+                // The line is not spent and nothing is recorded; TurnAsync/StartAsync land in Fail.
+                _gaveUp = true;
+                try { _turn?.Cancel(); } catch { /* already done */ }
+                return Task.CompletedTask;
+            }, Loc.Event("empty"), Loc.Dynamic(Loc.Ui("GiveUpWait")), "SPIRETALK_GIVE_UP", Array.Empty<IHoverTip>()).ThatWontSaveToChoiceHistory();
+            SetEventState(_vanillaDescription, new List<EventOption> { giveUp });
+            ShowLines(layout, new[] { Loc.Event("thinking") });
+            SpireTalk.Ui.ThinkingTicker.Attach(layout, Loc.EventText("thinking"));
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Talk] give-up option failed: {ex.Message}", 1);
         }
     }
 
@@ -461,7 +516,11 @@ public sealed class AncientConversation
         if (_ctx == null || _offer == null || _offerAnswered) return Task.CompletedTask;
         _offerAnswered = true;
         VisitExtras.OnOfferAnswered(_ctx, _npc, _offer, accepted, _runKey);
-        if (accepted) RewardExecutor.Toast(string.Format(Loc.EventText("dealAccepted"), _npc.DisplayName, _offer.Describe()));
+        if (accepted)
+        {
+            RewardExecutor.Toast(string.Format(Loc.EventText("dealAccepted"), _npc.DisplayName, _offer.Describe()));
+            _ = SaveAfterAsync(DealService.LastRelicGift);
+        }
         // Back to the reply that carried the proposal, now with the normal choices under it.
         if (_lastTurn != null) Present(_lastTurn, relines: false);
         return Task.CompletedTask;
@@ -469,7 +528,8 @@ public sealed class AncientConversation
 
     private void Fail(Exception ex)
     {
-        MainFile.Logger.Warn($"[Talk] {_key} failed: {ex.GetType().Name}: {ex.Message}", 1);
+        _thinkingGen++;
+        MainFile.Logger.Warn($"[Talk] {_key} {(_gaveUp ? "stopped waiting" : "failed")}: {ex.GetType().Name}: {ex.Message}", 1);
         if (SpireTalkConfig.DebugLogging) MainFile.Logger.Warn($"[Talk] {ex}", 1);
         _ended = true;
         DisposeInput();
@@ -483,7 +543,7 @@ public sealed class AncientConversation
             if (layout != null)
             {
                 var line = Loc.Event("failed");
-                line.Add("Reason", Loc.Sanitize(Loc.DescribeError(ex)));
+                line.Add("Reason", Loc.Sanitize(_gaveUp ? Loc.Ui("GaveUpWait") : Loc.DescribeError(ex)));
                 ShowLines(layout, new[] { line });
             }
         }
@@ -605,6 +665,51 @@ public sealed class AncientConversation
             MainFile.Logger.Warn($"[Talk] reroll failed: {ex.Message}", 1);
         }
         return false;
+    }
+
+    private int KeepsakeLevel() =>
+        _ancient.Owner != null ? KeepsakeService.Owned(_ancient.Owner, _key)?.Level ?? 0 : 0;
+
+    /// <summary>Save once the deal's token relic is on the bar, so the save carries it.</summary>
+    private async Task SaveAfterAsync(Task gift)
+    {
+        try { await gift; } catch { /* GiveDealAsync logs its own failure */ }
+        AncientRunSave.Request(_ancient.Owner);
+    }
+
+    /// <summary>"NPC@floor" of this room, for the run's list of rerolled pages.</summary>
+    private static string? RoomKey(AncientEventModel ancient) =>
+        ancient.Owner != null ? $"{ancient.Id.Entry}@{ancient.Owner.RunState.TotalFloor}" : null;
+
+    private static bool WasRerolled(AncientEventModel ancient) =>
+        ancient.Owner != null && RoomKey(ancient) is { } room
+        && TalkStore.Instance.GetRun(RewardExecutor.RunKey(ancient.Owner)).Rerolled.Contains(room);
+
+    [ThreadStatic] private static bool _regenerating;
+
+    /// <summary>
+    /// Reload into a room whose page the NPC rerolled: the event's Rng is reseeded from the run seed,
+    /// so asking it for options a second time lands on the same rerolled page as before the reload.
+    /// Returns false for the inner call, which must stay untouched.
+    /// </summary>
+    internal static bool ReplayReroll(AncientEventModel ancient, ref IReadOnlyList<EventOption> options)
+    {
+        if (_regenerating) return false;
+        if (Active.ContainsKey(ancient) || !WasRerolled(ancient)) return true;
+        _regenerating = true;
+        try
+        {
+            if (GenerateOptionsMethod.Invoke(ancient, null) is IReadOnlyList<EventOption> again && again.Count > 0) options = again;
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Talk] replaying the reroll failed: {ex.Message}", 1);
+        }
+        finally
+        {
+            _regenerating = false;
+        }
+        return true;
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────

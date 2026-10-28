@@ -20,6 +20,8 @@ public enum ApiSource
     Zhipu,
     Ollama,
     Custom,
+    // Last so configs that stored the enum by number keep their pick; the page lists it first.
+    Yumina,
 }
 
 /// <summary>
@@ -73,6 +75,10 @@ public static class ApiSources
         new(ApiSource.Zhipu, "https://open.bigmodel.cn/api/paas/v4", "https://open.bigmodel.cn/usercenter/apikeys", "BigModel", true, None),
     };
 
+    /// <summary>The sources in the order the page lists them: the Yumina line (no key to find) first.</summary>
+    public static IEnumerable<ApiSource> Ordered =>
+        new[] { ApiSource.Yumina }.Concat(Enum.GetValues<ApiSource>().Where(s => s != ApiSource.Yumina));
+
     public static Preset? PresetOf(ApiSource source) => Presets.FirstOrDefault(p => p.Source == source);
 
     public static ApiSource Infer(string? baseUrl)
@@ -80,6 +86,7 @@ public static class ApiSources
         var url = (baseUrl ?? "").Trim().TrimEnd('/');
         if (url.Length == 0) return ApiSource.OpenRouter;
         if (url.Contains(":11434", StringComparison.Ordinal)) return ApiSource.Ollama;
+        if (url.EndsWith("/api/ai/v1", StringComparison.OrdinalIgnoreCase)) return ApiSource.Yumina;
         foreach (var p in Presets)
         {
             if (url.StartsWith(p.Url, StringComparison.OrdinalIgnoreCase)) return p.Source;
@@ -90,6 +97,7 @@ public static class ApiSources
     public static string UrlFor(ApiSource source) => source switch
     {
         ApiSource.Ollama => OllamaUrl,
+        ApiSource.Yumina => YuminaAccount.ApiBase,
         ApiSource.Custom => (SpireTalkConfig.CustomBaseUrl ?? "").Trim(),
         _ => PresetOf(source)?.Url ?? OpenRouterUrl,
     };
@@ -98,6 +106,7 @@ public static class ApiSources
     public static bool ShouldFetch(ApiSource source) => source switch
     {
         ApiSource.Ollama => true,
+        ApiSource.Yumina => false, // the account's own list (YuminaAccount.Current.Models)
         ApiSource.Custom => !string.IsNullOrWhiteSpace(SpireTalkConfig.CustomBaseUrl),
         _ => PresetOf(source)?.CanList == true && !string.IsNullOrWhiteSpace(SpireTalkConfig.OwnKey),
     };

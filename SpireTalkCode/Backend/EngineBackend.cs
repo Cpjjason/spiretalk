@@ -28,6 +28,21 @@ public sealed class EngineBackend : INpcBackend
 
     public async Task<NpcTurn> ExchangeAsync(VisitContext ctx, string playerLine, bool isOpener, CancellationToken ct)
     {
+        try
+        {
+            var turn = await ExchangeCoreAsync(ctx, playerLine, isOpener, ct);
+            ModService.Count(ctx, scripted: false, null);
+            return turn;
+        }
+        catch (Exception ex)
+        {
+            ModService.Count(ctx, scripted: false, ex);
+            throw;
+        }
+    }
+
+    private async Task<NpcTurn> ExchangeCoreAsync(VisitContext ctx, string playerLine, bool isOpener, CancellationToken ct)
+    {
         var card = CardLibrary.For(ctx.NpcKey)
             ?? throw new BackendException(string.Format(Loc.Ui("ErrNoCard"), ctx.NpcKey), null, "NO_CARD");
         var runtime = YuminaRuntime.Instance;
@@ -71,6 +86,11 @@ public sealed class EngineBackend : INpcBackend
         }
 
         var raw = await _llm.CompleteAsync(prompt.Messages, prompt.MaxTokens, prompt.Temperature, ct);
+        // Yumina moved this line to the account's default model (the pick is down for a while): say so once.
+        if (OpenAiClient.TakeFallBack() is { } benched)
+        {
+            Rewards.RewardExecutor.Toast(string.Format(Loc.Ui("FellBack"), benched, OpenAiClient.Model));
+        }
 
         if (SpireTalkConfig.DebugLogging)
         {

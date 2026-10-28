@@ -65,7 +65,11 @@ public sealed partial class MainMenuButton : TextureButton
     {
         if (_current == null || !IsInstanceValid(_current)) return;
         var dot = _current.GetNodeOrNull<Control>("Dot");
-        if (dot != null) dot.Visible = SpireTalkConfig.GuideSeen && !SpireTalkConfig.ModeNoticeSeen;
+        if (dot != null)
+        {
+            dot.Visible = (SpireTalkConfig.GuideSeen && !SpireTalkConfig.ModeNoticeSeen)
+                || (Backend.ModService.Newer && Backend.ModService.State != Backend.ModService.UpdateState.Staged);
+        }
     }
 
     private void PlaceAt(float top)

@@ -234,20 +234,27 @@ public sealed partial class GuideScreen : Control, IScreenContext
         AddTitleAndBody(text, "welcome");
         text.AddChild(GameArt.Label("[b]" + Loc.Ui("WelcomeQuestion") + "[/b]", 27, GameArt.Gold));
 
-        text.AddChild(Choice(1, "WelcomeHaveKey", () =>
+        text.AddChild(Choice(1, "WelcomeYumina", () =>
+        {
+            // The browser opens to sign in; the tour reads while it's out, and the account links on its own.
+            UseYumina();
+            Continue(TourPages);
+        }));
+        text.AddChild(Choice(2, "WelcomeHaveKey", () =>
         {
             SpireTalkConfig.UseAi = true;
+            if (SpireTalkConfig.Source == ApiSource.Yumina) SpireTalkConfig.SwitchSource(ApiSource.OpenRouter);
             SpireTalkConfig.Instance?.SaveDebounced(200);
             Close();
             MemoryScreen.OpenLater(SpireTalkScreen.Open);
         }));
-        text.AddChild(Choice(2, "WelcomeTeachMe", () =>
+        text.AddChild(Choice(3, "WelcomeTeachMe", () =>
         {
             SpireTalkConfig.UseAi = true;
             SpireTalkConfig.Instance?.SaveDebounced(200);
             Continue(new[] { "keyregion" });
         }));
-        text.AddChild(Choice(3, "WelcomeNoAi", () =>
+        text.AddChild(Choice(4, "WelcomeNoAi", () =>
         {
             SpireTalkConfig.UseAi = false;
             SpireTalkConfig.Instance?.SaveDebounced(200);
@@ -300,8 +307,23 @@ public sealed partial class GuideScreen : Control, IScreenContext
     private void FillRegion(VBoxContainer text)
     {
         AddTitleAndBody(text, "keyregion");
-        text.AddChild(Choice(1, "RegionChina", () => PickRegion(ApiSource.Zhipu)));
-        text.AddChild(Choice(2, "RegionAbroad", () => PickRegion(ApiSource.Google)));
+        text.AddChild(Choice(1, "RegionYumina", () =>
+        {
+            UseYumina();
+            if (_backToSettings) Finish();
+            else Continue(TourPages);
+        }));
+        text.AddChild(Choice(2, "RegionChina", () => PickRegion(ApiSource.Zhipu)));
+        text.AddChild(Choice(3, "RegionAbroad", () => PickRegion(ApiSource.Google)));
+    }
+
+    /// <summary>The Yumina line: switch to it and send the player to the browser to sign in.</summary>
+    private static void UseYumina()
+    {
+        SpireTalkConfig.SwitchSource(ApiSource.Yumina);
+        SpireTalkConfig.UseAi = true;
+        SpireTalkConfig.Instance?.SaveDebounced(200);
+        if (!YuminaAccount.Linked) YuminaAccount.StartLogin();
     }
 
     private void PickRegion(ApiSource source)

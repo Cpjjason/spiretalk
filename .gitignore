@@ -13,3 +13,4 @@ obj/
 tools/__pycache__/
 tools/BranchCheck/bin/
 tools/BranchCheck/obj/
+release/out/

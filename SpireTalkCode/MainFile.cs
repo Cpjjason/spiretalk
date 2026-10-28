@@ -11,7 +11,7 @@ namespace SpireTalk;
 public partial class MainFile : Node
 {
     public const string ModId = "SpireTalk";
-    public const string Version = "0.5.11";
+    public const string Version = "0.6.0";
 
     public static MegaCrit.Sts2.Core.Logging.Logger Logger { get; } = new(ModId, MegaCrit.Sts2.Core.Logging.LogType.Generic);
 
@@ -27,6 +27,11 @@ public partial class MainFile : Node
 
         var config = new SpireTalkConfig();
         ModConfigRegistry.Register(ModId, config);
+        // A fresh install starts on the Yumina line; then load the account (balance, default model).
+        SpireTalkConfig.ChooseFirstSource();
+        if (SpireTalkConfig.Source == ApiSource.Yumina) YuminaAccount.Refresh();
+        ModService.Changed += Ui.MainMenuButton.RefreshDot;
+        ModService.Start();
 
         var harmony = new Harmony("io.yumina.spiretalk");
         harmony.PatchAll(typeof(MainFile).Assembly);
@@ -35,6 +40,7 @@ public partial class MainFile : Node
         // Developer automation bridge — dev builds only (dotnet build -p:SpireTalkDev=true), and
         // even then only when the flag file exists (see Dev/TestBridge.cs).
         Dev.TestBridge.Install();
+        if (Dev.TestBridge.ShouldInstall) Dev.AudioTap.Install(harmony);
 #endif
 
         Logger.Info($"[Init] SpireTalk {Version} ready. backend={Backend.DisplayName} configured={Backend.IsConfigured} cards={CardLibrary.All.Count}", 1);

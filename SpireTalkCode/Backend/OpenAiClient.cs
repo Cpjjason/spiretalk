@@ -7,8 +7,9 @@ namespace SpireTalk.Backend;
 
 /// <summary>
 /// The one network call the mod makes: chat completions against any OpenAI-compatible endpoint
-/// with the player's own key — OpenRouter (default), OpenAI, a local Ollama
-/// (http://localhost:11434/v1, key optional), or anything that speaks the same dialect.
+/// with the player's own key — OpenRouter, OpenAI, a local Ollama (http://localhost:11434/v1, key
+/// optional), or anything that speaks the same dialect — or Yumina's AI gateway, where the bearer
+/// is the signed-in account's short-lived token (<see cref="YuminaAccount"/>).
 /// </summary>
 public sealed class OpenAiClient
 {
@@ -28,10 +29,13 @@ public sealed class OpenAiClient
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("SpireTalk/" + MainFile.Version + " (Slay the Spire 2 mod)");
     }
 
+    private static bool OnYumina => SpireTalkConfig.Source == ApiSource.Yumina;
+
     public bool IsConfigured
     {
         get
         {
+            if (OnYumina) return YuminaAccount.Linked;
             var url = BaseUrl;
             if (string.IsNullOrWhiteSpace(url)) return false;
             // Local servers usually need no key; hosted ones do.
@@ -44,6 +48,7 @@ public sealed class OpenAiClient
     {
         get
         {
+            if (OnYumina) return YuminaAccount.ApiBase;
             var raw = (SpireTalkConfig.OwnBaseUrl ?? "").Trim().TrimEnd('/');
             if (raw.Length == 0) raw = "https://openrouter.ai/api/v1";
             if (!raw.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !raw.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
@@ -52,7 +57,42 @@ public sealed class OpenAiClient
         }
     }
 
-    public static string Model => string.IsNullOrWhiteSpace(SpireTalkConfig.OwnModel) ? "google/gemini-2.5-flash-lite" : SpireTalkConfig.OwnModel.Trim();
+    /// <summary>The model a line goes to: the player's pick, unless Yumina could not take it a moment ago (see Bench).</summary>
+    public static string Model
+    {
+        get
+        {
+            var m = Picked;
+            return m == _benched && DateTime.UtcNow < _benchedUntil && Fallback is { } f ? f : m;
+        }
+    }
+
+    private static string Picked => OnYumina
+        ? (string.IsNullOrWhiteSpace(SpireTalkConfig.YuminaModel) ? YuminaAccount.Current?.DefaultModel ?? "" : SpireTalkConfig.YuminaModel.Trim())
+        : string.IsNullOrWhiteSpace(SpireTalkConfig.OwnModel) ? "google/gemini-2.5-flash-lite" : SpireTalkConfig.OwnModel.Trim();
+
+    // Yumina's free line is shared by every player on the site, and now and then a model there is
+    // down for a while. When the pick still fails after its retry, lines go to the account's default
+    // model for ten minutes (and the player is told once). Own keys never switch: that's their bill.
+    private static string? _benched;
+    private static DateTime _benchedUntil;
+    private static string? _fellBack;
+
+    private static string? Fallback
+    {
+        get
+        {
+            if (!OnYumina) return null;
+            var d = YuminaAccount.Current?.DefaultModel;
+            return string.IsNullOrWhiteSpace(d) ? null : d;
+        }
+    }
+
+    private static bool Bench(BackendException ex) =>
+        (ex.StatusCode is >= 500 || ex.Code is "TIMEOUT" or "EMPTY") && Fallback is { } f && Model != f;
+
+    /// <summary>The model whose failure moved this line to the default one, once; null when nothing moved.</summary>
+    public static string? TakeFallBack() => Interlocked.Exchange(ref _fellBack, null);
 
     private static bool LooksLikeOllama => BaseUrl.Contains(":11434", StringComparison.Ordinal) || BaseUrl.Contains("ollama", StringComparison.OrdinalIgnoreCase);
     private static bool LooksLikeOpenRouter => BaseUrl.Contains("openrouter.ai", StringComparison.OrdinalIgnoreCase);
@@ -60,8 +100,28 @@ public sealed class OpenAiClient
     private static bool LooksLikeGoogleGemini => BaseUrl.Contains("generativelanguage.googleapis.com", StringComparison.OrdinalIgnoreCase)
         && Model.Contains("gemini", StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>One completion for the messages the engine assembled; one retry on the failures that usually clear themselves.</summary>
+    /// <summary>One completion for the messages the engine assembled; see <see cref="CompleteOnceAsync"/> and Bench.</summary>
     public async Task<string> CompleteAsync(JsonArray messages, int maxTokens, double temperature, CancellationToken ct)
+    {
+        // Signed in, but the account (and so its default model) has not loaded yet: load it first.
+        if (OnYumina && Model.Length == 0) await YuminaAccount.RefreshAsync();
+        try
+        {
+            return await CompleteOnceAsync(messages, maxTokens, temperature, ct);
+        }
+        catch (BackendException ex) when (!ct.IsCancellationRequested && Bench(ex))
+        {
+            var from = Model;
+            _benched = from;
+            _benchedUntil = DateTime.UtcNow.AddMinutes(10);
+            Interlocked.Exchange(ref _fellBack, from);
+            MainFile.Logger.Warn($"[LLM] {from} failed ({ex.StatusCode?.ToString() ?? ex.Code}) after its retry; lines go to {Model} for 10 minutes", 1);
+            return await CompleteOnceAsync(messages, maxTokens, temperature, ct);
+        }
+    }
+
+    /// <summary>One completion; one retry on the failures that usually clear themselves.</summary>
+    private async Task<string> CompleteOnceAsync(JsonArray messages, int maxTokens, double temperature, CancellationToken ct)
     {
         // An NPC line needs no chain of thought, and the reply only shows once it is complete, so
         // thinking is pure waiting: Qwen on OpenRouter spends 10-20 s on it even at "low". Ask every
@@ -79,7 +139,7 @@ public sealed class OpenAiClient
         {
             MainFile.Logger.Info($"[LLM] {Model} will not skip thinking ({ex.Message}); asking with light thinking instead", 1);
             ThinkingRequired[thinkingKey] = true;
-            return await CompleteAsync(messages, maxTokens, temperature, ct);
+            return await CompleteOnceAsync(messages, maxTokens, temperature, ct);
         }
         catch (BackendException ex) when (!ct.IsCancellationRequested && IsTransient(ex))
         {
@@ -190,7 +250,7 @@ public sealed class OpenAiClient
     public async Task<string> ProbeAsync(CancellationToken ct)
     {
         using var req = new HttpRequestMessage(HttpMethod.Get, BaseUrl + "/models");
-        AddAuth(req);
+        await AddAuth(req);
         try
         {
             using var res = await _http.SendAsync(req, ct);
@@ -222,7 +282,7 @@ public sealed class OpenAiClient
     private async Task<string> PostAsync(JsonObject body, CancellationToken ct)
     {
         using var req = new HttpRequestMessage(HttpMethod.Post, LooksLikeOllama ? OllamaChatUrl : BaseUrl + "/chat/completions");
-        AddAuth(req);
+        await AddAuth(req);
         req.Content = new StringContent(body.ToJsonString(JsonOpts), Encoding.UTF8, "application/json");
         HttpResponseMessage res;
         try
@@ -250,9 +310,19 @@ public sealed class OpenAiClient
                     429 => "RATE_LIMITED",
                     _ => null,
                 };
+                if (OnYumina && (int)res.StatusCode is 401 or 402)
+                {
+                    // Our own words (top up / sign in again), not the gateway's English.
+                    var noCredits = (int)res.StatusCode == 402;
+                    throw new BackendException(Loc.Ui(noCredits ? "YmNoCredits" : "YmRelink"), (int)res.StatusCode, noCredits ? "YUMINA_NO_CREDITS" : "YUMINA_RELINK");
+                }
                 throw new BackendException(msg, (int)res.StatusCode, code);
             }
             var node = JsonNode.Parse(text);
+            if (OnYumina && node?["yumina"]?["balance"] is JsonValue left && left.TryGetValue<double>(out var balance))
+            {
+                YuminaAccount.NoteBalance(balance);
+            }
             var content = LooksLikeOllama
                 ? node?["message"]?["content"]?.GetValue<string>()
                 : node?["choices"]?[0]?["message"]?["content"]?.GetValue<string>();
@@ -264,8 +334,14 @@ public sealed class OpenAiClient
         }
     }
 
-    private static void AddAuth(HttpRequestMessage req)
+    private static async Task AddAuth(HttpRequestMessage req)
     {
+        if (OnYumina)
+        {
+            // Our own endpoint: the account's token, no OpenRouter attribution headers.
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await YuminaAccount.AccessTokenAsync());
+            return;
+        }
         var key = (SpireTalkConfig.OwnKey ?? "").Trim();
         if (key.Length > 0) req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", key);
         // OpenRouter attribution headers are harmless elsewhere.

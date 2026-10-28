@@ -7,8 +7,9 @@ using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 namespace SpireTalk.Ui;
 
 /// <summary>
-/// The mod's own settings sheet: a parchment page in the game's modal layer — an API endpoint, a
-/// key, a model, and the conversation switches. That is all the mod needs.
+/// The mod's own settings sheet: a parchment page in the game's modal layer — where the replies
+/// come from (the player's Yumina account, or an API endpoint + key + model), and the conversation
+/// switches. That is all the mod needs.
 /// </summary>
 public sealed partial class SpireTalkScreen : Control, IScreenContext
 {
@@ -79,8 +80,14 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var titles = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill, SizeFlagsVertical = SizeFlags.ShrinkCenter };
         titles.AddThemeConstantOverride("separation", 0);
         titles.AddChild(GameArt.Label("[b]" + Loc.Ui("ScreenTitle") + "[/b]", 40, GameArt.Ink, wrap: false));
-        titles.AddChild(GameArt.Label(Loc.Ui("ScreenSubtitle") + "  ·  v" + MainFile.Version, 24, GameArt.InkSoft, wrap: false));
+        var sub = new HBoxContainer();
+        sub.AddThemeConstantOverride("separation", 18);
+        sub.AddChild(GameArt.Label(Loc.Ui("ScreenSubtitle") + "  ·  v" + MainFile.Version, 24, GameArt.InkSoft, wrap: false));
+        _updateSlot = new HBoxContainer();
+        sub.AddChild(_updateSlot);
+        titles.AddChild(sub);
         row.AddChild(titles);
+        FillUpdate();
 
         var close = GameArt.LinkButton("✕", GameArt.Ink, 34);
         close.SizeFlagsVertical = SizeFlags.ShrinkBegin;
@@ -88,6 +95,42 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         row.AddChild(close);
         return row;
     }
+
+    // ── A newer release: one click to fetch it; it goes in when the game closes ──
+
+    private HBoxContainer _updateSlot = null!;
+
+    private void FillUpdate()
+    {
+        if (_updateSlot == null || !IsInstanceValid(_updateSlot)) return;
+        foreach (var child in _updateSlot.GetChildren()) child.QueueFree();
+        if (!ModService.Newer) return;
+        var deep = new Color("8a5a12");
+        switch (ModService.State)
+        {
+            case ModService.UpdateState.Working:
+                _updateSlot.AddChild(GameArt.Label(string.Format(Loc.Ui("UpdWorking"), (int)(ModService.Progress * 100)), 22, deep, wrap: false));
+                break;
+            case ModService.UpdateState.Staged:
+                _updateSlot.AddChild(GameArt.Label(string.Format(Loc.Ui("UpdStaged"), ModService.Latest), 22, new Color("2f6b3f"), wrap: false));
+                break;
+            default:
+                var failed = ModService.State == ModService.UpdateState.Failed;
+                var link = GameArt.LinkButton(
+                    failed ? string.Format(Loc.Ui("UpdFailed"), ModService.Error) : string.Format(Loc.Ui(ModService.CanUpdate ? "UpdAvailable" : "UpdAvailableManual"), ModService.Latest),
+                    failed ? new Color("a03030") : deep, 22);
+                link.TooltipText = ModService.Notes ?? "";
+                link.Pressed += () =>
+                {
+                    if (ModService.CanUpdate && !failed) ModService.Install();
+                    else YuminaAccount.Open(ModService.ReleasesPage);
+                };
+                _updateSlot.AddChild(link);
+                break;
+        }
+    }
+
+    private void OnUpdateChanged() => Callable.From(FillUpdate).CallDeferred();
 
     // ── The slate well: provider card + conversation switches ────────────
 
@@ -233,7 +276,7 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
         var source = SpireTalkConfig.Source;
 
 
-        var sources = Enum.GetValues<ApiSource>().Select(s => new ChoiceDropdown.Choice(Loc.Ui("Source" + s), s.ToString()));
+        var sources = ApiSources.Ordered.Select(s => new ChoiceDropdown.Choice(Loc.Ui("Source" + s), s.ToString()));
         _connection.AddChild(Row(Loc.Ui("SourceLabel"), ChoiceDropdown.Create(FieldWidth, sources, source.ToString(), c =>
         {
             var next = Enum.Parse<ApiSource>(c.Value);
@@ -242,6 +285,15 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
             _config.SaveDebounced(200);
             Callable.From(FillConnection).CallDeferred();
         }, out _)));
+
+        if (source == ApiSource.Yumina)
+        {
+            FillYumina();
+            return;
+        }
+
+        // No key yet: the Yumina line is one click away (sign in, no key to find).
+        if (!MainFile.Backend.IsConfigured) _connection.AddChild(FreeBanner());
 
         if (source == ApiSource.Custom)
         {
@@ -304,6 +356,112 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
 
         // A custom endpoint has nothing to ask until its address is in; Test connection asks later.
         if (ApiSources.ShouldFetch(source)) _ = LoadModels(source);
+    }
+
+    // ── The Yumina line: sign in once in the browser; replies are billed in the account's mushies ──
+
+    private Control FreeBanner()
+    {
+        var b = GameArt.LinkButton("★  " + Loc.Ui("FreeTitle"), GameArt.Gold, 24);
+        b.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
+        b.TooltipText = Loc.Ui("FreeSub");
+        b.Pressed += () =>
+        {
+            SpireTalkConfig.SwitchSource(ApiSource.Yumina);
+            SpireTalkConfig.UseAi = true;
+            _config.SaveDebounced(200);
+            if (!YuminaAccount.Linked) YuminaAccount.StartLogin();
+            Callable.From(FillWell).CallDeferred();
+        };
+        // One line: the custom source's card is already the tallest the sheet holds (the rest is in the tooltip).
+        return b;
+    }
+
+    private void FillYumina()
+    {
+        var me = YuminaAccount.Current;
+        if (!YuminaAccount.Linked)
+        {
+            _connection.AddChild(GameArt.Label(Loc.Ui("YmIntro"), 22, GameArt.Cream));
+            var actions = new HBoxContainer();
+            actions.AddThemeConstantOverride("separation", 20);
+            if (YuminaAccount.PendingUrl is { } url)
+            {
+                var waiting = GameArt.Label(Loc.Ui("YmWaiting"), 22, GameArt.Gold);
+                waiting.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                waiting.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+                actions.AddChild(waiting);
+                actions.AddChild(_config.MakeButton(Loc.Ui("YmReopen"), () => YuminaAccount.Open(url), "#4a7d9d"));
+                actions.AddChild(_config.MakeButton(Loc.Ui("YmCancel"), YuminaAccount.CancelLogin, "#7d6a4a"));
+            }
+            else
+            {
+                var note = GameArt.Label(YuminaAccount.LastError ?? Loc.Ui("YmLineNote"), 21, YuminaAccount.LastError != null ? new Color("f0a0a0") : GameArt.Muted);
+                note.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                note.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+                actions.AddChild(note);
+                var login = _config.MakeButton(Loc.Ui("YmLogin"), YuminaAccount.StartLogin, "#4a9d7a");
+                login.CustomMinimumSize = new Vector2(320f, login.CustomMinimumSize.Y);
+                actions.AddChild(login);
+            }
+            _connection.AddChild(actions);
+            _ownStatus = GameArt.Label("", 21, GameArt.Muted);
+            _ownStatus.Visible = false;
+            _connection.AddChild(_ownStatus);
+            return;
+        }
+
+        // Signed in: who, how many mushies, top up / sign out.
+        var account = new HBoxContainer();
+        account.AddThemeConstantOverride("separation", 18);
+        account.AddChild(GameArt.Icon(GameArt.MushieCoinPath, 34));
+        var who = me == null
+            ? Loc.Ui("YmLoading")
+            : string.Format(Loc.Ui("YmSignedIn"), string.IsNullOrWhiteSpace(me.Name) ? me.Username : me.Name, Math.Floor(me.Balance).ToString("N0"));
+        var whoLabel = GameArt.Label(who, 24, GameArt.Cream, wrap: false);
+        whoLabel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        whoLabel.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        account.AddChild(whoLabel);
+        var topUp = GameArt.LinkButton(Loc.Ui("YmTopUp"), GameArt.Gold, 22);
+        topUp.Pressed += () => YuminaAccount.Open(YuminaAccount.PlansUrl);
+        account.AddChild(topUp);
+        var logout = GameArt.LinkButton(Loc.Ui("YmLogout"), GameArt.Muted, 22);
+        logout.Pressed += YuminaAccount.Logout;
+        account.AddChild(logout);
+        _connection.AddChild(account);
+
+        // The models the account can use, as yumina.io lists them, with what a reply costs.
+        var models = me?.Models.Where(m => m.Available).ToList() ?? new();
+        var current = OpenAiClient.Model;
+        var choices = models.Select(m => new ChoiceDropdown.Choice(
+            m.Name + "  ·  " + (m.AvgCost <= 0 ? Loc.Ui("YmFree") : string.Format(Loc.Ui("YmPerReply"), m.AvgCost < 1 ? m.AvgCost.ToString("0.#") : Math.Round(m.AvgCost).ToString("0"))),
+            m.Id)).ToList();
+        if (choices.Count == 0 && current.Length > 0) choices.Add(new ChoiceDropdown.Choice(current, current));
+        _connection.AddChild(Row(Loc.Ui("OwnModel"), ChoiceDropdown.Create(FieldWidth, choices, current, c =>
+        {
+            SpireTalkConfig.YuminaModel = c.Value == me?.DefaultModel ? "" : c.Value;
+            _config.SaveDebounced(200);
+        }, out _)));
+
+        var bottom = new HBoxContainer();
+        bottom.AddThemeConstantOverride("separation", 24);
+        _ownStatus = GameArt.Label(YuminaAccount.LastError ?? Loc.Ui("YmFoot"), 21, YuminaAccount.LastError != null ? new Color("f0a0a0") : GameArt.Muted);
+        _ownStatus.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        _ownStatus.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        bottom.AddChild(_ownStatus);
+        var test = _config.MakeButton(Loc.Ui("TestBtn"), () => _ = RunOwnKeyTest(), "#4a9d7a");
+        test.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        bottom.AddChild(test);
+        _connection.AddChild(bottom);
+        if (me == null) YuminaAccount.Refresh();
+    }
+
+    /// <summary>The account moved (signed in, balance, an error): redraw the connection card.</summary>
+    private void OnAccountChanged()
+    {
+        if (!IsInsideTree() || _connection == null || !IsInstanceValid(_connection)) return;
+        if (SpireTalkConfig.Source != ApiSource.Yumina) return;
+        Callable.From(FillWell).CallDeferred();
     }
 
     /// <summary>OpenRouter, Ollama and "other" have their own words; the provider presets share one line.</summary>
@@ -444,7 +602,14 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
     {
         var row = new HBoxContainer();
         row.AddThemeConstantOverride("separation", 12);
-        row.Alignment = BoxContainer.AlignmentMode.End;
+        var feedback = GameArt.LinkButton(Loc.Ui("FbLink"), GameArt.Ink, 22);
+        feedback.Pressed += () =>
+        {
+            Close();
+            MemoryScreen.OpenLater(FeedbackScreen.Open);
+        };
+        row.AddChild(feedback);
+        row.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
         row.AddChild(GameArt.Icon(GameArt.MushieCoinPath, 30));
         var thanks = GameArt.Label(Loc.Ui("ThanksYumina"), 21, GameArt.InkSoft, wrap: false);
         thanks.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
@@ -505,10 +670,14 @@ public sealed partial class SpireTalkScreen : Control, IScreenContext
     {
         // The game's own popups block every hotkey while open; do the same.
         try { NHotkeyManager.Instance?.AddBlockingScreen(this); } catch { /* optional */ }
+        YuminaAccount.Changed += OnAccountChanged;
+        ModService.Changed += OnUpdateChanged;
     }
 
     public override void _ExitTree()
     {
+        YuminaAccount.Changed -= OnAccountChanged;
+        ModService.Changed -= OnUpdateChanged;
         try { NHotkeyManager.Instance?.RemoveBlockingScreen(this); } catch { /* optional */ }
     }
 }

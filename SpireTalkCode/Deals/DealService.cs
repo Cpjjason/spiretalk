@@ -155,6 +155,9 @@ public static class DealService
 
     // ── Accepting ────────────────────────────────────────────────────────
 
+    /// <summary>The token relic of the last accepted deal being put on the bar.</summary>
+    public static Task LastRelicGift { get; private set; } = Task.CompletedTask;
+
     public static TalkStore.DealRecord Accept(Offer offer)
     {
         var store = TalkStore.Instance;
@@ -173,7 +176,7 @@ public static class DealService
         store.AddDeal(deal);
         store.Get(offer.Npc).LastDealType = offer.Key;
         store.Save();
-        _ = Tokens.TokenService.GiveDealAsync(Merchant.MerchantTalk.ResolveLocalPlayer(), offer.Npc);
+        LastRelicGift = Tokens.TokenService.GiveDealAsync(Merchant.MerchantTalk.ResolveLocalPlayer(), offer.Npc);
         if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Deal] accepted {deal.Npc} {deal.Type} param={deal.Param} target={deal.TargetAct}", 1);
         return deal;
     }
