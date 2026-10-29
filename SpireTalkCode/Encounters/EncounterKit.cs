@@ -12,36 +12,19 @@ using SpireTalk.Store;
 namespace SpireTalk.Encounters;
 
 /// <summary>
-/// Which picture an encounter shows. Every scene has two: one in the game's own style and one
-/// matching the waifu mods (AncientWaifus for the Ancients, Merchant2CuteII for the Merchant),
-/// chosen by whether the player has that mod loaded. Missing pictures fall back to the other
-/// style, then to a vanilla event painting, so the event never shows an empty frame.
+/// Which picture an encounter shows: the mod's own painting in the game's style, else a vanilla
+/// event painting, so the event never shows an empty frame. Only art in the game's own style ships
+/// (0.6.0 dropped the versions drawn after other mods' character skins).
 /// </summary>
 public static class EncounterArt
 {
     private const string Folder = "res://SpireTalk/images/encounters/";
 
-    public static bool AncientWaifus => Loaded("AncientWaifus");
-    public static bool MerchantWaifu => Loaded("Merchant2CuteII");
-
-    private static readonly Dictionary<string, bool> LoadedCache = new();
-
-    private static bool Loaded(string assembly)
+    /// <summary>res:// path of <paramref name="scene"/>'s painting, or the vanilla fallback.</summary>
+    public static string For(string scene, string vanillaFallback)
     {
-        if (LoadedCache.TryGetValue(assembly, out var hit)) return hit;
-        var found = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == assembly);
-        LoadedCache[assembly] = found;
-        return found;
-    }
-
-    /// <summary>res:// path of <paramref name="scene"/> in the style the player's mods call for.</summary>
-    public static string For(string scene, bool waifu, string vanillaFallback)
-    {
-        var preferred = Folder + scene + (waifu ? "_waifu.png" : "_vanilla.png");
-        if (ResourceLoader.Exists(preferred)) return preferred;
-        var other = Folder + scene + (waifu ? "_vanilla.png" : "_waifu.png");
-        if (!waifu && ResourceLoader.Exists(other)) return vanillaFallback; // never show waifu art to a vanilla player
-        return ResourceLoader.Exists(other) ? other : vanillaFallback;
+        var path = Folder + scene + "_vanilla.png";
+        return ResourceLoader.Exists(path) ? path : vanillaFallback;
     }
 }
 

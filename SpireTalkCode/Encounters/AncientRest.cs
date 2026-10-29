@@ -33,7 +33,6 @@ public sealed class AncientRest : EncounterEvent
 
     protected override string Key => "SPIRETALK-ANCIENT_REST";
     protected override string Scene => "ancient_rest_" + (Npc?.Key.ToLowerInvariant() ?? "unknown");
-    protected override bool Waifu => EncounterArt.AncientWaifus;
     protected override string FallbackPortrait => ImageHelper.GetImagePath("events/wellspring.png");
 
     protected override NpcDefinition? NpcFor(Player? player)

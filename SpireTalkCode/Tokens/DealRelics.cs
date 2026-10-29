@@ -35,9 +35,9 @@ public abstract class DealRelic : CustomRelicModel
     private string IconName => "deal_" + NpcKey.ToLowerInvariant();
     private bool IsMerchant => NpcKey == "MERCHANT";
 
-    public override string PackedIconPath => RelicArt.Icon(IconName, IsMerchant) ?? base.PackedIconPath;
-    protected override string PackedIconOutlinePath => RelicArt.Outline(IconName, IsMerchant) ?? base.PackedIconOutlinePath;
-    protected override string BigIconPath => RelicArt.Big(IconName, IsMerchant) ?? base.BigIconPath;
+    public override string PackedIconPath => RelicArt.Icon(IconName) ?? base.PackedIconPath;
+    protected override string PackedIconOutlinePath => RelicArt.Outline(IconName) ?? base.PackedIconOutlinePath;
+    protected override string BigIconPath => RelicArt.Big(IconName) ?? base.BigIconPath;
 
     public override RelicRarity Rarity => RelicRarity.Event;
     public override bool IsAllowedInShops => false;

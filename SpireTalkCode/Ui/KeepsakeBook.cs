@@ -112,7 +112,7 @@ public sealed partial class KeepsakeBook : Control, IScreenContext
         row.AddThemeConstantOverride("separation", 16);
         card.AddChild(row);
 
-        var icon = Tokens.RelicArt.Big($"keepsake_{npc.Key.ToLowerInvariant()}_{Math.Max(1, best)}", merchant);
+        var icon = Tokens.RelicArt.Big($"keepsake_{npc.Key.ToLowerInvariant()}_{Math.Max(1, best)}");
         var pic = GameArt.Icon(icon ?? GameArt.MushieSitPath, Portrait);
         if (best == 0) pic.SelfModulate = new Color(0.05f, 0.05f, 0.07f, 0.9f);
         pic.SizeFlagsVertical = SizeFlags.ShrinkCenter;

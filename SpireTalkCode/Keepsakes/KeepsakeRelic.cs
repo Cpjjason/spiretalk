@@ -42,9 +42,9 @@ public abstract class KeepsakeRelic : CustomRelicModel
     private string IconName => $"keepsake_{NpcKey.ToLowerInvariant()}_{Level}";
     private bool IsMerchant => NpcKey == "MERCHANT";
 
-    public override string PackedIconPath => Tokens.RelicArt.Icon(IconName, IsMerchant) ?? base.PackedIconPath;
-    protected override string PackedIconOutlinePath => Tokens.RelicArt.Outline(IconName, IsMerchant) ?? base.PackedIconOutlinePath;
-    protected override string BigIconPath => Tokens.RelicArt.Big(IconName, IsMerchant) ?? base.BigIconPath;
+    public override string PackedIconPath => Tokens.RelicArt.Icon(IconName) ?? base.PackedIconPath;
+    protected override string PackedIconOutlinePath => Tokens.RelicArt.Outline(IconName) ?? base.PackedIconOutlinePath;
+    protected override string BigIconPath => Tokens.RelicArt.Big(IconName) ?? base.BigIconPath;
 
     public override RelicRarity Rarity => RelicRarity.Event;
 

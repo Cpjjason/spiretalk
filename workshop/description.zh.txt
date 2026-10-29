@@ -1,42 +1,5 @@
-[img]https://yumina.io/cdn/150c040f-b38e-4906-88f4-57c3e174a9bd[/img]
+让八位先民和商人可以对话。先民事件里多一个「交谈」选项，商店右上角多一个「聊聊」按钮。每次见面说三句，说的话会改变好感；聊过会得到会成长的信物；先民会提约定；角色记得之前几局聊过的内容；每局最多两次路上新事件；一局结束时好感最高的那位会说几句。
 
-让八位先民和商人可以对话。先民事件里多一个「交谈」选项，商店右上角多一个「聊聊」按钮。
+最省事：第一次打开选「用 Yumina 账号」，浏览器里登录一次就能聊，每个账号每月有免费额度，不用自己找 API 密钥。也可以填自己的密钥（DeepSeek、智谱、通义、OpenRouter、本机 Ollama 等），或者不用 AI，说写好的台词。
 
-[img]https://yumina.io/cdn/6ce1de99-3f58-4315-a1a0-30dc8ec3bd4b[/img]
-每次见面能说三句，说的话会改变好感（敌意 / 陌生 / 友好 / 亲近 / 挚爱）。
-
-聊过一次会得到这位角色的信物，是一件遗物，好感升档时当场升级，挚爱时变成誓约信物。设置里有信物图鉴。
-
-先民有时会提一个约定，比如活着走到第二章、这一章不喝药水。答应后变成遗物栏里的遗物，守住了给好感和 50 金币。
-
-角色记得之前几局聊过的内容，可以在设置的「角色记忆」里查看和修改。
-
-每局最多遇到两次新事件：翻倒的货车、路边的先民。
-
-好感高的先民可能把自己的遗物放到商店里卖。
-
-一局结束时，好感最高的那位会在结算页说几句。
-
-[img]https://yumina.io/cdn/a0a89ddf-4841-416a-84e7-bff6be1754c9[/img]
-不需要 API 密钥也能玩。不填密钥时角色说预先写好的台词，从三个回复里选，其他功能不变。
-
-填了密钥后台词由 AI 生成，会结合这一局的血量、卡组、遗物，也可以自己打字。支持 OpenRouter、OpenAI、Anthropic、Gemini、DeepSeek、智谱、硅基流动、阿里云百炼、本地 Ollama 等。
-
-免费的选择：国内可以用智谱的 glm-4.7-flash，国外可以用 Google AI Studio。第一次进游戏会有引导。
-
-两种模式可以在设置最上面的「对话方式」里随时切换。
-
-[img]https://yumina.io/cdn/1b6b58e2-1654-4b97-8949-ed86aa1e47a8[/img]
-需要 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url]。
-只支持单人模式。跟随游戏语言，游戏支持的 16 种语言全部覆盖：界面、遗物、事件、写好的台词，以及填了 API 密钥后角色说的话。
-正式版（v0.107）和测试版 public-beta（v0.111）都能用，订阅同一个就行，不用分版本。
-默认原版画风，装了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] 和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] 会自动换成对应画风。
-兼容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]，装了会直接用它的好感度。
-偶遇插画和信物图标是生成图。
-
-遇到 bug 请在讨论区反馈。
-
-[img]https://yumina.io/cdn/0ae8fc17-4ccf-4766-9efa-f9f762e0916b[/img]
-感谢 Yumina 开源。
-开源地址：[url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
-原网站：[url=https://yumina.io]yumina.io[/url]
+需要 BaseLib。只支持单人。跟随游戏语言，16 种语言全部覆盖。模组里的美术都是游戏原版画风。设置页有「反馈」，可以直接写给我们。

@@ -24,9 +24,9 @@ public abstract class MerchantToken : CustomRelicModel
     protected abstract string BorrowedIcon { get; }
 
     protected override string IconBaseName => BorrowedIcon;
-    public override string PackedIconPath => RelicArt.Icon(IconName, merchant: true) ?? base.PackedIconPath;
-    protected override string PackedIconOutlinePath => RelicArt.Outline(IconName, merchant: true) ?? base.PackedIconOutlinePath;
-    protected override string BigIconPath => RelicArt.Big(IconName, merchant: true) ?? base.BigIconPath;
+    public override string PackedIconPath => RelicArt.Icon(IconName) ?? base.PackedIconPath;
+    protected override string PackedIconOutlinePath => RelicArt.Outline(IconName) ?? base.PackedIconOutlinePath;
+    protected override string BigIconPath => RelicArt.Big(IconName) ?? base.BigIconPath;
 
     public override RelicRarity Rarity => RelicRarity.Event;
     public override bool IsAllowedInShops => false;

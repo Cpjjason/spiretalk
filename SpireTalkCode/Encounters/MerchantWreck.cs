@@ -31,7 +31,6 @@ public sealed class MerchantWreck : EncounterEvent
 
     protected override string Key => "SPIRETALK-MERCHANT_WRECK";
     protected override string Scene => "merchant_wreck";
-    protected override bool Waifu => EncounterArt.MerchantWaifu;
     protected override string FallbackPortrait => ImageHelper.GetImagePath("events/potion_courier.png");
     protected override NpcDefinition? NpcFor(Player? player) => NpcCatalog.Get("MERCHANT");
 

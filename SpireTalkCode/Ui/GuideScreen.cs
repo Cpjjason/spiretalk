@@ -424,7 +424,7 @@ public sealed partial class GuideScreen : Control, IScreenContext
         };
         var path = name.Length == 0
             ? (key == "keyentry" ? GameArt.MushieCoinPath : GameArt.MushieSitPath)
-            : Tokens.RelicArt.Icon(name, merchant: name.StartsWith("merchant")) ?? GameArt.MushieSitPath;
+            : Tokens.RelicArt.Icon(name) ?? GameArt.MushieSitPath;
         return new TextureRect
         {
             Texture = GameArt.Tex(path),
