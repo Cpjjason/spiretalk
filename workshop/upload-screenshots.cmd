@@ -13,7 +13,7 @@ dotnet build "%HERE%..\tools\WorkshopPreviews" -c Release -nologo -v q
 if not exist "%TOOL%" goto nobuild
 
 :run
-"%TOOL%" 3806015083 "%SHOTS%" --replace --note "screenshots"
+"%TOOL%" 3829839816 "%SHOTS%" --replace --note "screenshots"
 echo.
 pause
 exit /b 0

@@ -18,7 +18,7 @@ Ancients who like you may put one of their own relics up for sale in the shop.
 When a run ends, the character with the highest affection says a few words on the results screen.
 
 [img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b2.jpg[/img]
-Easiest: sign in with a Yumina account. The first launch asks how the characters should talk; pick "Use a Yumina account", sign in once in your browser and press Allow. Every account gets a free monthly allowance, no API key to find.
+Easiest: sign in with a Yumina account. The first launch asks how the characters should talk; pick 'Use a Yumina account', sign in once in your browser and press Allow. Every account gets a free monthly allowance, no API key to find.
 
 Your own key works too: OpenRouter, OpenAI, Anthropic, Gemini, DeepSeek, Zhipu, SiliconFlow, Alibaba Bailian, local Ollama and more. AI lines take your current run (HP, deck, relics) into account, and you can type your own.
 

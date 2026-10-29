@@ -78,7 +78,7 @@ def discussions(item):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--id", default="3806015083")
+    ap.add_argument("--id", default="3829839816")
     ap.add_argument("--creator", default="76561199129165177")
     ap.add_argument("--every", type=int, default=300)
     ap.add_argument("--once", action="store_true")
