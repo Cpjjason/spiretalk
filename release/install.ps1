@@ -4,6 +4,8 @@
 param([string]$Src = (Split-Path -Parent $MyInvocation.MyCommand.Path))
 
 $ErrorActionPreference = 'Stop'
+# Chinese prints right whatever the system code page is (the .bat launcher stays pure ASCII).
+try { [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch {}
 function Say([string]$zh, [string]$en) { Write-Host $zh; Write-Host "  $en" -ForegroundColor DarkGray }
 
 $exeName = 'SlayTheSpire2.exe'

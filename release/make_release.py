@@ -38,6 +38,11 @@ base_files = ["BaseLib.dll", "BaseLib.json", "BaseLib.pck", "LICENSE"]
 missing = [f for f in base_files if not os.path.exists(os.path.join(args.baselib, f))]
 assert not missing, f"missing in {args.baselib}: {missing}"
 
+# cmd misreads a UTF-8 batch file (10/29: Jianghu Yehua's installer stopped working), so the
+# launcher must stay pure ASCII with CRLF line ends.
+bat = open(os.path.join(HERE, "点我安装.bat"), "rb").read()
+assert all(c < 128 for c in bat) and bat.count(b"\n") == bat.count(b"\r\n"), "点我安装.bat must be ASCII + CRLF"
+
 out_dir = os.path.join(HERE, "out")
 os.makedirs(out_dir, exist_ok=True)
 name = f"SpireTalk-{ver}.zip"
