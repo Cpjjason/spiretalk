@@ -60,9 +60,15 @@ public static class YuminaAccount
     public static string Origin => (string.IsNullOrWhiteSpace(SpireTalkConfig.YuminaSite) ? "https://yumina.io" : SpireTalkConfig.YuminaSite).Trim().TrimEnd('/');
     public static string ApiBase => Origin + "/api/ai/v1";
     private static string AuthBase => Origin + "/api/auth/oauth2";
-    public static string SiteUrl => Current?.SiteUrl ?? Origin + "/?utm_source=mod&utm_medium=slay-the-spire-2&utm_campaign=spiretalk";
+    public static string SiteUrl => OnSite(Current?.SiteUrl) ?? Origin + "/?utm_source=mod&utm_medium=slay-the-spire-2&utm_campaign=spiretalk";
     // Top-up opens the subscription plans (a plan refills every month); packs are a tab away.
-    public static string PlansUrl => Current?.PlansUrl ?? Origin + "/app/plans?tab=subscription";
+    public static string PlansUrl => OnSite(Current?.PlansUrl) ?? Origin + "/app/plans?tab=subscription";
+
+    /// <summary>A link the account sent, kept only when it is http(s) on the Yumina site itself.</summary>
+    private static string? OnSite(string? url) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var u) && Uri.TryCreate(Origin, UriKind.Absolute, out var o)
+        && (u.Scheme == Uri.UriSchemeHttps || u.Scheme == Uri.UriSchemeHttp)
+        && string.Equals(u.Host, o.Host, StringComparison.OrdinalIgnoreCase) ? url : null;
 
     /// <summary>Raised whenever the account's state moves (signed in/out, balance, models, errors).</summary>
     public static event Action? Changed;
@@ -84,6 +90,8 @@ public static class YuminaAccount
 #if SPIRETALK_DEV
         if (Dev.TestBridge.ShouldInstall) { MainFile.Logger.Info("[Yumina] open (dev, not opened): " + url, 1); return; }
 #endif
+        // Only web pages: ShellOpen would also run a file path or any registered protocol.
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var u) || (u.Scheme != Uri.UriSchemeHttps && u.Scheme != Uri.UriSchemeHttp)) return;
         try { OS.ShellOpen(url); } catch { /* best effort */ }
     }
 

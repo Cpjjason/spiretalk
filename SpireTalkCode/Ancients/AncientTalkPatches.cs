@@ -8,8 +8,9 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 namespace SpireTalk.Ancients;
 
 /// <summary>
-/// Appends the "Talk" option to every Ancient's initial option page (single player only — a
-/// shared multiplayer event can't wait on one player's private conversation).
+/// Appends the "Talk" option to every Ancient's initial option page. In co-op every peer holds a
+/// copy of every player's Ancient event and each copy gets the option too, always last, so the
+/// vanilla options keep the same indexes everywhere (the game syncs relic picks by index).
 /// </summary>
 [HarmonyPatch(typeof(AncientEventModel), "GenerateInitialOptionsWrapper")]
 internal static class AncientInitialOptionsPatch
@@ -25,7 +26,7 @@ internal static class AncientInitialOptionsPatch
         {
             if (!SpireTalkConfig.EnableAncients) return;
             var owner = __instance.Owner;
-            if (owner == null || owner.RunState.Players.Count > 1) return;
+            if (owner == null) return;
             if (__result.Count == 0) return;
             // Only the PROCEED page (ancient blocked by Wax Choker etc.) has a single proceed option.
             if (__result.Count == 1 && __result[0].IsProceed) return;

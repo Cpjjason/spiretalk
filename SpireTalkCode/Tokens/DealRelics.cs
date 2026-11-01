@@ -58,6 +58,8 @@ public abstract class DealRelic : CustomRelicModel
         {
             try
             {
+                // Co-op: a teammate's token; their deal is on their machine, not in this store.
+                if (Coop.Party.IsCoop(Owner) && !Coop.Party.IsLocal(Owner)) return null;
                 var run = RewardExecutor.RunKey(Owner);
                 return TalkStore.Instance.Deals.LastOrDefault(d => d.Npc == NpcKey && d.Run == run && (d.Status == "pending" || d.Status == "broken"));
             }

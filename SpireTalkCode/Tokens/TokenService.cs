@@ -107,9 +107,7 @@ public static class TokenService
     {
         try
         {
-            var relic = ModelDb.GetById<RelicModel>(ModelDb.GetId(type)).ToMutable();
-            relic.Owner = player;
-            await RelicCmd.Obtain(relic, player);
+            await Coop.Sync.RunAsync(player, new Coop.Effect("relic", 0, ModelDb.GetId(type)));
         }
         catch (Exception ex)
         {
@@ -121,7 +119,8 @@ public static class TokenService
     {
         try
         {
-            await RelicCmd.Remove(relic);
+            if (relic.Owner is { } owner) await Coop.Sync.RunAsync(owner, new Coop.Effect("relic_remove", 0, relic.Id));
+            else await RelicCmd.Remove(relic);
         }
         catch (Exception ex)
         {

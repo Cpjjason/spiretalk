@@ -69,5 +69,15 @@
   "SPIRETALK.dealRelic.broken": "\n[red]파기됨.[/red]",
   "SPIRETALK.dealRelic.spent": "\n지금까지 사용: {0}/{1} 골드.",
   "SPIRETALK.keepsakeVow": "{0}이(가) 맹세가 되었습니다",
-  "SPIRETALK.vakuuBlood": ". 체력을 [red]{0}[/red] 잃습니다"
+  "SPIRETALK.vakuuBlood": ". 체력을 [red]{0}[/red] 잃습니다",
+  "SPIRETALK.rewardGoldTeammate": "{0}이(가) {1}에게 {2} 골드를 주었다",
+  "SPIRETALK.rewardHealTeammate": "{0}이(가) {1}의 상처를 치료했다 (+{2} HP)",
+  "SPIRETALK.rewardPotionTeammate": "{0}이(가) {1}에게 {2}을(를) 주었다",
+  "SPIRETALK.coopGiftGold": "{2}의 부탁으로 {0}이(가) {1} 골드를 주었다",
+  "SPIRETALK.coopGiftHeal": "{2}의 부탁으로 {0}이(가) 상처를 치료해 주었다 (+{1} HP)",
+  "SPIRETALK.coopGiftPotion": "{1}의 부탁으로 {0}이(가) 포션을 주었다",
+  "SPIRETALK.coopNudgeUp": "{1}이(가) 당신 이야기를 해서 {0}의 호감도가 올랐다",
+  "SPIRETALK.coopNudgeDown": "{1}이(가) 당신 이야기를 해서 {0}의 호감도가 떨어졌다",
+  "SPIRETALK.coopNudgedUp": "{0}의 {1}에 대한 호감도가 올랐다",
+  "SPIRETALK.coopNudgedDown": "{0}의 {1}에 대한 호감도가 떨어졌다"
 }

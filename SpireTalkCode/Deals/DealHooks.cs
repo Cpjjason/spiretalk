@@ -35,7 +35,7 @@ internal static class DealHooks
     private static void AfterCombatVictory(IRunState runState, CombatRoom room) => Guard("victory", () => DealService.OnCombatVictory(runState, room));
 
     [HarmonyPostfix, HarmonyPatch(typeof(Hook), nameof(Hook.AfterPotionUsed))]
-    private static void AfterPotionUsed(IRunState runState) => Guard("potion", () => DealService.OnPotionUsed(runState));
+    private static void AfterPotionUsed(IRunState runState, PotionModel potion) => Guard("potion", () => DealService.OnPotionUsed(runState, potion?.Owner));
 
     [HarmonyPostfix, HarmonyPatch(typeof(Hook), nameof(Hook.BeforeCardRemoved))]
     private static void BeforeCardRemoved(IRunState runState, CardModel card) => Guard("remove", () => DealService.OnCardRemoved(runState, card));

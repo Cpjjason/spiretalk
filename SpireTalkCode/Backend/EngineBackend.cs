@@ -73,6 +73,7 @@ public sealed class EngineBackend : INpcBackend
         vars["affection_delta"] = 0;
         vars["action"] = new JsonObject { ["type"] = "none", ["amount"] = 0 };
         vars["choices"] = new JsonArray();
+        vars["teammate"] = new JsonObject { ["name"] = "", ["delta"] = 0 };
         stateJson = runtime.ApplyVariables(card.Json, stateJson!, vars);
 
         // Read fresh every line: memory notes for earlier visits, this visit word for word.
@@ -125,7 +126,21 @@ public sealed class EngineBackend : INpcBackend
                 if (av.TryGetValue<int>(out var i)) amount = i;
                 else if (av.TryGetValue<double>(out var d)) amount = (int)Math.Round(d);
             }
-            action = new NpcAction(type.Trim().ToLowerInvariant(), amount);
+            var target = ao["target"] is JsonValue tv && tv.TryGetValue<string>(out var ts) && !string.IsNullOrWhiteSpace(ts) ? ts.Trim() : null;
+            action = new NpcAction(type.Trim().ToLowerInvariant(), amount) { Target = target };
+        }
+
+        // Co-op: how this line changed the NPC's mind about a teammate.
+        (string, int)? teammate = null;
+        if (vars["teammate"] is JsonObject tmo && tmo["name"] is JsonValue nv && nv.TryGetValue<string>(out var tName) && !string.IsNullOrWhiteSpace(tName))
+        {
+            var td = 0;
+            if (tmo["delta"] is JsonValue tdv)
+            {
+                if (tdv.TryGetValue<int>(out var i)) td = i;
+                else if (tdv.TryGetValue<double>(out var d)) td = (int)Math.Round(d);
+            }
+            if (td != 0) teammate = (tName.Trim(), td);
         }
 
         var choices = new List<string>();
@@ -143,7 +158,12 @@ public sealed class EngineBackend : INpcBackend
         var text = LooseFields.Extract(raw, result.CleanText, ref choices, ref delta, ref action);
         var lines = RepeatFilter.Apply(Ancients.AncientConversation.SplitIntoLines(text), saidBefore).Select(l => TidyDots(l, npcKey)).Where(l => l.Length > 0).ToList();
         choices = choices.Select(PlainChoice).Where(c => c.Length > 0).ToList();
-        return new NpcTurn(lines, choices, delta, null, action, OpenAiClient.Model);
+        // LooseFields may rebuild the action from loose text; keep the target the directive named.
+        if (action.Target == null && vars["action"] is JsonObject ao2 && ao2["target"] is JsonValue tv2 && tv2.TryGetValue<string>(out var t2) && !string.IsNullOrWhiteSpace(t2))
+        {
+            action = action with { Target = t2.Trim() };
+        }
+        return new NpcTurn(lines, choices, delta, null, action, OpenAiClient.Model) { Teammate = teammate };
     }
 
     private static readonly System.Text.RegularExpressions.Regex DotRun = new(@"\.{4,}|…{2,}|(?:\.\s*){4,}");

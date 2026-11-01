@@ -69,5 +69,15 @@
   "SPIRETALK.dealRelic.broken": "\n[red]已毁约。[/red]",
   "SPIRETALK.dealRelic.spent": "\n已花 {0}/{1} 金币。",
   "SPIRETALK.keepsakeVow": "{0}成为誓约信物",
-  "SPIRETALK.vakuuBlood": "，并失去[red]{0}[/red]点生命"
+  "SPIRETALK.vakuuBlood": "，并失去[red]{0}[/red]点生命",
+  "SPIRETALK.rewardGoldTeammate": "{0}给了{1} {2} 金币",
+  "SPIRETALK.rewardHealTeammate": "{0}治愈了{1}（+{2} 生命）",
+  "SPIRETALK.rewardPotionTeammate": "{0}给了{1} {2}",
+  "SPIRETALK.coopGiftGold": "{0}给了你 {1} 金币，是{2}替你求来的",
+  "SPIRETALK.coopGiftHeal": "{0}治愈了你（+{1} 生命），是{2}替你求来的",
+  "SPIRETALK.coopGiftPotion": "{0}给了你一瓶药水，是{1}替你求来的",
+  "SPIRETALK.coopNudgeUp": "{1}跟{0}说了你的事，{0}对你更有好感了",
+  "SPIRETALK.coopNudgeDown": "{1}跟{0}说了你的事，{0}对你的好感下降了",
+  "SPIRETALK.coopNudgedUp": "{0}对{1}更有好感了",
+  "SPIRETALK.coopNudgedDown": "{0}对{1}的好感下降了"
 }

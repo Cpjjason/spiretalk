@@ -39,6 +39,10 @@ function contextVariables(npc) {
     { id: "floor_total", name: "Floor", type: "number", defaultValue: 1, aiAccess: "read", behaviorRules: "Floor within the whole climb." },
     { id: "ascension", name: "Ascension", type: "number", defaultValue: 0, aiAccess: "read", behaviorRules: "Difficulty level chosen for this run. 0 is normal; 20 is the hardest." },
     { id: "players", name: "Players", type: "number", defaultValue: 1, aiAccess: "read", behaviorRules: "How many climbers are in the run (1 = solo)." },
+    { id: "party", name: "Party", type: "string", defaultValue: "solo", aiAccess: "read",
+      behaviorRules: "'solo', or the climber's teammates in this co-op run: name, character, HP, gold, and how you feel about each of them. Follow the PARTY rules." },
+    { id: "party_talk", name: "Teammates' talk with you", type: "string", defaultValue: "none", aiAccess: "read",
+      behaviorRules: "What the climber's teammates said to you in this room, and what you answered them, word for word. 'none' if nobody has. Follow the PARTY rules." },
     { id: "relics", name: "Relics", type: "string", defaultValue: "none", aiAccess: "read", behaviorRules: "Relics they carry. Mention one only when it is genuinely interesting to you." },
     { id: "relic_count", name: "Relic count", type: "number", defaultValue: 0, aiAccess: "read", behaviorRules: "How many relics." },
     { id: "deck", name: "Deck", type: "string", defaultValue: "Strike x5, Defend x4, Bash", aiAccess: "read", behaviorRules: "Card names in their deck (most common first)." },
@@ -80,6 +84,8 @@ function contextVariables(npc) {
       behaviorRules: "Set at the END of every reply: an integer from -3 to 3 judging the climber's last line by your 'what moves you' list. 0 is normal; ±3 is rare. Always set it (0 counts)." },
     { id: "choices", name: "Choices", type: "json", defaultValue: [], aiAccess: "write",
       behaviorRules: "At the END of every reply set this to exactly 3 short things the climber could say next, in the climber's first-person voice, in the reply language, each ≤ 40 characters, no numbering. These are the CLIMBER's words, not yours: plain, whole, natural sentences as a person would say them, never in your speech style (no ellipsis fragments, no shouting, no pet names) and never one of your own lines. Make them genuinely different in tone, and make at least one about THIS moment: the climber's HP, gold, character, a relic or card they carry, the act they are in, or something you just said. Avoid stock filler that fits any conversation (\"Let's go\", \"Tell me more\", \"Stop talking\", \"就这样吧\", \"少说废话\", \"然后呢\"). When lines_left is 0 set a single farewell instead. Never leave it empty." },
+    { id: "teammate", name: "Teammate", type: "json", defaultValue: { name: "", delta: 0 }, aiAccess: "write",
+      behaviorRules: "Co-op only. When the climber's last line was about a teammate (praise, pleading for them, gossip, betrayal) and it changed how you feel about THAT teammate, set {\"name\": \"<teammate name>\", \"delta\": -3..3}. Otherwise leave name empty. Follow the PARTY rules." },
     { id: "action", name: "Action", type: "json", defaultValue: { type: "none", amount: 0 }, aiAccess: "write",
       behaviorRules: "Set at the END of every reply: {\"type\": \"none\"} normally, or {\"type\": \"<one of allowed_actions>\", \"amount\": 0} when you decide to grant that reward this visit. The game validates and applies it; you only narrate." },
   ];
@@ -95,6 +101,17 @@ Then END the reply with exactly these three directive lines, in this form and no
 [choices: set ["first thing to say", "second thing to say", "third thing to say"]]
 [action: set {"type": "none", "amount": 0}]
 Replace the values (an integer -3..3; three strings in the reply language; a type from allowed_actions or "none"). Keep the brackets, the colon, the word set, and the JSON exactly as shown.`;
+
+// Only in co-op runs (players > 1). The fun of it: a group of friends at one Ancient, all of them
+// able to read what you say to each of them. Favourites, jealousy, gossip, pleading for a friend.
+const PARTY = `PARTY (this run is co-op)
+- The climber in front of you came with teammates (see party). They are standing right there: everything you say to this climber, the whole party sees, and you know it. Each of them can come and talk to you too; what they said to you here is in party_talk.
+- You have your own feelings about each of them (affection in party). Let it show. You may compare them openly, have a favourite, tease the one you like less, be jealous, protective or petty. Name them by their name or their character.
+- If a teammate already talked to you in this room, react to it: agree, contradict, mock, bring up what they said. Never pretend it did not happen.
+- If the climber talks about a teammate (praises them, begs you to help them, tells tales about them, betrays them), decide whether you believe it and what it does to how you feel about that TEAMMATE. Write it in the teammate directive. Flattery about a friend is not proof; gossip may backfire on the gossiper (judge that through your own affection_delta).
+- Gold, heal or potion rewards can go to a teammate instead, when the climber asked for it or the moment clearly calls for it (a dying friend). Then the action MUST name them, e.g. [action: set {"type": "gold", "amount": 0, "target": "<teammate name>"}]. Without "target" the reward lands on the climber in front of you, whatever your words said. Never invent extra rewards; it is still one reward per visit.
+- End the reply with one more directive line when (and only when) a teammate's standing changed:
+[teammate: set {"name": "<teammate name>", "delta": -2}]`;
 
 const CLIMBER_NAMES = {
   IRONCLAD: ["The Ironclad", "铁甲战士"],
@@ -177,6 +194,8 @@ function entriesFor(npc) {
     { id: "sts2-deal-rules", name: "Deals", content: catalog.deal_rules.trim(), role: "system", position: 3, ...base },
     { id: "sts2-keepsake-rules", name: "Keepsake", content: catalog.keepsake_rules.trim(), role: "system", position: 4, ...base },
     { id: "sts2-output", name: "Output", content: OUTPUT, role: "system", position: 5, ...base },
+    { id: "sts2-party-rules", name: "Party (co-op)", content: PARTY, role: "system", position: 5, ...base, alwaysSend: false,
+      conditions: [{ variableId: "players", operator: "gt", value: 1 }] },
     { id: `sts2-${k}-greeting`, name: "Greeting", content: npc.greeting, role: "greeting", position: 6, ...base, alwaysSend: false },
   ];
 }

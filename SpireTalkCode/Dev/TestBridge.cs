@@ -23,8 +23,22 @@ namespace SpireTalk.Dev;
 /// </summary>
 public sealed partial class TestBridge : Node
 {
+    // Two local co-op test instances (`--force-steam off --clientId N`) each get their own folder:
+    // spiretalk-bridge-host / spiretalk-bridge-<N>. A normal Steam launch keeps the plain one.
     private static readonly string Dir = Path.Combine(
-        System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "SlayTheSpire2", "spiretalk-bridge");
+        System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "SlayTheSpire2", "spiretalk-bridge" + InstanceSuffix());
+
+    private static string InstanceSuffix()
+    {
+        var args = OS.GetCmdlineArgs();
+        for (var i = 0; i < args.Length; i++)
+        {
+            var a = args[i];
+            if (a.StartsWith("--clientId=")) return "-" + a.Substring("--clientId=".Length);
+            if (a == "--clientId" && i + 1 < args.Length) return "-" + args[i + 1];
+        }
+        return args.Contains("--fastmp") ? "-host" : "";
+    }
     private static readonly string CmdPath = Path.Combine(Dir, "cmd.json");
     private static readonly string ResPath = Path.Combine(Dir, "res.json");
 
@@ -143,6 +157,20 @@ public sealed partial class TestBridge : Node
                 Activate(target);
                 break;
             }
+            case "usepotion":
+            {
+                // The local climber drinks their first potion through the game's own (synced) path.
+                var me = Merchant.MerchantTalk.ResolveLocalPlayer();
+                var potion = me?.Potions.FirstOrDefault();
+                if (potion == null) { WriteResult(false, "no potion"); break; }
+                potion.EnqueueManualUse(null);
+                WriteResult(true, "used " + potion.Id.Entry);
+                break;
+            }
+            case "closemap":
+                MegaCrit.Sts2.Core.Nodes.Screens.Map.NMapScreen.Instance?.Close(false);
+                WriteResult(true, "map closed");
+                break;
             case "key":
                 PressKey(cmd["key"]?.GetValue<string>() ?? "Enter");
                 break;

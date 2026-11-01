@@ -47,7 +47,10 @@ internal static class AncientRelicShelf
 
     private static void Stock(Player player, MerchantInventory inventory)
     {
-        if (player.RunState.Players.Count > 1) return;
+        // Co-op: every peer builds every climber's shelf; only the owner knows their Ancients, so only
+        // their machine stocks it. The game sends what was bought, not the shelf, so that is enough.
+        var coop = Coop.Party.IsCoop(player);
+        if (coop && !Coop.Party.IsLocal(player)) return;
         if (RelicEntriesField?.GetValue(inventory) is not List<MerchantRelicEntry> entries || entries.Count < 3) return;
 
         var runKey = RewardExecutor.RunKey(player);
@@ -81,7 +84,8 @@ internal static class AncientRelicShelf
         if (relic == null) return;
 
         var entry = new MerchantRelicEntry(relic, player);
-        var price = (int)Math.Round(BasePrice * player.PlayerRng.Shops.NextFloat(0.9f, 1.15f));
+        // Co-op must not touch the climber's shop Rng: it is part of the state every peer checks.
+        var price = (int)Math.Round(BasePrice * (coop ? (float)(0.9 + Random.Shared.NextDouble() * 0.25) : player.PlayerRng.Shops.NextFloat(0.9f, 1.15f)));
         CostField?.SetValue(entry, price);
         entries[2] = entry;
 

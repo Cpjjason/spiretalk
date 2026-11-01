@@ -67,10 +67,17 @@ public static class RewardExecutor
         };
     }
 
-    /// <summary>Apply everything except reroll_relics / discount, which the callers own.</summary>
-    public static async Task<Outcome> ApplyAsync(NpcAction action, Player player, string npcKey, string npcName, string runKey, object? ancientEvent = null, int affection = 0)
+    /// <summary>
+    /// Apply everything except reroll_relics / discount, which the callers own. In co-op the NPC
+    /// may hand the reward to a teammate instead (<paramref name="target"/>); random picks are made
+    /// here, on the speaker's machine, and the result goes through <see cref="Coop.Sync"/>.
+    /// </summary>
+    public static async Task<Outcome> ApplyAsync(NpcAction action, Player player, string npcKey, string npcName, string runKey, object? ancientEvent = null, int affection = 0, Player? target = null)
     {
         var run = TalkStore.Instance.GetRun(runKey);
+        var to = target != null && target.NetId != player.NetId ? target : null;
+        var targetId = to?.NetId ?? 0;
+        var forName = to != null ? Coop.Party.Name(to) : null;
         try
         {
             switch (action.Type)
@@ -84,8 +91,7 @@ public static class RewardExecutor
                     {
                         return new Outcome(false, "", "affection_relic: Ancient Affection did not offer a relic");
                     }
-                    relic.Owner = player;
-                    await RelicCmd.Obtain(relic, player, -1);
+                    if (!await Coop.Sync.RunAsync(player, new Coop.Effect("relic", 0, relic.Id, -1, 0, npcKey))) return new Outcome(false, "", "affection_relic not applied");
                     run.AffectionRelicGiven.Add(npcKey);
                     TalkStore.Instance.Save();
                     var relicTitle = SafeTitle(() => relic.Title.GetFormattedText());
@@ -93,33 +99,40 @@ public static class RewardExecutor
                 }
                 case "gold":
                 {
-                    await PlayerCmd.GainGold(action.Amount, player);
+                    if (!await Coop.Sync.RunAsync(player, new Coop.Effect("gold", action.Amount, null, -1, targetId, npcKey))) return new Outcome(false, "", "gold not applied");
                     run.GoldGiven.Add(npcKey);
                     TalkStore.Instance.Save();
-                    return Done(string.Format(Loc.EventText("rewardGold"), npcName, action.Amount), $"gold +{action.Amount}");
+                    return forName != null
+                        ? Done(string.Format(Loc.EventText("rewardGoldTeammate"), npcName, forName, action.Amount), $"gold +{action.Amount} to {forName}")
+                        : Done(string.Format(Loc.EventText("rewardGold"), npcName, action.Amount), $"gold +{action.Amount}");
                 }
                 case "heal":
                 {
-                    var before = player.Creature.CurrentHp;
-                    await CreatureCmd.Heal(player.Creature, action.Amount);
-                    var healed = Math.Max(0, player.Creature.CurrentHp - before);
+                    var who = to ?? player;
+                    var before = who.Creature.CurrentHp;
+                    if (!await Coop.Sync.RunAsync(player, new Coop.Effect("heal", action.Amount, null, -1, targetId, npcKey))) return new Outcome(false, "", "heal not applied");
+                    var healed = Math.Max(0, who.Creature.CurrentHp - before);
                     run.HealGiven.Add(npcKey);
                     TalkStore.Instance.Save();
-                    return Done(string.Format(Loc.EventText("rewardHeal"), npcName, healed), $"heal +{healed}");
+                    return forName != null
+                        ? Done(string.Format(Loc.EventText("rewardHealTeammate"), npcName, forName, healed), $"heal +{healed} to {forName}")
+                        : Done(string.Format(Loc.EventText("rewardHeal"), npcName, healed), $"heal +{healed}");
                 }
                 case "potion":
                 case "gift_potion":
                 {
-                    var potion = PotionFactory.CreateRandomPotionOutOfCombat(player, Rng.Chaotic).ToMutable();
-                    var result = await PotionCmd.TryToProcure(potion, player);
-                    if (!result.success)
+                    var who = to ?? player;
+                    var potion = PotionFactory.CreateRandomPotionOutOfCombat(who, Rng.Chaotic);
+                    if (!await Coop.Sync.RunAsync(player, new Coop.Effect("potion", 1, potion.Id, -1, targetId, npcKey)))
                     {
-                        return new Outcome(false, "", "potion refused: " + result.failureReason);
+                        return new Outcome(false, "", "potion refused");
                     }
                     if (action.Type == "potion") run.PotionGiven.Add(npcKey); else run.GiftGiven.Add(npcKey);
                     TalkStore.Instance.Save();
                     var title = SafeTitle(() => potion.Title.GetFormattedText());
-                    return Done(string.Format(Loc.EventText("rewardPotion"), npcName, title), "potion " + title);
+                    return forName != null
+                        ? Done(string.Format(Loc.EventText("rewardPotionTeammate"), npcName, forName, title), $"potion {title} to {forName}")
+                        : Done(string.Format(Loc.EventText("rewardPotion"), npcName, title), "potion " + title);
                 }
                 default:
                     return new Outcome(false, "", "unhandled " + action.Type);

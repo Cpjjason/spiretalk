@@ -69,5 +69,15 @@
   "SPIRETALK.dealRelic.broken": "\n[red]Zerwany.[/red]",
   "SPIRETALK.dealRelic.spent": "\nWydano dotąd: {0}/{1} szt. Złota.",
   "SPIRETALK.keepsakeVow": "{0} staje się przysięgą",
-  "SPIRETALK.vakuuBlood": " i utrać [red]{0}[/red] PŻ"
+  "SPIRETALK.vakuuBlood": " i utrać [red]{0}[/red] PŻ",
+  "SPIRETALK.rewardGoldTeammate": "{0} gives {1} {2} gold",
+  "SPIRETALK.rewardHealTeammate": "{0} mends {1}'s wounds (+{2} HP)",
+  "SPIRETALK.rewardPotionTeammate": "{0} gives {1} {2}",
+  "SPIRETALK.coopGiftGold": "{0} gives you {1} gold, because {2} asked",
+  "SPIRETALK.coopGiftHeal": "{0} mends your wounds (+{1} HP), because {2} asked",
+  "SPIRETALK.coopGiftPotion": "{0} gives you a potion, because {1} asked",
+  "SPIRETALK.coopNudgeUp": "{0} thinks better of you now: {1} talked about you",
+  "SPIRETALK.coopNudgeDown": "{0} thinks less of you now: {1} talked about you",
+  "SPIRETALK.coopNudgedUp": "{0} thinks better of {1} now",
+  "SPIRETALK.coopNudgedDown": "{0} thinks less of {1} now"
 }

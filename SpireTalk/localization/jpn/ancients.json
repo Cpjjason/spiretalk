@@ -69,5 +69,15 @@
   "SPIRETALK.dealRelic.broken": "\n[red]破られた。[/red]",
   "SPIRETALK.dealRelic.spent": "\nここまでの支出：{0}/{1}ゴールド。",
   "SPIRETALK.keepsakeVow": "{0}が誓いになった",
-  "SPIRETALK.vakuuBlood": "が、HPを[red]{0}[/red]失う"
+  "SPIRETALK.vakuuBlood": "が、HPを[red]{0}[/red]失う",
+  "SPIRETALK.rewardGoldTeammate": "{0}が{1}に{2}ゴールドを渡した",
+  "SPIRETALK.rewardHealTeammate": "{0}が{1}の傷を癒した（HP+{2}）",
+  "SPIRETALK.rewardPotionTeammate": "{0}が{1}に{2}を渡した",
+  "SPIRETALK.coopGiftGold": "{2}の頼みで、{0}から{1}ゴールドをもらった",
+  "SPIRETALK.coopGiftHeal": "{2}の頼みで、{0}が傷を癒してくれた（HP+{1}）",
+  "SPIRETALK.coopGiftPotion": "{1}の頼みで、{0}からポーションをもらった",
+  "SPIRETALK.coopNudgeUp": "{1}があなたのことを話したので、{0}の好感度が上がった",
+  "SPIRETALK.coopNudgeDown": "{1}があなたのことを話したので、{0}の好感度が下がった",
+  "SPIRETALK.coopNudgedUp": "{0}の{1}への好感度が上がった",
+  "SPIRETALK.coopNudgedDown": "{0}の{1}への好感度が下がった"
 }

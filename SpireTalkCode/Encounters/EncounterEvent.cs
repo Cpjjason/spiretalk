@@ -29,6 +29,20 @@ public abstract class EncounterEvent : CustomEventModel
 
     protected NpcDefinition? Npc => NpcFor(Owner);
 
+    /// <summary>
+    /// This climber is the one at this keyboard. In co-op every peer runs every climber's copy of the
+    /// event; affection, memory, the shop ledger and the NPC's voice belong to the owner's machine only.
+    /// </summary>
+    protected bool Mine => Owner == null || !Coop.Party.IsCoop(Owner) || Coop.Party.IsLocal(Owner);
+
+    protected bool InCoop => Owner != null && Coop.Party.IsCoop(Owner);
+
+    /// <summary>Affection moves on the owner's machine only.</summary>
+    protected void Bond(string npcKey, NpcKind kind, int delta)
+    {
+        if (Mine) Affection.AffectionService.Apply(npcKey, kind, delta);
+    }
+
     /// <summary>What the NPC is doing when the climber walks up, for the model.</summary>
     protected abstract string Situation { get; }
 
@@ -43,7 +57,15 @@ public abstract class EncounterEvent : CustomEventModel
 
     public override bool IsAllowed(IRunState runState)
     {
-        if (runState.Players.Count != 1) return false;
+        if (runState.Players.Count > 1)
+        {
+            // Co-op: every peer must agree, so only what the run itself records counts: each
+            // encounter once, at most two of them per climb. Each climber still meets their own NPC.
+            if (runState is not RunState full) return false;
+            if (full.VisitedEventIds.Contains(Id)) return false;
+            var seen = full.VisitedEventIds.Count(e => e.Entry.StartsWith("SPIRETALK-", StringComparison.Ordinal));
+            return seen < EncounterBudget.PerRun && runState.Players.All(p => NpcFor(p) != null);
+        }
         var player = runState.Players[0];
         if (NpcFor(player) == null) return false;
         return EncounterBudget.Allows(player, Id.Entry) && IsAllowedFor(player);
@@ -53,7 +75,7 @@ public abstract class EncounterEvent : CustomEventModel
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
-        if (Owner != null)
+        if (Owner != null && Mine)
         {
             var npc = Npc;
             if (npc != null) TalkStore.Instance.BeginVisit(npc.Key, RewardExecutor.RunKey(Owner));
@@ -82,7 +104,16 @@ public abstract class EncounterEvent : CustomEventModel
     protected List<EventOption> Page()
     {
         var options = new List<EventOption>();
-        if (!_talked && Backend.Backends.AiReady) options.Add(Option(Talk, "INITIAL"));
+        var talk = !_talked && Backend.Backends.AiReady && Mine;
+        if (InCoop)
+        {
+            // Co-op: the real choices first, so their indexes are the same on every peer; the chat
+            // (only on the owner's screen, only run there) goes last.
+            options.AddRange(Choices());
+            if (talk) options.Add(Coop.LocalOnly.Mark(Option(Talk, "INITIAL")));
+            return options;
+        }
+        if (talk) options.Add(Option(Talk, "INITIAL"));
         options.AddRange(Choices());
         return options;
     }
@@ -122,9 +153,9 @@ public abstract class EncounterEvent : CustomEventModel
         if (Finished) return;
         Finished = true;
         var marks = Text("pages.WAITING.description").GetFormattedText();
-        var speaks = Owner != null && Npc != null && Backend.Backends.AiReady;
+        var speaks = Owner != null && Npc != null && Backend.Backends.AiReady && Mine;
         SetEventFinished(Page(speaks ? pageKey : pageKey + "Silent", speaks ? marks : "", fill));
-        SaveOutcome(Page(pageKey + "Silent", "", fill).GetFormattedText());
+        if (Mine) SaveOutcome(Page(pageKey + "Silent", "", fill).GetFormattedText());
         if (!speaks) return;
         ThinkingTicker.Attach(Node, marks, asSuffix: true);
 
@@ -148,7 +179,8 @@ public abstract class EncounterEvent : CustomEventModel
             EncounterBudget.Spend(Owner, Id.Entry);
             TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner)).EncounterResults[Id.Entry] = result;
             TalkStore.Instance.Save();
-            if (Owner.RunState.CurrentRoom is EventRoom room)
+            // Solo only: a co-op room is everyone's, and only the host writes the run save.
+            if (!InCoop && Owner.RunState.CurrentRoom is EventRoom room)
             {
                 room.MarkPreFinished();
                 TaskHelper.RunSafely(SaveManager.Instance.SaveRun(room));

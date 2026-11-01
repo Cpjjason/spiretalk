@@ -49,20 +49,25 @@ public sealed class MerchantWreck : EncounterEvent
     private async Task Help()
     {
         if (Owner == null || Finished) return;
+        using var everywhere = Coop.Sync.Everywhere();
         var npc = Npc!;
         // Same overload on 0.107 and 0.111 (see KeepsakeVakuu); the CardModel/CardPlay ones differ between branches.
         await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), Owner.Creature, HelpHpLoss, ValueProp.Unblockable | ValueProp.Unpowered, (Creature?)null);
-        AffectionService.Apply(npc.Key, NpcKind.Merchant, HelpAffection);
-        var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner));
-        run.MerchantFavor = true;
-        run.MerchantGrudge = false;
-        TalkStore.Instance.Save();
+        Bond(npc.Key, NpcKind.Merchant, HelpAffection);
+        if (Mine)
+        {
+            var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner));
+            run.MerchantFavor = true;
+            run.MerchantGrudge = false;
+            TalkStore.Instance.Save();
+        }
         await Tokens.TokenService.GiveFavorAsync(Owner);
 
         var potionName = "";
         try
         {
-            var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, Rng.Chaotic).ToMutable();
+            // Seeded: every co-op peer rolls this for the same climber and must land on the same potion.
+            var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, new Rng(Owner, Id, (ulong)Owner.RunState.TotalFloor)).ToMutable();
             var got = await PotionCmd.TryToProcure(potion, Owner);
             if (got.success) potionName = potion.Title.GetFormattedText();
         }
@@ -81,6 +86,7 @@ public sealed class MerchantWreck : EncounterEvent
     private async Task Pocket()
     {
         if (Owner == null || Finished) return;
+        using var everywhere = Coop.Sync.Everywhere();
         var npc = Npc!;
         var relicName = "";
         try
@@ -94,11 +100,14 @@ public sealed class MerchantWreck : EncounterEvent
         {
             MainFile.Logger.Warn($"[Encounter] wreck relic failed: {ex.Message}", 1);
         }
-        AffectionService.Apply(npc.Key, NpcKind.Merchant, StealAffection);
-        var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner));
-        run.MerchantGrudge = true;
-        run.MerchantFavor = false;
-        TalkStore.Instance.Save();
+        Bond(npc.Key, NpcKind.Merchant, StealAffection);
+        if (Mine)
+        {
+            var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner));
+            run.MerchantGrudge = true;
+            run.MerchantFavor = false;
+            TalkStore.Instance.Save();
+        }
         await Tokens.TokenService.GiveGrudgeAsync(Owner);
 
         EncounterVoice.Remember(npc, Owner, "memory.wreckStole", relicName);
@@ -112,7 +121,7 @@ public sealed class MerchantWreck : EncounterEvent
     {
         if (Owner == null || Finished) return;
         var npc = Npc!;
-        AffectionService.Apply(npc.Key, NpcKind.Merchant, WalkAffection);
+        Bond(npc.Key, NpcKind.Merchant, WalkAffection);
         EncounterVoice.Remember(npc, Owner, "memory.wreckWalked");
         await ReactAndFinish("The climber looked at the mess and walked on without stopping.", "pages.WALK_ON.description");
     }

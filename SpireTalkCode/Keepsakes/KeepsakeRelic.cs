@@ -90,7 +90,25 @@ public abstract class KeepsakeRelic : CustomRelicModel
     }
 
     /// <summary>Deals kept with this NPC, ever, on this profile (capped).</summary>
-    public int Engravings => Math.Min(MaxEngravings, TalkStore.Instance.Get(NpcKey).Engravings);
+    private int _engraved = -1;
+
+    /// <summary>
+    /// Engravings stamped on this copy of the relic (-1 = read the climber's record). Co-op sets it:
+    /// every peer simulates every player's relics, and only the owner's machine has their record.
+    /// </summary>
+    [SavedProperty]
+    public int EngravedCount
+    {
+        get => _engraved;
+        set
+        {
+            AssertMutable();
+            _engraved = Math.Clamp(value, -1, MaxEngravings);
+            ApplyValues();
+        }
+    }
+
+    public int Engravings => _engraved >= 0 ? _engraved : Math.Min(MaxEngravings, TalkStore.Instance.Get(NpcKey).Engravings);
 
     public override LocString Title
     {

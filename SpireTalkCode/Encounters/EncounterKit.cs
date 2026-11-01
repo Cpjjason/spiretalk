@@ -125,6 +125,7 @@ public static class EncounterVoice
     /// <summary>What happened on the road becomes one of the NPC's memory notes (text from the mod's events table).</summary>
     public static void Remember(NpcDefinition npc, Player player, string memoryKey, params object[] args)
     {
+        if (Coop.Party.IsCoop(player) && !Coop.Party.IsLocal(player)) return; // another climber's memory lives on their machine
         var text = string.Format(Loc.EventText(memoryKey), new object[] { Loc.NpcName(npc) }.Concat(args).ToArray());
         if (text.Length > 0) text = char.ToUpperInvariant(text[0]) + text[1..];
         TalkStore.Instance.AddMemory(npc.Key, text, "road", RewardExecutor.RunKey(player));

@@ -15,6 +15,7 @@ using SpireTalk.Npc;
 using SpireTalk.Rewards;
 using SpireTalk.Store;
 using SpireTalk.Backend;
+using SpireTalk.Coop;
 
 namespace SpireTalk.Ancients;
 
@@ -77,6 +78,10 @@ public sealed class AncientConversation
     private CancellationTokenSource? _turn;
     private int _thinkingGen;
     private bool _gaveUp;
+    /// <summary>Co-op: net affection this climber's words moved for each teammate this visit.</summary>
+    private readonly Dictionary<ulong, int> _nudged = new();
+    /// <summary>Co-op: the fresh page a queued reroll came back with.</summary>
+    private TaskCompletionSource<IReadOnlyList<EventOption>>? _rerollWait;
 
     /// <summary>How long a reply may take before the player is offered a way out.</summary>
     private const double GiveUpAfterSeconds = 25;
@@ -93,6 +98,15 @@ public sealed class AncientConversation
         _runKey = ancient.Owner != null ? RewardExecutor.RunKey(ancient.Owner) : "no-run";
         // A reroll made before a reload is still spent: the page was regenerated to match it.
         _rerollUsed = WasRerolled(ancient);
+        Sync.Rerolled += OnRerolled;
+    }
+
+    private bool Coop => Party.IsCoop(_ancient.Owner);
+
+    private void OnRerolled(MegaCrit.Sts2.Core.Entities.Players.Player owner, IReadOnlyList<EventOption> fresh)
+    {
+        if (_ancient.Owner == null || owner.NetId != _ancient.Owner.NetId) return;
+        _rerollWait?.TrySetResult(fresh);
     }
 
     // ── Entry points ─────────────────────────────────────────────────────
@@ -150,6 +164,7 @@ public sealed class AncientConversation
     {
         if (Active.Remove(ancient, out var convo))
         {
+            Sync.Rerolled -= convo.OnRerolled;
             ModService.FlushVisit();
             convo.DisposeInput();
             try { convo._lifetime.Cancel(); } catch { /* already disposed */ }
@@ -190,6 +205,7 @@ public sealed class AncientConversation
 
             ShowThinking();
             TalkStore.Instance.BeginVisit(_key, _runKey);
+            if (_ancient.Owner != null) Party.RememberCompanions(_ancient.Owner, _key, _runKey);
             _ctx = BuildContext();
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
@@ -199,6 +215,7 @@ public sealed class AncientConversation
             if (KeepsakeLevel() != keepsakeBefore) AncientRunSave.Request(_ancient.Owner);
             _offerAnswered = false;
             _ctx.SyncRelationshipVariables();
+            SyncPartyVariables();
             TalkStore.Instance.Save();
 
             using var cts = TurnTimeout(120);
@@ -244,6 +261,7 @@ public sealed class AncientConversation
             _ctx.Married = married;
             _ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Ancient, _ctx.Tier, RewardState());
             _ctx.SyncRelationshipVariables();
+            SyncPartyVariables();
 
             ShowThinking();
             using var cts = TurnTimeout(120);
@@ -290,6 +308,7 @@ public sealed class AncientConversation
             _netDeltaThisVisit += appliedDelta;
             _ctx.Affection = AffectionService.Apply(_key, NpcKind.Ancient, appliedDelta);
             _previousPlayerLine = playerLine;
+            NudgeTeammate(turn);
             if (appliedDelta != 0 && _ancient.Owner != null)
             {
                 var keepsakeBefore = KeepsakeLevel();
@@ -303,6 +322,7 @@ public sealed class AncientConversation
         // Rewards are earned with lines, never handed out on the greeting.
         var reward = isOpener ? NpcAction.None : ConversationRules.Validate(turn.Action, NpcKind.Ancient, _ctx.Tier, RewardState(), MaxHp());
         TalkStore.Instance.Save();
+        Broadcast(playerLine, turn, isOpener);
         if (!reward.IsNone && _ancient.Owner != null)
         {
             _rewardsThisVisit++;
@@ -344,7 +364,7 @@ public sealed class AncientConversation
         {
             if (reward.Type == "reroll_relics")
             {
-                if (!RerollRelics()) _rewardsThisVisit--;
+                if (!await RerollRelicsAsync()) _rewardsThisVisit--;
                 else
                 {
                     _rerollUsed = true;
@@ -355,7 +375,9 @@ public sealed class AncientConversation
             }
             else
             {
-                var outcome = await RewardExecutor.ApplyAsync(reward, _ancient.Owner, _key, _ancient.Title.GetFormattedText(), _runKey, _ancient, _ctx.Affection);
+                var target = Coop ? Party.FindByName(_ancient.Owner, turn.Action.Target) : null;
+                if (target != null && reward.Type is not ("gold" or "heal" or "potion")) target = null;
+                var outcome = await RewardExecutor.ApplyAsync(reward, _ancient.Owner, _key, _ancient.Title.GetFormattedText(), _runKey, _ancient, _ctx.Affection, target);
                 if (!outcome.Applied) _rewardsThisVisit--;
                 else AncientRunSave.Request(_ancient.Owner);
                 rewardSummary = outcome.Summary;
@@ -650,8 +672,18 @@ public sealed class AncientConversation
     }
 
     /// <summary>Ask the event for a fresh initial page; those become the options restored when the talk ends.</summary>
-    private bool RerollRelics()
+    private async Task<bool> RerollRelicsAsync()
     {
+        if (Coop && _ancient.Owner != null)
+        {
+            // Every peer must regenerate its copy of this event at the same moment, through the queue.
+            _rerollWait = new TaskCompletionSource<IReadOnlyList<EventOption>>(TaskCreationOptions.RunContinuationsAsynchronously);
+            if (!await Sync.RunAsync(_ancient.Owner, new Effect("reroll", 0, null, -1, 0, _key))) return false;
+            var done = await Task.WhenAny(_rerollWait.Task, Task.Delay(5000));
+            if (done != _rerollWait.Task) return false;
+            _vanillaOptions = _rerollWait.Task.Result.Where(o => o.TextKey != TalkTextKey && !o.IsProceed).ToList();
+            return _vanillaOptions.Count > 0;
+        }
         try
         {
             if (GenerateOptionsMethod.Invoke(_ancient, null) is IReadOnlyList<EventOption> fresh && fresh.Count > 0)
@@ -695,6 +727,9 @@ public sealed class AncientConversation
     internal static bool ReplayReroll(AncientEventModel ancient, ref IReadOnlyList<EventOption> options)
     {
         if (_regenerating) return false;
+        // Co-op: the page must come out the same on every peer, and only this machine knows about
+        // the reroll. A reload simply shows the original page again, everywhere.
+        if (Party.IsCoop(ancient.Owner)) return true;
         if (Active.ContainsKey(ancient) || !WasRerolled(ancient)) return true;
         _regenerating = true;
         try
@@ -710,6 +745,54 @@ public sealed class AncientConversation
             _regenerating = false;
         }
         return true;
+    }
+
+    // ── Co-op ────────────────────────────────────────────────────────────
+
+    /// <summary>Who came along and what they have been saying to this NPC, fresh before every line.</summary>
+    private void SyncPartyVariables()
+    {
+        if (_ctx == null) return;
+        var me = _ancient.Owner;
+        _ctx.Variables["party"] = me != null ? Party.DescribeParty(me, _key) : "solo";
+        _ctx.Variables["party_talk"] = me != null && Coop ? Party.DescribeTeammateTalk(_key) : "none";
+    }
+
+    /// <summary>Let the party watch: my line and the NPC's answer go to every teammate's feed.</summary>
+    private void Broadcast(string playerLine, NpcTurn turn, bool isOpener)
+    {
+        var me = _ancient.Owner;
+        if (_ctx == null || me == null || !Coop) return;
+        if (!isOpener) CoopMessages.SendLine(me, _key, false, playerLine, _ctx.Affection, _ctx.Tier, _ctx.Married, _record.Talks);
+        var said = turn.JoinedText;
+        if (!string.IsNullOrWhiteSpace(said)) CoopMessages.SendLine(me, _key, true, said, _ctx.Affection, _ctx.Tier, _ctx.Married, _record.Talks);
+    }
+
+    /// <summary>
+    /// The climber talked about a teammate (praise, pleading, gossip, a knife in the back) and the NPC
+    /// believed it: that teammate's standing moves, on their own machine. Same per-line cap as the
+    /// climber's own affection, and at most 6 either way per teammate per visit.
+    /// </summary>
+    private void NudgeTeammate(NpcTurn turn)
+    {
+        var me = _ancient.Owner;
+        if (me == null || !Coop || turn.Teammate is not { } t || t.Delta == 0) return;
+        var target = Party.FindByName(me, t.Name);
+        if (target == null) return;
+        _nudged.TryGetValue(target.NetId, out var sofar);
+        var d = Math.Clamp(t.Delta, -ConversationRules.MaxDeltaPerLine, ConversationRules.MaxDeltaPerLine);
+        var room = d > 0 ? 6 - sofar : 6 + sofar;
+        if (room <= 0) return;
+        d = d > 0 ? Math.Min(d, room) : Math.Max(d, -room);
+        _nudged[target.NetId] = sofar + d;
+        CoopMessages.SendNudge(me, target, _key, d);
+        if (Party.StandingOf(target.NetId, _key) is { } s)
+        {
+            var now = ConversationRules.ClampAffection(s.Affection + d, NpcKind.Ancient);
+            Party.SetStanding(target.NetId, _key, s with { Affection = now, Tier = ConversationRules.TierName(ConversationRules.TierOf(now, s.Married)) });
+        }
+        RewardExecutor.Toast(string.Format(Loc.EventText(d > 0 ? "coopNudgedUp" : "coopNudgedDown"), _npc.DisplayName, Party.Name(target)));
+        if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Coop] {_key}: {Party.Name(target)} {(d > 0 ? "+" : "")}{d} because of {Party.Name(me)}", 1);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────
@@ -744,6 +827,11 @@ public sealed class AncientConversation
         var sb = new StringBuilder();
         sb.Append('[').Append(character).Append(" walks up to you");
         sb.Append(_record.Talks <= 1 ? " for the first time." : $" again (conversation #{_record.Talks}).");
+        if (owner != null && Coop)
+        {
+            sb.Append(" Their party (see party) is in the room too and can see what you say.");
+            if (Party.TeammateLines(_key).Count > 0) sb.Append(" A teammate already talked to you here (see party_talk).");
+        }
         sb.Append(" They may say up to ").Append(ConversationRules.LinesPerVisit).Append(" lines this visit. Greet them in character and reply in ").Append(Loc.ReplyLanguageName()).Append(".]");
         return sb.ToString();
     }

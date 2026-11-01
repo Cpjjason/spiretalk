@@ -38,6 +38,14 @@ public sealed class AncientRest : EncounterEvent
     protected override NpcDefinition? NpcFor(Player? player)
     {
         if (player == null) return null;
+        if (Coop.Party.IsCoop(player))
+        {
+            // Co-op: every peer must pick the same Ancient for this climber, so the pick comes from
+            // the run's seed and the climber's seat, not from anyone's memories.
+            var ancients = NpcCatalog.All.Where(n => n.Kind == NpcKind.Ancient).OrderBy(n => n.Key, StringComparer.Ordinal).ToList();
+            if (ancients.Count == 0) return null;
+            return ancients[new MegaCrit.Sts2.Core.Random.Rng(player, ModelDb.GetId(typeof(AncientRest))).NextInt(ancients.Count)];
+        }
         var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(player));
         if (run.RestAncient != null) return NpcCatalog.Get(run.RestAncient);
         return Pick(player);
@@ -69,7 +77,7 @@ public sealed class AncientRest : EncounterEvent
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
-        if (Owner != null && Npc is { } npc)
+        if (Owner != null && !InCoop && Npc is { } npc)
         {
             var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(Owner));
             run.RestAncient ??= npc.Key;
@@ -88,12 +96,27 @@ public sealed class AncientRest : EncounterEvent
     }
 
     /// <summary>What they ask of this climber: the closer they are, the less they need.</summary>
-    private (Ask ask, int gold) Request
+    private (Ask ask, int gold)? _request;
+
+    /// <summary>
+    /// What the Ancient asks for, decided once when the climber arrives: after they hand over the gold
+    /// they have less of it, and the scene must not change its mind (in co-op every peer decides it
+    /// the same way, from what they all see).
+    /// </summary>
+    private (Ask ask, int gold) Request => Owner == null ? (Ask.Nothing, 0) : _request ??= DecideRequest();
+
+    private (Ask ask, int gold) DecideRequest()
     {
-        get
         {
+            if (Owner == null) return (Ask.Nothing, 0);
+            if (InCoop)
+            {
+                // Co-op: the ask decides the options, so it may only read what every peer sees.
+                if (Owner.Gold >= FriendGold) return (Ask.Gold, FriendGold);
+                return Owner.Potions.Any() ? (Ask.Potion, 0) : (Ask.Nothing, 0);
+            }
             var tier = Tier;
-            if (tier is ConversationRules.Tier.Close or ConversationRules.Tier.Devoted || Owner == null) return (Ask.Nothing, 0);
+            if (tier is ConversationRules.Tier.Close or ConversationRules.Tier.Devoted) return (Ask.Nothing, 0);
             var hasPotion = Owner.Potions.Any();
             var gold = tier == ConversationRules.Tier.Friendly ? FriendGold : StrangerGold;
             if (tier == ConversationRules.Tier.Friendly && hasPotion) return (Ask.Potion, 0);
@@ -155,6 +178,7 @@ public sealed class AncientRest : EncounterEvent
     private async Task GiveGold()
     {
         if (Owner == null || Finished) return;
+        using var everywhere = Coop.Sync.Everywhere();
         var gold = Request.gold;
         await PlayerCmd.LoseGold(gold, Owner, GoldLossType.Lost);
         await Grateful(GiveAffection, $"The climber gave you {gold} gold without arguing.", "memory.restGold", gold);
@@ -163,6 +187,7 @@ public sealed class AncientRest : EncounterEvent
     private async Task GivePotion()
     {
         if (Owner == null || Finished) return;
+        using var everywhere = Coop.Sync.Everywhere();
         var potion = Owner.Potions.FirstOrDefault();
         var name = "";
         if (potion != null)
@@ -176,6 +201,7 @@ public sealed class AncientRest : EncounterEvent
     private async Task SitWith()
     {
         if (Owner == null || Finished) return;
+        using var everywhere = Coop.Sync.Everywhere();
         await Grateful(SitAffection, "The climber sat down beside you on the stone for a while and asked for nothing.", "memory.restSat");
     }
 
@@ -183,11 +209,17 @@ public sealed class AncientRest : EncounterEvent
     private async Task Grateful(int affection, string whatHappened, string memoryKey, params object[] memoryArgs)
     {
         var npc = Npc!;
-        AffectionService.Apply(npc.Key, NpcKind.Ancient, affection);
-        var card = BlessOneCard(Owner!);
+        Bond(npc.Key, NpcKind.Ancient, affection);
+        var card = BlessOneCard(Owner!, Id);
         try
         {
-            await KeepsakeService.RefreshAsync(npc, Owner!, quiet: false);
+            // The keepsake's level follows the owner's affection, which only their machine knows:
+            // they decide it and queue it for everyone.
+            if (Mine)
+            {
+                using var queued = Coop.Sync.Queued();
+                await KeepsakeService.RefreshAsync(npc, Owner!, quiet: false);
+            }
         }
         catch (Exception ex)
         {
@@ -212,7 +244,7 @@ public sealed class AncientRest : EncounterEvent
     {
         if (Owner == null || Finished) return;
         var npc = Npc!;
-        if (Request.ask != Ask.Nothing) AffectionService.Apply(npc.Key, NpcKind.Ancient, RefuseAffection);
+        if (Request.ask != Ask.Nothing) Bond(npc.Key, NpcKind.Ancient, RefuseAffection);
         EncounterVoice.Remember(npc, Owner, "memory.restDeclined");
         await ReactAndFinish("The climber said no and moved on.", "pages.DECLINE.description");
     }
@@ -225,13 +257,14 @@ public sealed class AncientRest : EncounterEvent
     }
 
     /// <summary>Upgrade one random card that can still be upgraded. Returns its name, or null.</summary>
-    private static string? BlessOneCard(Player player)
+    private static string? BlessOneCard(Player player, ModelId eventId)
     {
         try
         {
             var candidates = player.Deck.Cards.Where(c => c.IsUpgradable).ToList();
             if (candidates.Count == 0) return null;
-            var card = candidates[new Random().Next(candidates.Count)];
+            // Seeded: in co-op every peer upgrades the same card.
+            var card = candidates[new MegaCrit.Sts2.Core.Random.Rng(player, eventId, (ulong)player.RunState.TotalFloor).NextInt(candidates.Count)];
             CardCmd.Upgrade(card);
             return card.Title;
         }

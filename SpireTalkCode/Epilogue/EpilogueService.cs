@@ -41,8 +41,11 @@ internal static class EpilogueService
         try
         {
             if (RunStateField?.GetValue(__instance) is not RunState runState) return;
-            var player = runState.Players.FirstOrDefault();
-            if (player == null || runState.Players.Count > 1) return;
+            // Co-op: each climber gets their own look-back from their own Ancients, on their own screen.
+            var player = runState.Players.Count > 1
+                ? runState.Players.FirstOrDefault(p => Coop.Party.IsLocal(p))
+                : runState.Players.FirstOrDefault();
+            if (player == null) return;
             var win = SafeWin(runState);
 
             DealService.OnRunEnded(runState, win);

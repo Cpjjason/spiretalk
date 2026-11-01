@@ -100,7 +100,6 @@ public static class DealService
         {
             return null;
         }
-        if (run.Players.Count > 1) return null;
         var lastAct = act >= actCount - 1;
 
         var gold = SafeInt(() => player.Gold, 0);
@@ -193,11 +192,21 @@ public static class DealService
 
     // ── Settling ─────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// The climber at this keyboard. Deals live in their store only; in co-op the game's hooks fire on
+    /// every peer for every climber, and only this one's deals are judged here.
+    /// </summary>
+    private static Player? Me(IRunState run)
+    {
+        if (run.Players.Count <= 1) return run.Players.FirstOrDefault();
+        return run.Players.FirstOrDefault(p => Coop.Party.IsLocal(p));
+    }
+
     private static string RunKeyOf(IRunState run)
     {
         try
         {
-            var player = run.Players.FirstOrDefault();
+            var player = Me(run);
             return player != null ? RewardExecutor.RunKey(player) : "no-run";
         }
         catch
@@ -210,7 +219,7 @@ public static class DealService
     {
         var runKey = RunKeyOf(run);
         var act = run.CurrentActIndex;
-        var player = run.Players.FirstOrDefault();
+        var player = Me(run);
         foreach (var deal in PendingInRun(runKey).ToList())
         {
             if (deal.TargetAct > act) continue;
@@ -241,17 +250,18 @@ public static class DealService
     {
         if (room.RoomType != RoomType.Elite) return;
         var runKey = RunKeyOf(run);
-        var player = run.Players.FirstOrDefault();
+        var player = Me(run);
         foreach (var deal in PendingInRun(runKey).Where(d => d.Type == "kill_elite" && d.MadeAct == run.CurrentActIndex).ToList())
         {
             Settle(deal, true, player);
         }
     }
 
-    public static void OnPotionUsed(IRunState run)
+    public static void OnPotionUsed(IRunState run, Player? user)
     {
+        var player = Me(run);
+        if (user != null && player != null && user.NetId != player.NetId) return; // a teammate's potion
         var runKey = RunKeyOf(run);
-        var player = run.Players.FirstOrDefault();
         foreach (var deal in PendingInRun(runKey).Where(d => d.Type == "no_potion").ToList())
         {
             Settle(deal, false, player);
@@ -275,8 +285,9 @@ public static class DealService
     public static void OnCardRemoved(IRunState run, CardModel card)
     {
         if (IsInvoluntary(card)) return;
+        var player = Me(run);
+        if (card.Owner != null && player != null && card.Owner.NetId != player.NetId) return; // a teammate's deck
         var runKey = RunKeyOf(run);
-        var player = run.Players.FirstOrDefault();
         foreach (var deal in PendingInRun(runKey).Where(d => d.Type == "no_card_removal").ToList())
         {
             Settle(deal, false, player);
@@ -286,6 +297,8 @@ public static class DealService
     public static void OnItemPurchased(IRunState run, Player player, int goldSpent)
     {
         if (goldSpent <= 0) return;
+        var me = Me(run);
+        if (me != null && player.NetId != me.NetId) return; // a teammate's purchase
         var runKey = RunKeyOf(run);
         var changed = false;
         foreach (var deal in PendingInRun(runKey).Where(d => d.Type == "spend_at_shop").ToList())
@@ -350,7 +363,7 @@ public static class DealService
     {
         try
         {
-            await PlayerCmd.GainGold(KeptGold, player);
+            await Coop.Sync.RunAsync(player, new Coop.Effect("gold", KeptGold));
         }
         catch (Exception ex)
         {

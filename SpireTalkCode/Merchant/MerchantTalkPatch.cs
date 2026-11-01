@@ -68,11 +68,14 @@ internal static class MerchantTalk
         _conversation?.Dispose();
         _conversation = null;
         var owner = ResolveLocalPlayer();
-        if (owner == null || owner.RunState.Players.Count > 1)
+        if (owner == null)
         {
-            if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered but no solo local player; skipping", 1);
+            if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info("[Merchant] shop entered but no local player; skipping", 1);
             return;
         }
+        // Co-op: every climber has their own shelf and their own Merchant conversation; prices
+        // are local and the game broadcasts what was actually paid, so the talk is safe here.
+        Coop.Party.ClearRoom();
         // The cart's favour or grudge is a relic the climber holds: it applies whether or not
         // talking to the Merchant is switched on.
         ApplyRoadMemory(owner);
@@ -308,6 +311,7 @@ internal sealed class MerchantConversation
         try
         {
             TalkStore.Instance.BeginVisit(MerchantTalk.NpcKey, _runKey);
+            Coop.Party.RememberCompanions(_owner, MerchantTalk.NpcKey, _runKey);
             _ctx = BuildContext();
             _record.Talks++;
             _record.LastTalkUtc = DateTime.UtcNow.ToString("o");
@@ -315,6 +319,7 @@ internal sealed class MerchantConversation
             _offer = await VisitExtras.PrepareAsync(_ctx, _npc, _owner, _runKey);
             _offerAnswered = false;
             _ctx.SyncRelationshipVariables();
+            SyncParty();
             TalkStore.Instance.Save();
 
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
@@ -336,6 +341,7 @@ internal sealed class MerchantConversation
             }
             VisitExtras.AfterOpener(_ctx, _npc, _runKey);
             TalkStore.Instance.Save();
+            Coop.CoopMessages.SendLine(_owner, MerchantTalk.NpcKey, true, turn.JoinedText, _ctx.Affection, _ctx.Tier, _ctx.Married, _record.Talks);
 
             if (SpireTalkConfig.DebugLogging) MainFile.Logger.Info($"[Merchant] greeting shown: {turn.Lines.FirstOrDefault() ?? ""}", 1);
             if (_panel != null && GodotObject.IsInstanceValid(_panel)) Present(turn);
@@ -402,6 +408,7 @@ internal sealed class MerchantConversation
             _ctx.LinesLeft = ConversationRules.LinesPerVisit - _linesUsed;
             _ctx.AllowedActions = ConversationRules.AllowedActions(NpcKind.Merchant, _ctx.Tier, RewardState());
             _ctx.SyncRelationshipVariables();
+            SyncParty();
             _panel?.SetThinking();
 
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
@@ -420,6 +427,9 @@ internal sealed class MerchantConversation
             _ctx.Affection = AffectionService.Apply(MerchantTalk.NpcKey, NpcKind.Merchant, delta);
             _previousPlayerLine = playerLine;
             if (delta != 0) await VisitExtras.AfterAffectionChangedAsync(_ctx, _npc, _owner);
+            Coop.CoopMessages.SendLine(_owner, MerchantTalk.NpcKey, false, playerLine, _ctx.Affection, _ctx.Tier, _ctx.Married, _record.Talks);
+            Coop.CoopMessages.SendLine(_owner, MerchantTalk.NpcKey, true, turn.JoinedText, _ctx.Affection, _ctx.Tier, _ctx.Married, _record.Talks);
+            NudgeTeammate(turn);
 
             var reward = ConversationRules.Validate(turn.Action, NpcKind.Merchant, _ctx.Tier, RewardState(), _owner.Creature.MaxHp);
             var summary = "none";
@@ -434,7 +444,8 @@ internal sealed class MerchantConversation
                 }
                 else
                 {
-                    var outcome = await RewardExecutor.ApplyAsync(reward, _owner, MerchantTalk.NpcKey, _npc.DisplayName, _runKey);
+                    var target = Coop.Party.IsCoop(_owner) ? Coop.Party.FindByName(_owner, turn.Action.Target) : null;
+                    var outcome = await RewardExecutor.ApplyAsync(reward, _owner, MerchantTalk.NpcKey, _npc.DisplayName, _runKey, null, 0, target);
                     if (outcome.Applied) _rewardsThisVisit++;
                     summary = outcome.Summary;
                 }
@@ -485,6 +496,31 @@ internal sealed class MerchantConversation
         _panel.SetTurn(lines, choices, linesLeft, SpireTalkConfig.FreeTextInput && !Backends.Scripted, footer);
     }
 
+    private readonly Dictionary<ulong, int> _nudged = new();
+
+    private void SyncParty()
+    {
+        if (_ctx == null) return;
+        _ctx.Variables["party"] = Coop.Party.DescribeParty(_owner, MerchantTalk.NpcKey);
+        _ctx.Variables["party_talk"] = Coop.Party.IsCoop(_owner) ? Coop.Party.DescribeTeammateTalk(MerchantTalk.NpcKey) : "none";
+    }
+
+    /// <summary>Co-op: the climber talked the Merchant into (or out of) liking a teammate. Same caps as at the Ancients.</summary>
+    private void NudgeTeammate(NpcTurn turn)
+    {
+        if (!Coop.Party.IsCoop(_owner) || turn.Teammate is not { } t || t.Delta == 0) return;
+        var target = Coop.Party.FindByName(_owner, t.Name);
+        if (target == null) return;
+        _nudged.TryGetValue(target.NetId, out var sofar);
+        var d = Math.Clamp(t.Delta, -ConversationRules.MaxDeltaPerLine, ConversationRules.MaxDeltaPerLine);
+        var room = d > 0 ? 6 - sofar : 6 + sofar;
+        if (room <= 0) return;
+        d = d > 0 ? Math.Min(d, room) : Math.Max(d, -room);
+        _nudged[target.NetId] = sofar + d;
+        Coop.CoopMessages.SendNudge(_owner, target, MerchantTalk.NpcKey, d);
+        RewardExecutor.Toast(string.Format(Loc.EventText(d > 0 ? "coopNudgedUp" : "coopNudgedDown"), _npc.DisplayName, Coop.Party.Name(target)));
+    }
+
     private ConversationRules.RewardState RewardState()
     {
         return RewardExecutor.BuildState(_owner, MerchantTalk.NpcKey, _runKey, _rewardsThisVisit, rerollUsed: true, MerchantTalk.DiscountUsedThisVisit);
@@ -510,6 +546,7 @@ internal sealed class MerchantConversation
     private string BuildOpener()
     {
         var character = _owner.Character.Title.GetFormattedText();
+        if (Coop.Party.IsCoop(_owner)) character = $"{Coop.Party.Name(_owner)} ({character}), with their party (see party),";
         return $"[{character} walks into your shop{(_record.Talks <= 1 ? " for the first time" : $" again (visit #{_record.Talks})")}. Greet them in one or two short sentences; they may say up to {ConversationRules.LinesPerVisit} lines this visit. Reply in {Loc.ReplyLanguageName()}.]";
     }
 }

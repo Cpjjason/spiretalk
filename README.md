@@ -4,10 +4,6 @@
 
 [中文说明在下面](#中文说明)
 
-## Install
-
-Download **[SpireTalk-0.6.0.zip](https://github.com/Cpjjason/spiretalk/releases/latest)**, extract it and double-click `点我安装.bat`: it finds the game through Steam and copies the mod and BaseLib in. By hand: drag its `mods` folder into the game folder (Steam → right-click Slay the Spire 2 → Manage → Browse local files; merge if asked). You should end up with `Slay the Spire 2/mods/SpireTalk/` and `Slay the Spire 2/mods/BaseLib/`. Start the game, choose *Play Modded*, then click the mushie in the top-right of the main menu. BaseLib ([Alchyr](https://github.com/Alchyr/BaseLib-StS2), MIT) is bundled; if you already have it, keep the newer one (3.4.0+). Modded saves are kept apart from unmodded ones, so an empty profile on the first modded launch is normal; `安装说明 INSTALL.txt` in the zip shows how to copy them over. Something broken? [Open an issue](https://github.com/Cpjjason/spiretalk/issues/new/choose) and attach `%APPDATA%\SlayTheSpire2\logs\godot.log`.
-
 ## What it does
 
 - **Talk** — a new option on every Ancient's page and a **Talk** button in the shop. Three lines per visit: pick one of three suggested replies or type your own. The AI is only called when you actually talk (the shop's own greeting stays vanilla).
@@ -46,16 +42,14 @@ Download **[SpireTalk-0.6.0.zip](https://github.com/Cpjjason/spiretalk/releases/
 - **Memories** — Settings → *Memories* shows, per NPC, the notes they read before every conversation (edit, delete, or add your own, e.g. your climber's name) and the recent conversation. Earlier visits are passed to the model as these short notes, not as the NPC's old lines, and phrases an NPC already said are cut from new replies, so they don't repeat themselves.
 - **Temperament** — a setting: lenient / normal / strict. Strict caps each line at ±2, a visit at ±5, hands rewards out only from *close*, and sizes the deals harder.
 - **With Ancient Affection** — if that mod is installed, SpireTalk reads and writes *its* affection value, so conversation moves the same number that unlocks its bond relics and marriage. Without it, SpireTalk keeps its own affection per profile, and showing up to talk earns +2 by itself.
-- **Single player only.** In multiplayer the Talk option is not offered.
+- **Co-op.** Every climber talks to their own Ancients and Merchant, and the whole party watches: teammates' lines show on the left of your screen, and the NPC knows who you came with, compares you, can be talked into (or out of) liking a teammate, and can hand a reward to a teammate instead. Rewards go through the game's own action queue so every player's game stays identical. Everyone needs the same SpireTalk version (the game checks). Deals, road encounters (each climber meets their own), the Merchant's Ancient shelf and the end-of-run look-back all work in co-op.
 - **Works on both Steam branches:** the default branch (v0.107) and public-beta (v0.111).
 
 ## Setup
 
-The first launch asks how the NPCs should talk. **Use a Yumina account** is the easiest: your browser opens yumina.io, you sign up or sign in and press *Allow*, and the game connects (OAuth 2.1 with PKCE on a local port; the game never sees your password). Every account gets free mushies each month; replies are paid from them.
+Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*). Pick a source (OpenRouter, OpenAI, Anthropic, Google Gemini, DeepSeek, xAI, Mistral, Groq, Moonshot, SiliconFlow, Alibaba Bailian, Zhipu, a local Ollama, or any other OpenAI-compatible endpoint), paste your key (Ollama needs none), pick a model from the list (or *Other* to type one), and press **Test**; the result shows right underneath.
 
-Your own key works too. Click the mushie in the top-right corner of the main menu (or Mods → SpireTalk → *Open SpireTalk settings*). Pick a source (OpenRouter, OpenAI, Anthropic, Google Gemini, DeepSeek, xAI, Mistral, Groq, Moonshot, SiliconFlow, Alibaba Bailian, Zhipu, a local Ollama, or any other OpenAI-compatible endpoint), paste your key (Ollama needs none), pick a model from the list (or *Other* to type one), and press **Test**; the result shows right underneath.
-
-The NPCs run on the Yumina engine *inside the game*. Besides the model endpoint (your own, or Yumina's gateway when signed in), the mod talks to `feedback.yumina.io`: it checks for a new release (the settings show *New version · Update*; one click downloads it and it installs when you quit the game), carries what you write on the *Feedback* page, and sends anonymous per-visit counts (no text, no account, no key; the Feedback page turns them off). The Workshop cover and the road-encounter paintings are generated art, redrawn from the game's own characters.
+That is the whole setup. There is no account: the NPCs run on the Yumina engine *inside the game*, and the only thing the mod ever connects to is the endpoint you configure. The Workshop cover and the road-encounter paintings are generated art, redrawn from the game's own characters.
 
 ## Cards
 
@@ -81,10 +75,6 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 ---
 
 ## 中文说明
-
-### 安装
-
-下载 **[SpireTalk-0.6.0.zip](https://github.com/Cpjjason/spiretalk/releases/latest)**，解压后双击「点我安装.bat」，它会自己通过 Steam 找到游戏，把模组和 BaseLib 放进去。想手动装就把里面的 `mods` 文件夹整个拖进游戏目录（Steam 库里右键《杀戮尖塔 2》→ 管理 → 浏览本地文件；提示合并就选合并）。放好后是 `Slay the Spire 2/mods/SpireTalk/` 和 `Slay the Spire 2/mods/BaseLib/`。启动游戏选带模组的模式（Play Modded），再点主菜单右上角的 mushie。前置 BaseLib（[Alchyr](https://github.com/Alchyr/BaseLib-StS2) 制作，MIT 协议）已经带在包里；装过的话留版本新的那个（3.4.0 以上）。带模组的存档和原版是分开的，第一次进模组模式进度是空的属于正常，压缩包里的 `安装说明 INSTALL.txt` 写了怎么把原版存档复制过去。出问题请[提 issue](https://github.com/Cpjjason/spiretalk/issues/new/choose)，附上 `%APPDATA%\SlayTheSpire2\logs\godot.log`。
 
 《杀戮尖塔 2》模组：和八位远古先民、以及商人聊天。每个 NPC 都有自己的性格，记得你说过的话（跨局也记得），关系够好还能换来实打实的东西：换一批遗物、金币、治疗、药水、商店折扣，或者 Ancient Affection 的信物遗物。
 
@@ -131,13 +121,11 @@ Open source. The engine is Yumina's: https://github.com/lovetimo0421/yumina-oss
 
 ### 设置
 
-第一次打开会问你怎么和他们说话，选**用 Yumina 账号**最省事：浏览器打开 Yumina，注册或登录后点「允许」，游戏就连上了（OAuth 2.1 + PKCE，走本机端口，游戏拿不到你的密码）。每个账号每月送免费蘑菇币，对话从里面扣。
-
-用自己的密钥也行：点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。选来源（OpenRouter、OpenAI、Anthropic、Google Gemini、DeepSeek、xAI、Mistral、Groq、月之暗面、硅基流动、阿里云百炼、智谱、本机 Ollama，或其他 OpenAI 兼容接口），贴密钥（Ollama 不用），从列表挑模型（或选「其他」手动填），点「测试连接」，结果就写在下面一行。
+点主菜单右上角的 mushie（或 模组配置 → SpireTalk → *打开 SpireTalk 设置*）。选来源（OpenRouter、OpenAI、Anthropic、Google Gemini、DeepSeek、xAI、Mistral、Groq、月之暗面、硅基流动、阿里云百炼、智谱、本机 Ollama，或其他 OpenAI 兼容接口），贴密钥（Ollama 不用），从列表挑模型（或选「其他」手动填），点「测试连接」，结果就写在下面一行。
 
 不填密钥也能玩：NPC 说 `SpireTalk/offline_script.json` 里写好的台词（每人按关系分档的开场白、15 组「回复→回答」、约定和送礼的台词，中英各一套），你从三个回复（热情/平常/冒犯）里选，好感按 +3/+1/−3 走同一套上限规则；约定、信物、偶遇照常，只是不能自己打字、偶遇里没有「搭话」、局末不回顾。免费密钥：国内智谱 glm-4.7-flash，国外 Google AI Studio 的 flash 模型。
 
-NPC 由游戏内置的 Yumina 引擎驱动。除了模型接口（你自己的，或登录后的 Yumina 网关），模组还会连 `feedback.yumina.io`：检查新版本（设置页顶上显示「有新版本 · 一键更新」，点一下下载，退出游戏后自动装上）、发送你在「反馈」页写的内容、发送匿名统计（不含对话内容、账号和密钥，反馈页可以关掉）。创意工坊封面和路上偶遇的插画是生成图，按游戏里的角色重绘。
+设置就这些，不需要任何账号：NPC 由游戏内置的 Yumina 引擎驱动，模组除了你自己填的接口之外不连任何服务器。创意工坊封面和路上偶遇的插画是生成图，按游戏里的角色重绘。
 
 ### 卡
 

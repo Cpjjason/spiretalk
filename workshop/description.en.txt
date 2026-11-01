@@ -28,7 +28,8 @@ If an Ancient takes more than 25 seconds to answer, you can stop waiting; the li
 
 [img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b3.jpg[/img]
 Requires [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url].
-Single player only. Follows your game language in all 16 languages the game supports: menus, relics, events, the written lines, and whatever the characters say.
+Co-op works: everyone talks to their own Ancients and the Merchant while the party watches. Your friends' lines show on the left of your screen, the characters know who you came with, compare you, can be talked into (or out of) liking a teammate, and can hand a reward to a friend instead. Everyone in the lobby needs the same SpireTalk version.
+Follows your game language in all 16 languages the game supports: menus, relics, events, the written lines, and whatever the characters say.
 Compatible with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url] and uses its affection when installed.
 All art in the mod is in the game's own style. Road event paintings and keepsake icons are generated art.
 The settings page has a Feedback link that reaches us directly; the discussion section works too.

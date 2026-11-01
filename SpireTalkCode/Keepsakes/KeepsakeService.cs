@@ -83,12 +83,12 @@ public static class KeepsakeService
     {
         try
         {
-            var canonical = ModelDb.GetById<RelicModel>(ModelDb.GetId(type));
-            if (canonical.ToMutable() is not KeepsakeRelic relic) return null;
-            relic.Owner = player;
-            relic.Level = LevelFor(tier);
-            await RelicCmd.Obtain(relic, player);
-            if (relic is KeepsakeTezcatara tez) await tez.GrantSlotIfDue();
+            var id = ModelDb.GetId(type);
+            var level = LevelFor(tier);
+            // Co-op: the relic carries its engravings, every peer simulates it.
+            var engraved = Coop.Party.IsCoop(player) ? Math.Min(KeepsakeRelic.MaxEngravings, TalkStore.Instance.Get(npc.Key).Engravings) : -1;
+            if (!await Coop.Sync.RunAsync(player, new Coop.Effect("relic", level, id, engraved, 0, npc.Key))) return null;
+            if (Owned(player, npc.Key) is not { } relic) return null;
             RecordBest(npc.Key, relic.Level);
             RewardExecutor.Toast(string.Format(Loc.EventText("keepsakeGiven"), npc.DisplayName, KeepsakeName(npc.Key)));
             MainFile.Logger.Info($"[Keepsake] {npc.Key} gave {relic.Id.Entry} at level {relic.Level}", 1);
@@ -115,11 +115,10 @@ public static class KeepsakeService
                 owned.ApplyValues(); // engravings may have moved
                 return false;
             }
-            owned.Level = level;
+            if (!await Coop.Sync.RunAsync(player, new Coop.Effect("keepsake", level, owned.Id, EngravedFor(player, npc.Key), 0, npc.Key))) return false;
             RecordBest(npc.Key, level);
             if (level >= KeepsakeRelic.MaxLevel) owned.CelebrateVow();
             else owned.Flash();
-            if (owned is KeepsakeTezcatara tez) await tez.GrantSlotIfDue();
             if (!quiet)
             {
                 RewardExecutor.Toast(level >= KeepsakeRelic.MaxLevel
@@ -147,9 +146,13 @@ public static class KeepsakeService
         var owned = Owned(player, npcKey);
         if (owned == null) return;
         await RefreshAsync(npc, player, quiet: true);
-        owned.ApplyValues();
+        // Solo: the relic reads the record. Co-op: stamp the new count on it, on every peer.
+        await Coop.Sync.RunAsync(player, new Coop.Effect("keepsake", 0, owned.Id, EngravedFor(player, npcKey), 0, npcKey));
         RewardExecutor.Toast(string.Format(Loc.EventText("keepsakeEngraved"), KeepsakeName(npcKey), owned.Engravings));
     }
+
+    private static int EngravedFor(Player player, string npcKey) =>
+        Coop.Party.IsCoop(player) ? Math.Min(KeepsakeRelic.MaxEngravings, TalkStore.Instance.Get(npcKey).Engravings) : -1;
 
     /// <summary>The keepsake book remembers the best level ever reached and the day it became a vow.</summary>
     private static void RecordBest(string npcKey, int level)
