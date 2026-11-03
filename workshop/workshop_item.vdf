@@ -45,7 +45,7 @@ Requires [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]
 Co-op works: everyone talks to their own Ancients and the Merchant while the party watches. Your friends' lines show on the left of your screen, the characters know who you came with, compare you, can be talked into (or out of) liking a teammate, and can hand a reward to a friend instead. Everyone in the lobby needs the same SpireTalk version.
 Follows your game language in all 16 languages the game supports: menus, relics, events, the written lines, and whatever the characters say.
 Compatible with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url] and uses its affection when installed.
-All art in the mod is in the game's own style. Road event paintings and keepsake icons are generated art.
+Vanilla art by default. With [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] (art by LunchShark, animation by Dodobird) and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] (by LinXce) installed, the road event paintings and keepsake icons switch to versions drawn after their character designs, which belong to those authors. Road event paintings and keepsake icons are generated art.
 The settings page has a Feedback link that reaches us directly; the discussion section works too.
 
 [img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b4.jpg[/img]
@@ -62,6 +62,6 @@ Website: [url=https://yumina.io]yumina.io[/url]
 
 支持联机：每个人和自己的先古之民、商人聊，队友在屏幕左边能看到你们聊了什么。角色知道你和谁一起来，会拿你们比、会偏心，能被你说动去喜欢或讨厌你的队友，也能把奖励给队友。大家要装同一个版本。
 
-需要 BaseLib。跟随游戏语言，16 种语言全部覆盖。模组里的美术都是游戏原版画风。设置页有「反馈」，可以直接写给我们。"
-	"changenote"		"0.7.0 - Co-op. Talk to your Ancients and the Merchant in multiplayer while the party watches: teammates' lines show on your screen, the characters compare you, can be talked into liking or disliking a teammate, and can give a reward to a friend. Deals, road encounters, the Ancient's shelf and the end-of-run look-back work in co-op too. Everyone needs the same version."
+需要 BaseLib。跟随游戏语言，16 种语言全部覆盖。默认原版画风；装了 AncientWaifus（美术 LunchShark，动画 Dodobird）和 Merchant2CuteII（作者 LinXce）后，路边事件插图和信物图标会换成照它们的角色形象画的版本。设置页有「反馈」，可以直接写给我们。"
+	"changenote"		"0.7.0 - Co-op. Talk to your Ancients and the Merchant in multiplayer while the party watches: teammates' lines show on your screen, the characters compare you, can be talked into liking or disliking a teammate, and can give a reward to a friend. Deals, road encounters, the Ancient's shelf and the end-of-run look-back work in co-op too. Everyone needs the same version. With AncientWaifus (LunchShark, Dodobird) and Merchant2CuteII (LinXce) installed, road event paintings and keepsake icons switch to versions drawn after their characters."
 }

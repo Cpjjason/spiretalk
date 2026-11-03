@@ -90,8 +90,10 @@ public static class Sync
         lock (Pending) Pending.Remove(nonce);
         if (done != tcs.Task)
         {
-            MainFile.Logger.Warn($"[Coop] {effect.Kind} not confirmed by the host in time", 1);
-            return false;
+            // It is in the host's queue and will still run on every machine, so count it as given:
+            // reporting a failure here would let the conversation hand the same reward out again.
+            MainFile.Logger.Warn($"[Coop] {effect.Kind} not confirmed by the host in 20s; it will apply when the host gets to it", 1);
+            return true;
         }
         return tcs.Task.Result;
     }
@@ -132,9 +134,78 @@ public static class Effects
     private static readonly MethodInfo GenerateOptions = AccessTools.Method(typeof(EventModel), "GenerateInitialOptionsWrapper");
     private static readonly MethodInfo SetEventState = AccessTools.Method(typeof(EventModel), "SetEventState", new[] { typeof(LocString), typeof(IEnumerable<EventOption>) });
 
+    // The most one effect may carry: the conversation rules give 15-75 gold, a deal kept pays 50.
+    private const int MaxGold = 75;
+
+    /// <summary>
+    /// Whether an effect is one SpireTalk could have sent. A queued action arrives from another
+    /// player's machine, so a modified client could ask for anything; every peer runs this same
+    /// check on the same data, so refusing here never splits the run.
+    /// </summary>
+    private static bool Allowed(Player owner, Effect e, out Player target)
+    {
+        target = owner;
+        if (e.Target != 0 && e.Target != owner.NetId)
+        {
+            // Only gifts go to a teammate, and only to someone in this run.
+            if (e.Kind is not ("gold" or "heal" or "potion")) return false;
+            if (Party.Find(owner.RunState, e.Target) is not { } mate) return false;
+            target = mate;
+        }
+        switch (e.Kind)
+        {
+            case "gold":
+                return e.Amount is > 0 and <= MaxGold;
+            case "heal":
+                return e.Amount > 0 && e.Amount <= Math.Max(5, owner.Creature.MaxHp / 3);
+            case "lose_gold":
+                return e.Amount > 0 && target == owner;
+            case "potion":
+                return e.Id != null;
+            case "relic":
+            case "relic_remove":
+            case "keepsake":
+                // SpireTalk's own tokens, deals and keepsakes only.
+                return e.Id != null && e.Id.Entry.StartsWith("SPIRETALK", StringComparison.Ordinal) && target == owner;
+            case "relic_prepared":
+            {
+                // An Ancient's relic, as Ancient Affection hands out.
+                if (e.Id == null || target != owner) return false;
+                var model = ModelDb.GetById<RelicModel>(e.Id);
+                return model != null && (model.Rarity == MegaCrit.Sts2.Core.Entities.Relics.RelicRarity.Ancient
+                    || (model.GetType().Namespace ?? "").StartsWith("AncientAffection", StringComparison.Ordinal));
+            }
+            case "reroll":
+                return target == owner;
+            default:
+                return false;
+        }
+    }
+
     public static async Task<bool> ApplyAsync(Player owner, Effect e, bool local)
     {
-        var target = e.Target != 0 ? Party.Find(owner.RunState, e.Target) ?? owner : owner;
+        bool allowed;
+        Player target;
+        try
+        {
+            // Solo nothing crosses a network, so effects are applied as they come (as in 0.6.0).
+            if (!Party.IsCoop(owner))
+            {
+                target = owner;
+                allowed = true;
+            }
+            else allowed = Allowed(owner, e, out target);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Coop] effect {e.Kind} check failed: {ex.Message}", 1);
+            return false;
+        }
+        if (!allowed)
+        {
+            MainFile.Logger.Warn($"[Coop] refused effect {e.Kind} {e.Amount} {e.Id?.Entry} from {owner.NetId} to {e.Target}", 1);
+            return false;
+        }
         switch (e.Kind)
         {
             case "gold":
@@ -146,6 +217,16 @@ public static class Effects
             case "heal":
                 await CreatureCmd.Heal(target.Creature, e.Amount);
                 return true;
+            case "relic_prepared":
+            {
+                // Every peer prepares its own copy from the same reward Rng position (see RewardExecutor).
+                var relic = ModelDb.GetById<RelicModel>(e.Id!).ToMutable();
+                var setup = relic.GetType().GetMethod("SetupForPlayer", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(Player) }, null);
+                if (setup != null && setup.Invoke(relic, new object[] { target }) is false) return false;
+                relic.Owner = target;
+                await RelicCmd.Obtain(relic, target);
+                return true;
+            }
             case "potion":
             {
                 if (e.Id == null) return false;

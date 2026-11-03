@@ -167,6 +167,18 @@ public sealed partial class TestBridge : Node
                 WriteResult(true, "used " + potion.Id.Entry);
                 break;
             }
+            case "vote":
+            {
+                // Vote for a travelable map point (index among the travelable ones, left to right).
+                var idx = cmd["index"]?.GetValue<int?>() ?? 0;
+                var points = new List<MegaCrit.Sts2.Core.Nodes.Screens.Map.NMapPoint>();
+                void V(Node n) { if (n is MegaCrit.Sts2.Core.Nodes.Screens.Map.NMapPoint p && (typeof(MegaCrit.Sts2.Core.Nodes.Screens.Map.NMapPoint).GetProperty("IsTravelable", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)?.GetValue(p) as bool? ?? false)) points.Add(p); foreach (var c in n.GetChildren()) V(c); }
+                V(GetTree().Root);
+                points.Sort((a, b) => a.GlobalPosition.X.CompareTo(b.GlobalPosition.X));
+                if (idx >= points.Count) { WriteResult(false, $"{points.Count} travelable"); break; }
+                Activate(points[idx]);
+                break;
+            }
             case "closemap":
                 MegaCrit.Sts2.Core.Nodes.Screens.Map.NMapScreen.Instance?.Close(false);
                 WriteResult(true, "map closed");

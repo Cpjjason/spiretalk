@@ -23,6 +23,7 @@ public abstract class EncounterEvent : CustomEventModel
 {
     protected abstract string Key { get; }
     protected abstract string Scene { get; }
+    protected abstract bool Waifu { get; }
     protected abstract string FallbackPortrait { get; }
     /// <summary>Who turns up for this climber (null: nobody, and the event is not offered).</summary>
     protected abstract NpcDefinition? NpcFor(Player? player);
@@ -53,7 +54,7 @@ public abstract class EncounterEvent : CustomEventModel
     private bool _waiting;
     protected bool Finished { get; private set; }
 
-    public override string? CustomInitialPortraitPath => EncounterArt.For(Scene, FallbackPortrait);
+    public override string? CustomInitialPortraitPath => EncounterArt.For(Scene, Waifu, FallbackPortrait);
 
     public override bool IsAllowed(IRunState runState)
     {

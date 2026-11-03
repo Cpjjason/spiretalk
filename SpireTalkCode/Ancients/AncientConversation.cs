@@ -107,6 +107,18 @@ public sealed class AncientConversation
     {
         if (_ancient.Owner == null || owner.NetId != _ancient.Owner.NetId) return;
         _rerollWait?.TrySetResult(fresh);
+        // However late the host ran it, every other peer now shows this page: adopt it here too, or a
+        // later pick (synced by index) would hand out a different relic on this machine.
+        var options = fresh.Where(o => o.TextKey != TalkTextKey && !o.IsProceed).ToList();
+        if (options.Count == 0) return;
+        _vanillaOptions = options;
+        _rerollUsed = true;
+        if (_ended)
+        {
+            var restored = new List<EventOption>(_vanillaOptions);
+            if (_linesUsed < ConversationRules.LinesPerVisit) restored.Add(CreateTalkOption(_ancient, _vanillaOptions));
+            SetEventState(_vanillaDescription, restored);
+        }
     }
 
     // ── Entry points ─────────────────────────────────────────────────────
@@ -680,7 +692,8 @@ public sealed class AncientConversation
             _rerollWait = new TaskCompletionSource<IReadOnlyList<EventOption>>(TaskCreationOptions.RunContinuationsAsynchronously);
             if (!await Sync.RunAsync(_ancient.Owner, new Effect("reroll", 0, null, -1, 0, _key))) return false;
             var done = await Task.WhenAny(_rerollWait.Task, Task.Delay(5000));
-            if (done != _rerollWait.Task) return false;
+            // Queued but not run yet: OnRerolled swaps the page in when it lands.
+            if (done != _rerollWait.Task) return true;
             _vanillaOptions = _rerollWait.Task.Result.Where(o => o.TextKey != TalkTextKey && !o.IsProceed).ToList();
             return _vanillaOptions.Count > 0;
         }

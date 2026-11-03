@@ -87,11 +87,24 @@ public static class RewardExecutor
                     // One of Ancient Affection's own bond relics, chosen by its selector so the pool,
                     // upgrade tiers and "not already owned" filter match what its option would give.
                     if (ancientEvent == null) return new Outcome(false, "", "affection_relic needs an ancient event");
-                    if (SpireTalk.Affection.AncientAffectionBridge.PickBondRelic(ancientEvent, npcKey, affection) is not MegaCrit.Sts2.Core.Models.RelicModel relic)
+                    // Co-op: Ancient Affection prepares the relic it picks (Dusty Tome draws its card from
+                    // the player's reward Rng) on this machine only. Put that Rng back, and let every peer
+                    // prepare its own copy from the same position (Effects "relic_prepared").
+                    var coop = Coop.Party.IsCoop(player);
+                    var rewardsRng = coop ? player.PlayerRng.Rewards.ToSerializable() : null;
+                    var picked = SpireTalk.Affection.AncientAffectionBridge.PickBondRelic(ancientEvent, npcKey, affection);
+                    if (rewardsRng != null) player.PlayerRng.Rewards.LoadFromSerializable(rewardsRng);
+                    if (picked is not MegaCrit.Sts2.Core.Models.RelicModel relic)
                     {
                         return new Outcome(false, "", "affection_relic: Ancient Affection did not offer a relic");
                     }
-                    if (!await Coop.Sync.RunAsync(player, new Coop.Effect("relic", 0, relic.Id, -1, 0, npcKey))) return new Outcome(false, "", "affection_relic not applied");
+                    if (!coop)
+                    {
+                        // solo: the instance Ancient Affection prepared (Dusty Tome carries its chosen card), as in 0.6.0
+                        relic.Owner = player;
+                        await RelicCmd.Obtain(relic, player, -1);
+                    }
+                    else if (!await Coop.Sync.RunAsync(player, new Coop.Effect("relic_prepared", 0, relic.Id, -1, 0, npcKey))) return new Outcome(false, "", "affection_relic not applied");
                     run.AffectionRelicGiven.Add(npcKey);
                     TalkStore.Instance.Save();
                     var relicTitle = SafeTitle(() => relic.Title.GetFormattedText());

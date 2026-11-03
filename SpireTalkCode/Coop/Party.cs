@@ -72,15 +72,26 @@ public static class Party
         {
             if (string.Equals(Name(p), n, StringComparison.OrdinalIgnoreCase)) return p;
         }
+        // The speaker themself (the model sometimes writes the climber's own name or class as the
+        // target): nobody else gets it.
+        var myName = Name(me);
+        var myClass = Character(me);
+        if (string.Equals(myName, n, StringComparison.OrdinalIgnoreCase)
+            || (myName.Length > 0 && n.Contains(myName, StringComparison.OrdinalIgnoreCase))) return null;
         foreach (var p in Teammates(me))
         {
             var c = Character(p);
+            if (n.Contains(Name(p), StringComparison.OrdinalIgnoreCase)) return p;
+            // Two climbers of the same class: the class alone doesn't say which.
+            if (string.Equals(c, myClass, StringComparison.OrdinalIgnoreCase)) continue;
             if (string.Equals(c, n, StringComparison.OrdinalIgnoreCase)
                 || c.Contains(n, StringComparison.OrdinalIgnoreCase)
-                || n.Contains(c.Replace("The ", ""), StringComparison.OrdinalIgnoreCase)
-                || n.Contains(Name(p), StringComparison.OrdinalIgnoreCase)) return p;
+                || n.Contains(c.Replace("The ", ""), StringComparison.OrdinalIgnoreCase)) return p;
         }
-        // Only one teammate: any name the NPC used must have meant them.
+        if (string.Equals(myClass, n, StringComparison.OrdinalIgnoreCase)
+            || myClass.Contains(n, StringComparison.OrdinalIgnoreCase)
+            || n.Contains(myClass.Replace("The ", ""), StringComparison.OrdinalIgnoreCase)) return null;
+        // Only one teammate and the name isn't the speaker's: it must have meant them.
         var others = Teammates(me).ToList();
         return others.Count == 1 ? others[0] : null;
     }

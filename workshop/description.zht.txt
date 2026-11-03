@@ -31,7 +31,7 @@
 支援連線：每個人和自己的先古之民、商人聊，隊友在畫面左邊能看到你們聊了什麼。角色知道你和誰一起來，會拿你們比、會偏心，能被你說動去喜歡或討厭你的隊友，也能把獎勵給隊友。大家要裝同一個版本。
 跟隨遊戲語言，遊戲支援的 16 種語言全部涵蓋：介面、遺物、事件、寫好的臺詞，以及填了 API 金鑰後角色說的話。
 正式版（v0.107）和測試版 public-beta（v0.111）都能用，訂閱同一個就行，不用分版本。
-預設原版畫風，裝了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] 和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] 會自動換成對應畫風。
+預設原版畫風，裝了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] 和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] 會自動換成對應畫風（AncientWaifus 美術 LunchShark、動畫 Dodobird；Merchant2CuteII 作者 LinXce；角色形象歸原作者）。
 相容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]，裝了會直接用它的好感度。
 偶遇插畫和信物圖示是生成圖。
 

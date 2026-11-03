@@ -193,10 +193,23 @@ public sealed class NudgeMessage : ICustomMessage
         delta = reader.ReadInt();
     }
 
+    // What each teammate has already moved each NPC by on this machine, so a flood of nudges (a
+    // modified client) can't run a standing up or down: the sender's caps, enforced again here.
+    private static readonly Dictionary<(ulong, string), (int Net, DateTime Last)> Received = new();
+    private static readonly TimeSpan VisitGap = TimeSpan.FromMinutes(10);
+
     public void HandleMessage(ulong senderId)
     {
         if (targetNetId != Party.LocalNetId) return;
+        if (byNetId != senderId || NpcCatalog.Get(npc) == null) return;
         var d = Math.Clamp(delta, -ConversationRules.MaxDeltaPerLine, ConversationRules.MaxDeltaPerLine);
+        if (d == 0) return;
+        var cap = 2 * ConversationRules.MaxDeltaPerLine; // the sender allows ±6 per visit (±4 strict)
+        var now0 = DateTime.UtcNow;
+        var key = (senderId, npc);
+        var net = Received.TryGetValue(key, out var seen) && now0 - seen.Last < VisitGap ? seen.Net : 0;
+        d = Math.Clamp(net + d, -cap, cap) - net;
+        Received[key] = (net + d, now0);
         if (d == 0) return;
         var kind = npc == "MERCHANT" ? NpcKind.Merchant : NpcKind.Ancient;
         var now = AffectionService.Apply(npc, kind, d);
