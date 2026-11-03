@@ -62,6 +62,6 @@ Website: [url=https://yumina.io]yumina.io[/url]
 
 支持联机：每个人和自己的先古之民、商人聊，队友在屏幕左边能看到你们聊了什么。角色知道你和谁一起来，会拿你们比、会偏心，能被你说动去喜欢或讨厌你的队友，也能把奖励给队友。大家要装同一个版本。
 
-需要 BaseLib。跟随游戏语言，16 种语言全部覆盖。默认原版画风；装了 AncientWaifus（美术 LunchShark，动画 Dodobird）和 Merchant2CuteII（作者 LinXce）后，路边事件插图和信物图标会换成照它们的角色形象画的版本。设置页有「反馈」，可以直接写给我们。"
+需要 BaseLib。跟随游戏语言，16 种语言全部覆盖。兼容 Ancient Affection（先古好感度），装了会直接用它的好感度。默认原版画风；装了 AncientWaifus（美术 LunchShark，动画 Dodobird）和 Merchant2CuteII（作者 LinXce）后，路边事件插图和信物图标会换成照它们的角色形象画的版本。设置页有「反馈」，可以直接写给我们。"
 	"changenote"		"0.7.0 - Co-op. Talk to your Ancients and the Merchant in multiplayer while the party watches: teammates' lines show on your screen, the characters compare you, can be talked into liking or disliking a teammate, and can give a reward to a friend. Deals, road encounters, the Ancient's shelf and the end-of-run look-back work in co-op too. Everyone needs the same version. With AncientWaifus (LunchShark, Dodobird) and Merchant2CuteII (LinXce) installed, road event paintings and keepsake icons switch to versions drawn after their characters."
 }
