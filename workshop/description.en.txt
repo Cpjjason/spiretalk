@@ -1,8 +1,8 @@
-[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/top.jpg[/img]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/top_en.jpg[/img]
 
 Lets you talk to the eight Ancients and the Merchant. Ancient events get a Talk option, and the shop gets a Talk button in the top right.
 
-[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b1.jpg[/img]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b1_en.jpg[/img]
 You get three lines per visit, and what you say changes their affection (hostile / stranger / friendly / close / devoted).
 
 After the first talk they give you their keepsake, a relic that levels up as affection goes up and becomes a vow at devoted. There is a keepsake book in the settings.
@@ -17,7 +17,7 @@ Ancients who like you may put one of their own relics up for sale in the shop.
 
 When a run ends, the character with the highest affection says a few words on the results screen.
 
-[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b2.jpg[/img]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b2_en.jpg[/img]
 Easiest: sign in with a Yumina account. The first launch asks how the characters should talk; pick 'Use a Yumina account', sign in once in your browser and press Allow. Every account gets a free monthly allowance, no API key to find.
 
 Your own key works too: OpenRouter, OpenAI, Anthropic, Gemini, DeepSeek, Zhipu, SiliconFlow, Alibaba Bailian, local Ollama and more. AI lines take your current run (HP, deck, relics) into account, and you can type your own.
@@ -26,7 +26,7 @@ No AI at all is fine: characters use pre-written lines and you pick from three r
 
 If an Ancient takes more than 25 seconds to answer, you can stop waiting; the line isn't spent.
 
-[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b3.jpg[/img]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b3_en.jpg[/img]
 Requires [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url].
 Co-op works: everyone talks to their own Ancients and the Merchant while the party watches. Your friends' lines show on the left of your screen, the characters know who you came with, compare you, can be talked into (or out of) liking a teammate, and can hand a reward to a friend instead. Everyone in the lobby needs the same SpireTalk version.
 Follows your game language in all 16 languages the game supports: menus, relics, events, the written lines, and whatever the characters say.
@@ -34,18 +34,8 @@ Compatible with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750
 Vanilla art by default. With [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] (art by LunchShark, animation by Dodobird) and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] (by LinXce) installed, the road event paintings and keepsake icons switch to versions drawn after their character designs, which belong to those authors. Road event paintings and keepsake icons are generated art.
 The settings page has a Feedback link that reaches us directly; the discussion section works too.
 
-[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b4.jpg[/img]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b4_en.jpg[/img]
 Thanks to Yumina for open-sourcing their engine.
 Mod source: [url=https://github.com/Cpjjason/spiretalk]github.com/Cpjjason/spiretalk[/url]
 Engine: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]
-
-----------------------------------------
-
-让八位先民和商人可以对话。先民事件里多一个「交谈」选项，商店右上角多一个「聊聊」按钮。每次见面说三句，说的话会改变好感；聊过会得到会成长的信物；先民会提约定；角色记得之前几局聊过的内容；每局最多两次路上新事件；一局结束时好感最高的那位会说几句。
-
-最省事：第一次打开选「用 Yumina 账号」，浏览器里登录一次就能聊，每个账号每月有免费额度，不用自己找 API 密钥。也可以填自己的密钥（DeepSeek、智谱、通义、OpenRouter、本机 Ollama 等），或者不用 AI，说写好的台词。
-
-支持联机：每个人和自己的先古之民、商人聊，队友在屏幕左边能看到你们聊了什么。角色知道你和谁一起来，会拿你们比、会偏心，能被你说动去喜欢或讨厌你的队友，也能把奖励给队友。大家要装同一个版本。
-
-需要 BaseLib。跟随游戏语言，16 种语言全部覆盖。兼容 Ancient Affection（先古好感度），装了会直接用它的好感度。默认原版画风；装了 AncientWaifus（美术 LunchShark，动画 Dodobird）和 Merchant2CuteII（作者 LinXce）后，路边事件插图和信物图标会换成照它们的角色形象画的版本。设置页有「反馈」，可以直接写给我们。

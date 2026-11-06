@@ -1,7 +1,41 @@
-让八位先民和商人可以对话。先民事件里多一个「交谈」选项，商店右上角多一个「聊聊」按钮。每次见面说三句，说的话会改变好感；聊过会得到会成长的信物；先民会提约定；角色记得之前几局聊过的内容；每局最多两次路上新事件；一局结束时好感最高的那位会说几句。
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/top_zh.jpg[/img]
 
-最省事：第一次打开选「用 Yumina 账号」，浏览器里登录一次就能聊，每个账号每月有免费额度，不用自己找 API 密钥。也可以填自己的密钥（DeepSeek、智谱、通义、OpenRouter、本机 Ollama 等），或者不用 AI，说写好的台词。
+让八位先民和商人可以对话。先民事件里多一个「交谈」选项，商店右上角多一个「聊聊」按钮。
 
-支持联机：每个人和自己的先古之民、商人聊，队友在屏幕左边能看到你们聊了什么。角色知道你和谁一起来，会拿你们比、会偏心，能被你说动去喜欢或讨厌你的队友，也能把奖励给队友。大家要装同一个版本。
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b1_zh.jpg[/img]
+每次见面能说三句，说的话会改变好感（敌意 / 陌生 / 友好 / 亲近 / 挚爱）。
 
-需要 BaseLib。跟随游戏语言，16 种语言全部覆盖。兼容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]（先古好感度），装了会直接用它的好感度。默认原版画风；装了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url]（美术 LunchShark，动画 Dodobird）和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url]（作者 LinXce）后，路边事件插图和信物图标会换成照这两个模组的角色形象画的版本，角色形象归原作者。设置页有「反馈」，可以直接写给我们。
+第一次聊过之后，对方会送你信物。信物是一件遗物，好感升档时当场升级，到挚爱时变成誓约。设置里有信物图鉴。
+
+先民有时会提一个约定，比如活着走到第二章、这一章不喝药水。答应后会变成遗物栏里的一件遗物，守住了给好感和 50 金币。聊天中得到的奖励和约定，「保存并退出」后依然保留。
+
+角色记得之前几局聊过的内容，可以在设置的「角色记忆」里查看和修改。
+
+每局最多遇到两次新事件：翻倒的货车、路边歇脚的先民。
+
+好感高的先民可能把自己的遗物放到商店里卖。
+
+一局结束时，好感最高的那位会在结算页说几句。
+
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b2_zh.jpg[/img]
+最省事：用 Yumina 账号登录。第一次打开会问角色怎么说话，选「用 Yumina 账号」，在浏览器里登录一次、点「允许」就行。每个账号每月有免费额度，不用自己找 API 密钥。
+
+也可以填自己的密钥：OpenRouter、OpenAI、Anthropic、Gemini、DeepSeek、智谱、硅基流动、阿里云百炼、本机 Ollama 等。AI 台词会结合这一局的血量、卡组、遗物，你也可以自己打字说。
+
+完全不用 AI 也可以：角色说预先写好的台词，你从三个回复里选，其他功能不变。随时可以在设置页顶部的「模式」里切换。
+
+先民超过 25 秒还没回答时，可以选择不等了，这一句不算用掉。
+
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b3_zh.jpg[/img]
+需要 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url]。
+支持联机：每个人和自己的先民、商人聊，队友在旁边看着。队友说的话显示在你屏幕左边；角色知道你和谁一起来，会拿你们比较，能被你说动去喜欢或讨厌某个队友，也可以把奖励给你的朋友。房间里所有人要装同一个版本的 SpireTalk。
+跟随游戏语言，游戏支持的 16 种语言全部覆盖：菜单、遗物、事件、写好的台词和角色说的话。
+兼容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]（先古好感度），装了会直接用它的好感度。
+默认原版画风。装了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url]（美术 LunchShark，动画 Dodobird）和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url]（作者 LinXce）后，路边事件插图和信物图标会换成照它们的角色形象画的版本，角色形象归原作者。路边事件插图和信物图标是生成的美术。
+设置页有「反馈」，可以直接写给我们；讨论区也可以。
+
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b4_zh.jpg[/img]
+感谢 Yumina 开源引擎。
+模组源码：[url=https://github.com/Cpjjason/spiretalk]github.com/Cpjjason/spiretalk[/url]
+引擎：[url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
+官网：[url=https://yumina.io]yumina.io[/url]

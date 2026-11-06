@@ -1,43 +1,41 @@
-[img]https://yumina.io/cdn/150c040f-b38e-4906-88f4-57c3e174a9bd[/img]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/top_zht.jpg[/img]
 
 讓八位先民和商人可以對話。先民事件裡多一個「交談」選項，商店右上角多一個「聊聊」按鈕。
 
-[img]https://yumina.io/cdn/6ce1de99-3f58-4315-a1a0-30dc8ec3bd4b[/img]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b1_zht.jpg[/img]
 每次見面能說三句，說的話會改變好感（敵意 / 陌生 / 友好 / 親近 / 摯愛）。
 
-聊過一次會得到這位角色的信物，是一件遺物，好感升檔時當場升級，摯愛時變成誓約信物。設定裡有信物圖鑑。
+第一次聊過之後，對方會送你信物。信物是一件遺物，好感升檔時當場升級，到摯愛時變成誓約。設定裡有信物圖鑑。
 
-先民有時會提一個約定，比如活著走到第二章、這一章不喝藥水。答應後變成遺物欄裡的遺物，守住了給好感和 50 金幣。
+先民有時會提一個約定，比如活著走到第二章、這一章不喝藥水。答應後會變成遺物欄裡的一件遺物，守住了給好感和 50 金幣。聊天中得到的獎勵和約定，「儲存並離開」後依然保留。
 
 角色記得之前幾局聊過的內容，可以在設定的「角色記憶」裡檢視和修改。
 
-每局最多遇到兩次新事件：翻倒的貨車、路邊的先民。
+每局最多遇到兩次新事件：翻倒的貨車、路邊歇腳的先民。
 
 好感高的先民可能把自己的遺物放到商店裡賣。
 
 一局結束時，好感最高的那位會在結算頁說幾句。
 
-[img]https://yumina.io/cdn/a0a89ddf-4841-416a-84e7-bff6be1754c9[/img]
-不需要 API 金鑰也能玩。不填金鑰時角色說預先寫好的臺詞，從三個回覆裡選，其他功能不變。
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b2_zht.jpg[/img]
+最省事：用 Yumina 帳號登入。第一次開啟會問角色怎麼說話，選「用 Yumina 帳號」，在瀏覽器裡登入一次、點「允許」就行。每個帳號每月有免費額度，不用自己找 API 金鑰。
 
-填了金鑰後臺詞由 AI 生成，會結合這一局的血量、卡組、遺物，也可以自己打字。支援 OpenRouter、OpenAI、Anthropic、Gemini、DeepSeek、智譜、矽基流動、阿里雲百鍊、本地 Ollama 等。
+也可以填自己的金鑰：OpenRouter、OpenAI、Anthropic、Gemini、DeepSeek、智譜、矽基流動、阿里雲百煉、本機 Ollama 等。AI 臺詞會結合這一局的血量、牌組、遺物，你也可以自己打字說。
 
-免費的選擇：國內可以用智譜的 glm-4.7-flash，國外可以用 Google AI Studio。第一次進遊戲會有引導。
+完全不用 AI 也可以：角色說預先寫好的臺詞，你從三個回覆裡選，其他功能不變。隨時可以在設定頁頂部的「模式」裡切換。
 
-兩種模式可以在設定最上面的「對話方式」裡隨時切換。
+先民超過 25 秒還沒回答時，可以選擇不等了，這一句不算用掉。
 
-[img]https://yumina.io/cdn/1b6b58e2-1654-4b97-8949-ed86aa1e47a8[/img]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b3_zht.jpg[/img]
 需要 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url]。
-支援連線：每個人和自己的先古之民、商人聊，隊友在畫面左邊能看到你們聊了什麼。角色知道你和誰一起來，會拿你們比、會偏心，能被你說動去喜歡或討厭你的隊友，也能把獎勵給隊友。大家要裝同一個版本。
-跟隨遊戲語言，遊戲支援的 16 種語言全部涵蓋：介面、遺物、事件、寫好的臺詞，以及填了 API 金鑰後角色說的話。
-正式版（v0.107）和測試版 public-beta（v0.111）都能用，訂閱同一個就行，不用分版本。
-預設原版畫風，裝了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] 和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] 會自動換成對應畫風（AncientWaifus 美術 LunchShark、動畫 Dodobird；Merchant2CuteII 作者 LinXce；角色形象歸原作者）。
-相容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]，裝了會直接用它的好感度。
-偶遇插畫和信物圖示是生成圖。
+支援連線：每個人和自己的先民、商人聊，隊友在旁邊看著。隊友說的話顯示在你螢幕左邊；角色知道你和誰一起來，會拿你們比較，能被你說動去喜歡或討厭某個隊友，也可以把獎勵給你的朋友。房間裡所有人要裝同一個版本的 SpireTalk。
+跟隨遊戲語言，遊戲支援的 16 種語言全部涵蓋：選單、遺物、事件、寫好的臺詞和角色說的話。
+相容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]（先古好感度），裝了會直接用它的好感度。
+預設原版畫風。裝了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url]（美術 LunchShark，動畫 Dodobird）和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url]（作者 LinXce）後，路邊事件插圖和信物圖示會換成照它們的角色形象畫的版本，角色形象歸原作者。路邊事件插圖和信物圖示是生成的美術。
+設定頁有「回饋」，可以直接寫給我們；討論區也可以。
 
-遇到 bug 請在討論區反饋。
-
-[img]https://yumina.io/cdn/0ae8fc17-4ccf-4766-9efa-f9f762e0916b[/img]
-感謝 Yumina 開源。
-開源地址：[url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
-原網站：[url=https://yumina.io]yumina.io[/url]
+[img]https://raw.githubusercontent.com/Cpjjason/spiretalk/main/workshop/art/b4_zht.jpg[/img]
+感謝 Yumina 開源引擎。
+模組原始碼：[url=https://github.com/Cpjjason/spiretalk]github.com/Cpjjason/spiretalk[/url]
+引擎：[url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
+官網：[url=https://yumina.io]yumina.io[/url]
