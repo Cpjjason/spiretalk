@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
@@ -47,4 +48,28 @@ internal static class DealHooks
 
     [HarmonyPostfix, HarmonyPatch(typeof(Hook), nameof(Hook.AfterItemPurchased))]
     private static void AfterItemPurchased(IRunState runState, Player player, int goldSpent) => Guard("purchase", () => DealService.OnItemPurchased(runState, player, goldSpent));
+}
+
+/// <summary>
+/// The Slippery Bridge takes a random card when the climber lets go; that isn't a removal they chose,
+/// so it must not break a no-removal deal (reported on Bilibili, 2026-11-09). Its own class so that a
+/// game update renaming the event's private method only skips this patch, not the deal hooks.
+/// </summary>
+[HarmonyPatch(typeof(SlipperyBridge), "Overcome")]
+internal static class BridgeDropHook
+{
+    private static bool Prepare() => AccessTools.Method(typeof(SlipperyBridge), "Overcome") != null
+        && AccessTools.Field(typeof(SlipperyBridge), "_randomCardToLose") != null;
+
+    private static void Prefix(SlipperyBridge __instance)
+    {
+        try
+        {
+            DealService.OnForcedRemoval(Traverse.Create(__instance).Field("_randomCardToLose").GetValue<CardModel>());
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[Deal] bridge failed: {ex.GetType().Name}: {ex.Message}", 1);
+        }
+    }
 }

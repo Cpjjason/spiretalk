@@ -53,5 +53,5 @@ Thanks to Yumina for open-sourcing their engine.
 Mod source: [url=https://github.com/Cpjjason/spiretalk]github.com/Cpjjason/spiretalk[/url]
 Engine: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]"
-	"changenote"		"0.7.0 - Co-op. Talk to your Ancients and the Merchant in multiplayer while the party watches: teammates' lines show on your screen, the characters compare you, can be talked into liking or disliking a teammate, and can give a reward to a friend. Deals, road encounters, the Ancient's shelf and the end-of-run look-back work in co-op too. Everyone needs the same version. With AncientWaifus (LunchShark, Dodobird) and Merchant2CuteII (LinXce) installed, road event paintings and keepsake icons switch to versions drawn after their characters."
+	"changenote"		"0.7.1 - The card the Slippery Bridge knocks out of your hands no longer breaks a no-removal deal, and neither do the Lantern Keys the War Historian takes. Removing a card yourself at the shop or in an event still counts."
 }

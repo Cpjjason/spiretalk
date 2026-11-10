@@ -275,12 +275,19 @@ public static class DealService
         if (card.DeckVersion != null) Stolen.Add(card.DeckVersion);
     }
 
+    /// <summary>The Slippery Bridge drops a random card the climber never picked.</summary>
+    public static void OnForcedRemoval(CardModel? card)
+    {
+        if (card != null) Stolen.Add(card);
+    }
+
     /// <summary>
     /// Removals the climber didn't choose: a Thieving Hopper's theft (the card comes back if it dies),
-    /// Spoils Map spent on its treasure, Guilty wearing off after five fights, a placeholder card.
+    /// the Slippery Bridge's random card, Spoils Map spent on its treasure, Lantern Keys handed to the
+    /// War Historian, Guilty wearing off after five fights, a placeholder card.
     /// </summary>
     private static bool IsInvoluntary(CardModel card) =>
-        Stolen.Remove(card) || card is SpoilsMap or Guilty or DeprecatedCard;
+        Stolen.Remove(card) || card is SpoilsMap or LanternKey or Guilty or DeprecatedCard;
 
     public static void OnCardRemoved(IRunState run, CardModel card)
     {
