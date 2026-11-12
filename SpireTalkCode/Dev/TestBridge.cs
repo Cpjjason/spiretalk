@@ -167,6 +167,58 @@ public sealed partial class TestBridge : Node
                 WriteResult(true, "used " + potion.Id.Entry);
                 break;
             }
+            case "play":
+            {
+                // Play a card from hand the way a click would: play card=STRIKE [target=0] (index into hittable enemies).
+                var me = Merchant.MerchantTalk.ResolveLocalPlayer();
+                var want = cmd["card"]?.GetValue<string>() ?? "STRIKE";
+                var card = me?.PlayerCombatState?.Hand.Cards.FirstOrDefault(c => c.Id.Entry.StartsWith(want, StringComparison.OrdinalIgnoreCase));
+                if (me == null || card == null) { WriteResult(false, "no card " + want + " in hand"); break; }
+                var enemies = me.Creature.CombatState?.HittableEnemies;
+                var ti = cmd["target"]?.GetValue<int?>() ?? 0;
+                var target = enemies != null && ti < enemies.Count ? enemies[ti] : null;
+                var played = card.TryManualPlay(target);
+                WriteResult(played, $"play {card.Id.Entry} -> {target?.ToString() ?? "none"}: {played}");
+                break;
+            }
+            case "reward":
+            {
+                // Apply an NPC reward the way a conversation would: reward type=gold amount=10 [npc=OROBAS]
+                var me = Merchant.MerchantTalk.ResolveLocalPlayer();
+                if (me == null) { WriteResult(false, "no player"); break; }
+                var type = cmd["type"]?.GetValue<string>() ?? "gold";
+                var amount = cmd["amount"]?.GetValue<int?>() ?? 10;
+                var npcKey = cmd["npc"]?.GetValue<string>() ?? "OROBAS";
+                async Task Give()
+                {
+                    try
+                    {
+                        var o = await Rewards.RewardExecutor.ApplyAsync(new Npc.NpcAction(type, amount), me, npcKey, npcKey, Rewards.RewardExecutor.RunKey(me));
+                        WriteResult(o.Applied, $"{type} applied={o.Applied} {o.Summary}");
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteResult(false, ex.GetType().Name + ": " + ex.Message);
+                    }
+                }
+                _ = Give();
+                break;
+            }
+            case "rngtest":
+            {
+                // RngCompat on this branch: a seeded Rng builds, and the reward Rng rewinds to a snapshot.
+                var me = Merchant.MerchantTalk.ResolveLocalPlayer();
+                if (me == null) { WriteResult(false, "no player"); break; }
+                var seeded = Rewards.RngCompat.For(me, MegaCrit.Sts2.Core.Models.ModelDb.GetId(typeof(Encounters.AncientRest)), 7).NextInt(1000000);
+                var again = Rewards.RngCompat.For(me, MegaCrit.Sts2.Core.Models.ModelDb.GetId(typeof(Encounters.AncientRest)), 7).NextInt(1000000);
+                var snap = Rewards.RngCompat.SnapshotRewards(me);
+                var first = me.PlayerRng.Rewards.NextInt(1000000);
+                me.PlayerRng.Rewards.NextInt(1000000);
+                Rewards.RngCompat.RestoreRewards(me, snap);
+                var replay = me.PlayerRng.Rewards.NextInt(1000000);
+                WriteResult(seeded == again && first == replay, $"seeded {seeded}/{again} rewards {first}->{replay} snapshot={snap?.GetType().Name}");
+                break;
+            }
             case "vote":
             {
                 // Vote for a travelable map point (index among the travelable ones, left to right).
@@ -186,6 +238,28 @@ public sealed partial class TestBridge : Node
             case "key":
                 PressKey(cmd["key"]?.GetValue<string>() ?? "Enter");
                 break;
+            case "say":
+            {
+                // Type a line into the visible talk box letter by letter (so a recording shows it being
+                // typed) and send it, without needing the window to have keyboard focus.
+                var text = cmd["text"]?.GetValue<string>() ?? "";
+                SpireTalk.Ancients.TalkInputBox? box = null;
+                void FindBox(Node n) { if (box != null) return; if (n is SpireTalk.Ancients.TalkInputBox b && b.IsVisibleInTree()) box = b; foreach (var c in n.GetChildren()) FindBox(c); }
+                FindBox(GetTree().Root);
+                if (box == null) { WriteResult(false, "no talk box"); break; }
+                var edit = typeof(SpireTalk.Ancients.TalkInputBox).GetField("_edit", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(box) as LineEdit;
+                var submit = typeof(SpireTalk.Ancients.TalkInputBox).GetMethod("OnSubmitted", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (edit == null || submit == null) { WriteResult(false, "talk box internals moved"); break; }
+                edit.Text = "";
+                for (var i = 1; i <= text.Length; i++)
+                {
+                    var upto = i;
+                    _steps.Enqueue(() => { edit.Text = text.Substring(0, upto); edit.CaretColumn = upto; _frameWait = 3; });
+                }
+                _steps.Enqueue(() => { _frameWait = 30; });
+                _steps.Enqueue(() => { submit.Invoke(box, new object[] { text }); WriteResult(true, "said " + text.Length + " chars"); });
+                break;
+            }
             case "type":
                 TypeText(cmd["text"]?.GetValue<string>() ?? "");
                 break;

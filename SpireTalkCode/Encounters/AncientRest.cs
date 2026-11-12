@@ -45,7 +45,7 @@ public sealed class AncientRest : EncounterEvent
             // the run's seed and the climber's seat, not from anyone's memories.
             var ancients = NpcCatalog.All.Where(n => n.Kind == NpcKind.Ancient).OrderBy(n => n.Key, StringComparer.Ordinal).ToList();
             if (ancients.Count == 0) return null;
-            return ancients[new MegaCrit.Sts2.Core.Random.Rng(player, ModelDb.GetId(typeof(AncientRest))).NextInt(ancients.Count)];
+            return ancients[SpireTalk.Rewards.RngCompat.For(player, ModelDb.GetId(typeof(AncientRest))).NextInt(ancients.Count)];
         }
         var run = TalkStore.Instance.GetRun(RewardExecutor.RunKey(player));
         if (run.RestAncient != null) return NpcCatalog.Get(run.RestAncient);
@@ -265,7 +265,7 @@ public sealed class AncientRest : EncounterEvent
             var candidates = player.Deck.Cards.Where(c => c.IsUpgradable).ToList();
             if (candidates.Count == 0) return null;
             // Seeded: in co-op every peer upgrades the same card.
-            var card = candidates[new MegaCrit.Sts2.Core.Random.Rng(player, eventId, (ulong)player.RunState.TotalFloor).NextInt(candidates.Count)];
+            var card = candidates[SpireTalk.Rewards.RngCompat.For(player, eventId, (ulong)player.RunState.TotalFloor).NextInt(candidates.Count)];
             CardCmd.Upgrade(card);
             return card.Title;
         }

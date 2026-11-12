@@ -91,9 +91,9 @@ public static class RewardExecutor
                     // the player's reward Rng) on this machine only. Put that Rng back, and let every peer
                     // prepare its own copy from the same position (Effects "relic_prepared").
                     var coop = Coop.Party.IsCoop(player);
-                    var rewardsRng = coop ? player.PlayerRng.Rewards.ToSerializable() : null;
+                    var rewardsRng = coop ? RngCompat.SnapshotRewards(player) : null;
                     var picked = SpireTalk.Affection.AncientAffectionBridge.PickBondRelic(ancientEvent, npcKey, affection);
-                    if (rewardsRng != null) player.PlayerRng.Rewards.LoadFromSerializable(rewardsRng);
+                    RngCompat.RestoreRewards(player, rewardsRng);
                     if (picked is not MegaCrit.Sts2.Core.Models.RelicModel relic)
                     {
                         return new Outcome(false, "", "affection_relic: Ancient Affection did not offer a relic");

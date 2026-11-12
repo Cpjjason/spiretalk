@@ -68,7 +68,7 @@ public sealed class MerchantWreck : EncounterEvent
         try
         {
             // Seeded: every co-op peer rolls this for the same climber and must land on the same potion.
-            var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, new Rng(Owner, Id, (ulong)Owner.RunState.TotalFloor)).ToMutable();
+            var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, SpireTalk.Rewards.RngCompat.For(Owner, Id, (ulong)Owner.RunState.TotalFloor)).ToMutable();
             var got = await PotionCmd.TryToProcure(potion, Owner);
             if (got.success) potionName = potion.Title.GetFormattedText();
         }

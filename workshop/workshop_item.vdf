@@ -53,5 +53,5 @@ Thanks to Yumina for open-sourcing their engine.
 Mod source: [url=https://github.com/Cpjjason/spiretalk]github.com/Cpjjason/spiretalk[/url]
 Engine: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]"
-	"changenote"		"0.7.1 - The card the Slippery Bridge knocks out of your hands no longer breaks a no-removal deal, and neither do the Lantern Keys the War Historian takes. Removing a card yourself at the shop or in an event still counts."
+	"changenote"		"0.7.2 - Fixes for the public game version (v0.107): winning a fight while carrying Orobas' Keepsake no longer freezes the fight instead of ending it, the An Ancient by the Road room no longer goes black, helping the Merchant at the overturned cart works again, and the gold, healing and potions NPCs hand you in conversation arrive again. The public-beta (v0.111) was not affected."
 }

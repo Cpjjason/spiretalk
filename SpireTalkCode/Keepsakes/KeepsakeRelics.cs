@@ -79,7 +79,7 @@ public sealed class KeepsakeOrobas : KeepsakeRelic
         await PlayerCmd.GainGold(V("Gold"), Owner);
         // Seeded from the run, the owner and the floor: in co-op every peer runs this hook for every
         // player and must roll the same thing (a wall-clock Rng would split the run apart).
-        var rng = new Rng(Owner, Id, (ulong)Owner.RunState.TotalFloor);
+        var rng = SpireTalk.Rewards.RngCompat.For(Owner, Id, (ulong)Owner.RunState.TotalFloor);
         if (rng.NextInt(100) < VI("Chance"))
         {
             var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, rng).ToMutable();
