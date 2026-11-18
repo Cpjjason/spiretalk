@@ -30,7 +30,7 @@ If an Ancient takes more than 25 seconds to answer, you can stop waiting; the li
 Requires [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url].
 Co-op works: everyone talks to their own Ancients and the Merchant while the party watches. Your friends' lines show on the left of your screen, the characters know who you came with, compare you, can be talked into (or out of) liking a teammate, and can hand a reward to a friend instead. Everyone in the lobby needs the same SpireTalk version.
 Follows your game language in all 16 languages the game supports: menus, relics, events, the written lines, and whatever the characters say.
-Compatible with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url] and uses its affection when installed.
+Compatible with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url] and uses its affection when installed. With it, the 28 Ancient relics it has no affection versions for get Devoted and Beloved versions too, Neow's newest included.
 Vanilla art by default. With [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url] (art by LunchShark, animation by Dodobird) and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url] (by LinXce) installed, the road event paintings and keepsake icons switch to versions drawn after their character designs, which belong to those authors. Road event paintings and keepsake icons are generated art.
 The settings page has a Feedback link that reaches us directly; the discussion section works too.
 

@@ -76,11 +76,13 @@ public sealed class KeepsakeOrobas : KeepsakeRelic
     {
         if (Owner.Creature.IsDead) return;
         Flash();
-        await PlayerCmd.GainGold(V("Gold"), Owner);
+        // Blitz: gold buys nothing there, so the shiny finds are potions twice as often instead
+        var blitz = SpireTalk.Rewards.RunMode.IsBlitz(Owner);
+        if (!blitz) await PlayerCmd.GainGold(V("Gold"), Owner);
         // Seeded from the run, the owner and the floor: in co-op every peer runs this hook for every
         // player and must roll the same thing (a wall-clock Rng would split the run apart).
         var rng = SpireTalk.Rewards.RngCompat.For(Owner, Id, (ulong)Owner.RunState.TotalFloor);
-        if (rng.NextInt(100) < VI("Chance"))
+        if (rng.NextInt(100) < VI("Chance") * (blitz ? 2 : 1))
         {
             var potion = PotionFactory.CreateRandomPotionOutOfCombat(Owner, rng).ToMutable();
             await PotionCmd.TryToProcure(potion, Owner);

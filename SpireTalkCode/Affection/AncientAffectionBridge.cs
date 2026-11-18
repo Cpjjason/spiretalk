@@ -101,6 +101,7 @@ public static class AncientAffectionBridge
         try
         {
             if (!Available || _store == null) return null;
+            Bond.BondCatalog.EnsureInjected(); // our Devoted/Beloved relics are in its pool too
             var asm = _store.Assembly;
             var factory = asm.GetType("AncientAffection.AncientAffectionOptionFactory", throwOnError: false);
             var rngHelper = asm.GetType("AncientAffection.AncientAffectionSeededRng", throwOnError: false);

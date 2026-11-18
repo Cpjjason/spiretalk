@@ -107,6 +107,10 @@ public static class ConversationRules
         /// <summary>Ancient Affection is installed, so its bond relics can be handed out through talk.</summary>
         public bool AffectionRelicsAvailable;
         public bool AffectionRelicGivenThisRun;
+        /// <summary>The Ancient's page offers relics to reroll (Blitz's Neow offers cards instead).</summary>
+        public bool PageHasRelics = true;
+        /// <summary>Gold buys nothing in this run (Blitz).</summary>
+        public bool GoldUseless;
     }
 
     /// <summary>Actions an NPC of this kind may offer at this tier, given what was already given.</summary>
@@ -118,8 +122,8 @@ public static class ConversationRules
         var closeFloor = (Tier)Math.Max((int)Tier.Close, (int)floor);
         if (kind == NpcKind.Ancient)
         {
-            if (tier >= floor && !s.RerollUsedThisVisit) allowed.Add("reroll_relics");
-            if (tier >= floor && !s.GoldGivenThisRun) allowed.Add("gold");
+            if (tier >= floor && !s.RerollUsedThisVisit && s.PageHasRelics) allowed.Add("reroll_relics");
+            if (tier >= floor && !s.GoldGivenThisRun && !s.GoldUseless) allowed.Add("gold");
             if (tier >= floor && !s.HealGivenThisRun && s.PlayerHurt) allowed.Add("heal");
             if (tier >= closeFloor && !s.PotionGivenThisRun && s.PotionSlotFree) allowed.Add("potion");
             if (tier >= closeFloor && s.AffectionRelicsAvailable && !s.AffectionRelicGivenThisRun) allowed.Add("affection_relic");

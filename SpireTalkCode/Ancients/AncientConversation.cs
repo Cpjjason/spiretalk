@@ -668,7 +668,8 @@ public sealed class AncientConversation
     private ConversationRules.RewardState RewardState()
     {
         if (_ancient.Owner == null) return new ConversationRules.RewardState { RewardsThisVisit = 99 };
-        return RewardExecutor.BuildState(_ancient.Owner, _key, _runKey, _rewardsThisVisit, _rerollUsed, discountUsed: true);
+        return RewardExecutor.BuildState(_ancient.Owner, _key, _runKey, _rewardsThisVisit, _rerollUsed, discountUsed: true,
+            pageHasRelics: _vanillaOptions.Any(o => o.Relic != null));
     }
 
     private int MaxHp()

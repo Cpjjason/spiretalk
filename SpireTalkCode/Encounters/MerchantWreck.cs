@@ -92,7 +92,7 @@ public sealed class MerchantWreck : EncounterEvent
         var relicName = "";
         try
         {
-            var relic = RelicFactory.PullNextRelicFromFront(Owner).ToMutable();
+            var relic = SpireTalk.Rewards.RngCompat.PullNextRelicFromFront(Owner).ToMutable();
             relic.Owner = Owner;
             await RelicCmd.Obtain(relic, Owner, -1);
             relicName = relic.Title.GetFormattedText();

@@ -1,11 +1,11 @@
 @echo off
 setlocal
-rem Replaces the Workshop item's gallery with every image in workshop\screenshots\ (sorted by name).
+rem Replaces the Workshop gallery with workshopscreenshots_en (the gallery is shared by every language, so English UI only).
 rem Goes through the Steam client you are logged into, so Steam must be running and online.
 
 set "HERE=%~dp0"
 set "TOOL=%HERE%..\tools\WorkshopPreviews\bin\Release\net9.0\WorkshopPreviews.exe"
-set "SHOTS=%HERE%screenshots"
+set "SHOTS=%HERE%screenshots_en"
 
 if exist "%TOOL%" goto run
 echo Building the uploader once...

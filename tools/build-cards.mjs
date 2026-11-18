@@ -29,7 +29,7 @@ function contextVariables(npc) {
     { id: "character", name: "Player character", type: "string", defaultValue: "The Ironclad", aiAccess: "read",
       behaviorRules: "Who is standing in front of you. Address them by this name or their class, never as 'player'." },
     { id: "character_id", name: "Character id", type: "string", defaultValue: "IRONCLAD", aiAccess: "read",
-      behaviorRules: "IRONCLAD, SILENT, DEFECT, NECROBINDER or REGENT. Pick your attitude from the character notes." },
+      behaviorRules: "IRONCLAD, SILENT, DEFECT, NECROBINDER, REGENT or FOOL. Pick your attitude from the character notes." },
     { id: "hp", name: "HP", type: "number", defaultValue: 80, aiAccess: "read", behaviorRules: "Current hit points." },
     { id: "max_hp", name: "Max HP", type: "number", defaultValue: 80, aiAccess: "read", behaviorRules: "Maximum hit points. Low hp/max_hp means they arrived wounded." },
     { id: "gold", name: "Gold", type: "number", defaultValue: 99, aiAccess: "read", behaviorRules: "Gold carried right now." },

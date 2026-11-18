@@ -30,7 +30,7 @@
 需要 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127]BaseLib[/url]。
 支援連線：每個人和自己的先民、商人聊，隊友在旁邊看著。隊友說的話顯示在你螢幕左邊；角色知道你和誰一起來，會拿你們比較，能被你說動去喜歡或討厭某個隊友，也可以把獎勵給你的朋友。房間裡所有人要裝同一個版本的 SpireTalk。
 跟隨遊戲語言，遊戲支援的 16 種語言全部涵蓋：選單、遺物、事件、寫好的臺詞和角色說的話。
-相容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]（先古好感度），裝了會直接用它的好感度。
+相容 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3750930021]Ancient Affection[/url]（先古好感度），裝了會直接用它的好感度。它沒做好感版本的 28 個先古遺物，裝了本模組後也有「獻身」「摯愛」兩檔，包括涅奧新加的遺物。
 預設原版畫風。裝了 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748235030]AncientWaifus[/url]（美術 LunchShark，動畫 Dodobird）和 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3748331824]Merchant2CuteII[/url]（作者 LinXce）後，路邊事件插圖和信物圖示會換成照它們的角色形象畫的版本，角色形象歸原作者。路邊事件插圖和信物圖示是生成的美術。
 設定頁有「回饋」，可以直接寫給我們；討論區也可以。
 

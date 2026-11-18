@@ -48,7 +48,7 @@ if (args[1] == "--text")
             Console.Error.WriteLine("Steam refused the language, title or description (description limit is 8000 bytes)");
             return 1;
         }
-        var result = SubmitAndWait(handle, $"{language} text");
+        var result = SubmitAndWait(handle, null);
         Console.WriteLine(result == EResult.k_EResultOK ? $"Success: {language} title and description ({description.Length} chars)." : $"Steam answered {result}");
         return result == EResult.k_EResultOK ? 0 : 1;
     }
@@ -56,6 +56,25 @@ if (args[1] == "--text")
     {
         SteamAPI.Shutdown();
     }
+}
+
+// WorkshopPreviews <id> --cover <image>
+// Replaces only the main preview image (shared by every language), without touching files or text.
+if (args[1] == "--cover")
+{
+    var img = Path.GetFullPath(args[2]);
+    if (new FileInfo(img).Length > MaxPreviewBytes) { Console.Error.WriteLine("cover must be under 1 MB"); return 2; }
+    File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "steam_appid.txt"), AppIdValue.ToString(CultureInfo.InvariantCulture));
+    if (!SteamAPI.Init()) { Console.Error.WriteLine("SteamAPI.Init failed: is the Steam client running and logged in?"); return 1; }
+    try
+    {
+        var handle = SteamUGC.StartItemUpdate(new AppId_t(AppIdValue), fileId);
+        if (!SteamUGC.SetItemPreview(handle, img)) { Console.Error.WriteLine("Steam refused the cover"); return 1; }
+        var result = SubmitAndWait(handle, null);
+        Console.WriteLine(result == EResult.k_EResultOK ? "Success: cover replaced." : $"Steam answered {result}");
+        return result == EResult.k_EResultOK ? 0 : 1;
+    }
+    finally { SteamAPI.Shutdown(); }
 }
 
 // WorkshopPreviews <id> --deps [add <required id>]
@@ -112,7 +131,8 @@ var listOnly = args[1] == "--list";
 var folder = listOnly ? "" : Path.GetFullPath(args[1]);
 var replace = args.Contains("--replace");
 var noteIdx = Array.IndexOf(args, "--note");
-var note = noteIdx >= 0 && noteIdx + 1 < args.Length ? args[noteIdx + 1] : "screenshots";
+string? note = noteIdx >= 0 && noteIdx + 1 < args.Length ? args[noteIdx + 1] : null;
+if (note == "") note = null;
 
 var images = listOnly ? new List<string>() : Directory.GetFiles(folder)
     .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
@@ -207,7 +227,7 @@ static string StampJpeg(string path, string dir)
     return dest;
 }
 
-static EResult SubmitAndWait(UGCUpdateHandle_t handle, string note)
+static EResult SubmitAndWait(UGCUpdateHandle_t handle, string? note)
 {
     var done = false;
     var result = EResult.k_EResultFail;

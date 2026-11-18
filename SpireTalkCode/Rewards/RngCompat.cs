@@ -47,6 +47,21 @@ public static class RngCompat
         return (Rng)SeededCtor.Invoke(args);
     }
 
+    // RelicFactory.PullNextRelicFromFront(Player) on 0.107/0.111 rolled rarity on player.PlayerRng.Rewards;
+    // 0.113 removed it for PullNextRelicFromFront(Player, Rng). Passing the reward Rng keeps the old roll.
+    private static readonly MethodInfo? PullFrontWithRng = AccessTools.Method(typeof(MegaCrit.Sts2.Core.Factories.RelicFactory),
+        "PullNextRelicFromFront", new[] { typeof(Player), typeof(Rng) });
+    private static readonly MethodInfo? PullFrontPlayerOnly = AccessTools.Method(typeof(MegaCrit.Sts2.Core.Factories.RelicFactory),
+        "PullNextRelicFromFront", new[] { typeof(Player) });
+
+    /// <summary>The next relic off the front of the player's bag, rarity rolled on their reward Rng, on any branch.</summary>
+    public static RelicModel PullNextRelicFromFront(Player player)
+    {
+        if (PullFrontWithRng != null) return (RelicModel)PullFrontWithRng.Invoke(null, new object[] { player, player.PlayerRng.Rewards })!;
+        if (PullFrontPlayerOnly != null) return (RelicModel)PullFrontPlayerOnly.Invoke(null, new object[] { player })!;
+        throw new MissingMethodException("RelicFactory.PullNextRelicFromFront not found");
+    }
+
     /// <summary>Remember where the player's reward Rng is, to put it back with <see cref="RestoreRewards"/>.</summary>
     public static object? SnapshotRewards(Player player)
     {

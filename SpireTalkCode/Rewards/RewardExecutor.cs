@@ -36,7 +36,7 @@ public static class RewardExecutor
         }
     }
 
-    public static ConversationRules.RewardState BuildState(Player player, string npcKey, string runKey, int rewardsThisVisit, bool rerollUsed, bool discountUsed)
+    public static ConversationRules.RewardState BuildState(Player player, string npcKey, string runKey, int rewardsThisVisit, bool rerollUsed, bool discountUsed, bool pageHasRelics = true)
     {
         var run = TalkStore.Instance.GetRun(runKey);
         var potionFree = false;
@@ -55,6 +55,8 @@ public static class RewardExecutor
         {
             RewardsThisVisit = rewardsThisVisit,
             RerollUsedThisVisit = rerollUsed,
+            PageHasRelics = pageHasRelics,
+            GoldUseless = RunMode.IsBlitz(player),
             DiscountUsedThisVisit = discountUsed,
             GoldGivenThisRun = run.GoldGiven.Contains(npcKey),
             HealGivenThisRun = run.HealGiven.Contains(npcKey),
