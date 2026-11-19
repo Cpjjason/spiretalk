@@ -101,7 +101,7 @@ public abstract class BondPaelsEye : BondRelic
     public override async Task BeforeSideTurnEndEarly(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         if (Beloved || !participants.Contains(Owner.Creature) || Used || AnyPlayedThisTurn() || !WasPart) return;
-        foreach (var card in CardPile.GetCards(Owner, PileType.Hand).ToList()) await CardCmd.Exhaust(choiceContext, card);
+        foreach (var card in CardPile.GetCards(Owner, PileType.Hand).ToList()) await BondRewards.Exhaust(choiceContext, card);
     }
 
     public override Task AfterTakingExtraTurn(Player player)

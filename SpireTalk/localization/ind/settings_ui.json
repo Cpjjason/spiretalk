@@ -159,6 +159,8 @@
   "SPIRETALK-MSG.ModeNowAiMissing": "AI belum terhubung; sementara memakai dialog tertulis.",
   "SPIRETALK-MSG.KeyTutorialLink": "Dapatkan key gratis →",
   "SPIRETALK-MSG.ErrEmpty": "Model mengirim balasan kosong. Model yang berpikir dulu sebelum menjawab (Gemini Pro dan sejenisnya) bisa menghabiskan seluruh anggaran untuk berpikir: coba model Flash.",
+  "SPIRETALK-MSG.ErrNotAi": "Alamat itu mengembalikan halaman web, bukan balasan AI. Periksa alamat API di pengaturan SpireTalk (biasanya berakhiran /v1).",
+  "SPIRETALK-MSG.EventRescued": "Error mod dilewati. Kamu bisa lanjut.",
   "SPIRETALK-MSG.SourceYumina": "Akun Yumina (kuota gratis, tanpa kunci)",
   "SPIRETALK-MSG.FreeTitle": "Tidak punya kunci API? Main gratis dengan akun Yumina",
   "SPIRETALK-MSG.FreeSub": "Masuk sekali di browser dan mereka bicara. Setiap akun dapat mushies gratis tiap bulan.",

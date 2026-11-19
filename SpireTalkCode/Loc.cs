@@ -165,6 +165,8 @@ public static class Loc
             return ye.Message;
         }
         if (ex is OperationCanceledException) return Ui("ErrTimeout");
+        // A wrong address (no /v1, a provider's home page) answers with HTML, not JSON.
+        if (ex is System.Text.Json.JsonException && SpireTalkConfig.Source != Backend.ApiSource.Yumina) return Ui("ErrNotAi");
         return ex.Message;
     }
 }

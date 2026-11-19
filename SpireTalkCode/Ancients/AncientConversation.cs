@@ -84,7 +84,8 @@ public sealed class AncientConversation
     private TaskCompletionSource<IReadOnlyList<EventOption>>? _rerollWait;
 
     /// <summary>How long a reply may take before the player is offered a way out.</summary>
-    private const double GiveUpAfterSeconds = 25;
+    // Ten seconds of "...." with no button already looks like a hang; offer the way out early.
+    private const double GiveUpAfterSeconds = 10;
 
     private AncientConversation(AncientEventModel ancient, NpcDefinition npc, IReadOnlyList<EventOption> vanillaOptions)
     {

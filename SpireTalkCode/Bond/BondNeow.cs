@@ -19,7 +19,10 @@ public abstract class BondDowsingRod : BondRelic
     protected abstract int Rooms { get; }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new("Rooms", Rooms) };
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => HoverTipFactory.FromCardWithCardHoverTips<Dowsing>();
+    // Dowsing is new in 0.111: on 0.107 the relic never drops, but the compendium may still ask for its tips
+    protected override IEnumerable<IHoverTip> ExtraHoverTips { get { try { return Tips(); } catch (TypeLoadException) { return Array.Empty<IHoverTip>(); } } }
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+    private static IEnumerable<IHoverTip> Tips() => HoverTipFactory.FromCardWithCardHoverTips<Dowsing>();
 
     public override async Task AfterObtained()
     {
@@ -52,14 +55,15 @@ public abstract class BondNeowsSacrifice : BondRelic
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new("Combats", Combats) };
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    // Ambergris is new in 0.111: on 0.107 the relic never drops, but the compendium may still ask for its tips
+    protected override IEnumerable<IHoverTip> ExtraHoverTips { get { try { return Tips(Combats); } catch (TypeLoadException) { return Array.Empty<IHoverTip>(); } } }
+
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+    private static IEnumerable<IHoverTip> Tips(int combats)
     {
-        get
-        {
-            var tips = new List<IHoverTip> { HoverTipFactory.FromPotion<Ambergris>() };
-            if (Combats > 0) tips.AddRange(HoverTipFactory.FromCardWithCardHoverTips<Guilty>());
-            return tips;
-        }
+        var tips = new List<IHoverTip> { HoverTipFactory.FromPotion<Ambergris>() };
+        if (combats > 0) tips.AddRange(HoverTipFactory.FromCardWithCardHoverTips<Guilty>());
+        return tips;
     }
 
     public override async Task AfterObtained()

@@ -53,5 +53,5 @@ Thanks to Yumina for open-sourcing their engine.
 Mod source: [url=https://github.com/Cpjjason/spiretalk]github.com/Cpjjason/spiretalk[/url]
 Engine: [url=https://github.com/lovetimo0421/yumina-oss]github.com/lovetimo0421/yumina-oss[/url]
 Website: [url=https://yumina.io]yumina.io[/url]"
-	"changenote"		"0.8.0 - With Ancient Affection installed, the 28 Ancient relics it has no affection versions for (Neow's Dowsing Rod and Neow's Sacrifice included) now have Devoted and Beloved versions, awakened by Ancients who like you. The Ancients know the Fool. Blitz: Neow's card page no longer gets a relic reroll, Ancients don't hand out gold, and Orobas' Keepsake gives potions twice as often instead of gold. Fixes taking from the Merchant's overturned cart on the public-beta (v0.113)."
+	"changenote"		"0.8.1 - No more dead ends: if another mod (or a relic that no longer matches the game version) throws while you pick an option in an event, the page now shows Proceed instead of leaving you with no buttons. This fixes getting stuck at Neow with older Ancient Affection builds on the public beta (v0.113). The 'stop waiting' button now appears after 10 seconds instead of 25. A wrong API address (one that answers with a web page) now says so plainly."
 }

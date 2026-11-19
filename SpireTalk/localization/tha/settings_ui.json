@@ -159,6 +159,8 @@
   "SPIRETALK-MSG.ModeNowAiMissing": "ยังไม่ได้เชื่อมต่อ AI ตอนนี้ใช้บทพูดสำเร็จรูปไปก่อน",
   "SPIRETALK-MSG.KeyTutorialLink": "รับคีย์ฟรี →",
   "SPIRETALK-MSG.ErrEmpty": "โมเดลส่งคำตอบว่างกลับมา โมเดลที่คิดก่อนตอบ (เช่น Gemini Pro) อาจใช้โควตาหมดไปกับการคิด ลองใช้โมเดล Flash แทน",
+  "SPIRETALK-MSG.ErrNotAi": "ที่อยู่นี้ส่งหน้าเว็บกลับมา ไม่ใช่คำตอบจาก AI โปรดตรวจสอบที่อยู่ API ในการตั้งค่า SpireTalk (ปกติจะลงท้ายด้วย /v1)",
+  "SPIRETALK-MSG.EventRescued": "ข้ามข้อผิดพลาดของม็อดแล้ว",
   "SPIRETALK-MSG.SourceYumina": "บัญชี Yumina (มีโควตาฟรี ไม่ต้องใช้คีย์)",
   "SPIRETALK-MSG.FreeTitle": "ไม่มีคีย์ API? เล่นฟรีด้วยบัญชี Yumina",
   "SPIRETALK-MSG.FreeSub": "ล็อกอินในเบราว์เซอร์ครั้งเดียวก็คุยได้เลย ทุกบัญชีได้ mushies ฟรีทุกเดือน",

@@ -159,6 +159,8 @@
   "SPIRETALK-MSG.ModeNowAiMissing": "La IA todavía no está conectada; por ahora, diálogos escritos.",
   "SPIRETALK-MSG.KeyTutorialLink": "Consigue una clave gratis →",
   "SPIRETALK-MSG.ErrEmpty": "El modelo devolvió una respuesta vacía. Los modelos que piensan antes de responder (Gemini Pro y similares) pueden gastar todo el presupuesto pensando: prueba un modelo Flash.",
+  "SPIRETALK-MSG.ErrNotAi": "Esa dirección devolvió una página web, no una respuesta de IA. Revisa la dirección de la API en los ajustes de SpireTalk (suele terminar en /v1).",
+  "SPIRETALK-MSG.EventRescued": "Error de un mod evitado. Puedes seguir.",
   "SPIRETALK-MSG.SourceYumina": "Cuenta de Yumina (cuota gratis, sin clave)",
   "SPIRETALK-MSG.FreeTitle": "¿Sin clave API? Juega gratis con una cuenta de Yumina",
   "SPIRETALK-MSG.FreeSub": "Inicia sesión una vez en el navegador y ya hablan. Cada cuenta recibe mushies gratis cada mes.",

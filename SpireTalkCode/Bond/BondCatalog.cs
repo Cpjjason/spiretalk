@@ -142,4 +142,25 @@ internal static class BondRewards
         for (var i = 2; i < ps.Length; i++) args[i] = ps[i].DefaultValue;
         return (MegaCrit.Sts2.Core.Rewards.Reward)ByRarity.Invoke(args);
     }
+
+    // CardCmd.Exhaust returns Task<CardPileAddResult?> from 0.111; 0.107 has a different signature.
+    private static readonly System.Reflection.MethodInfo? ExhaustMethod =
+        typeof(MegaCrit.Sts2.Core.Commands.CardCmd).GetMethods().FirstOrDefault(m =>
+        {
+            if (m.Name != "Exhaust") return false;
+            var p = m.GetParameters();
+            return p.Length >= 2 && p[0].ParameterType == typeof(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext)
+                && p[1].ParameterType == typeof(MegaCrit.Sts2.Core.Models.CardModel) && p.Skip(2).All(x => x.HasDefaultValue);
+        });
+
+    public static Task Exhaust(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext ctx, MegaCrit.Sts2.Core.Models.CardModel card)
+    {
+        if (ExhaustMethod == null) return Task.CompletedTask;
+        var ps = ExhaustMethod.GetParameters();
+        var args = new object?[ps.Length];
+        args[0] = ctx;
+        args[1] = card;
+        for (var i = 2; i < ps.Length; i++) args[i] = ps[i].DefaultValue;
+        return ExhaustMethod.Invoke(null, args) as Task ?? Task.CompletedTask;
+    }
 }

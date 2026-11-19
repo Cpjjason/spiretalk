@@ -111,8 +111,14 @@ public abstract class BondPrismaticGem : BondRelic
     {
         if (Owner != player || options.Flags.HasFlag(CardCreationFlags.NoCardPoolModifications) || !options.Flags.HasFlag(CardCreationFlags.IsCardReward)) return options;
         if (options.CardPools.All(p => p.IsColorless)) return options;
-        return options.WithCardPools(player.UnlockState.CharacterCardPools.Union(options.CardPools));
+        // WithCardPools is missing on 0.107: there the rewards just stay the character's own
+        try { return WithAllPools(player, options); }
+        catch (MissingMethodException) { return options; }
     }
+
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+    private static CardCreationOptions WithAllPools(Player player, CardCreationOptions options) =>
+        options.WithCardPools(player.UnlockState.CharacterCardPools.Union(options.CardPools));
 
     public override bool TryModifyCardBeingAddedToDeck(CardModel card, out CardModel? newCard)
     {

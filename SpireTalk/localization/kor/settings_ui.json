@@ -159,6 +159,8 @@
   "SPIRETALK-MSG.ModeNowAiMissing": "AI가 아직 연결되지 않았습니다. 지금은 대본 대사를 사용합니다.",
   "SPIRETALK-MSG.KeyTutorialLink": "무료 키 받기 →",
   "SPIRETALK-MSG.ErrEmpty": "모델이 빈 응답을 보냈습니다. 답하기 전에 생각하는 모델(Gemini Pro 등)은 생각하는 데 한도를 다 쓸 수 있습니다. Flash 모델을 사용해 보세요.",
+  "SPIRETALK-MSG.ErrNotAi": "이 주소는 AI 응답이 아닌 웹페이지를 돌려줬습니다. SpireTalk 설정의 API 주소를 확인하세요(보통 /v1로 끝납니다).",
+  "SPIRETALK-MSG.EventRescued": "모드 오류를 건너뛰었습니다",
   "SPIRETALK-MSG.SourceYumina": "Yumina 계정 (무료 이용량, 키 불필요)",
   "SPIRETALK-MSG.FreeTitle": "API 키가 없나요? Yumina 계정으로 무료로 플레이",
   "SPIRETALK-MSG.FreeSub": "브라우저에서 한 번 로그인하면 바로 대화할 수 있어요. 모든 계정에 매달 무료 버섯 코인이 지급됩니다.",

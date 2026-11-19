@@ -159,6 +159,8 @@
   "SPIRETALK-MSG.ModeNowAiMissing": "还没连上 AI，先用写好的台词。",
   "SPIRETALK-MSG.KeyTutorialLink": "免费拿密钥 →",
   "SPIRETALK-MSG.ErrEmpty": "模型返回了空回复。先思考再回答的模型（Gemini Pro 等）可能把额度全用在思考上了，换个 Flash 模型试试。",
+  "SPIRETALK-MSG.ErrNotAi": "这个地址返回的是网页，不是 AI 的回复。请检查 SpireTalk 设置里的接口地址（一般以 /v1 结尾）。",
+  "SPIRETALK-MSG.EventRescued": "有模组出错，已帮你跳过",
   "SPIRETALK-MSG.SourceYumina": "Yumina 账号（有免费额度，不用 Key）",
   "SPIRETALK-MSG.FreeTitle": "没有 API Key？点这里用 Yumina 账号免费玩",
   "SPIRETALK-MSG.FreeSub": "浏览器里登录一下就能聊，每个账号每月都送免费蘑菇币。",

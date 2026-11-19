@@ -159,6 +159,8 @@
   "SPIRETALK-MSG.ModeNowAiMissing": "Yapay zekâ henüz bağlı değil; şimdilik hazır replikler kullanılıyor.",
   "SPIRETALK-MSG.KeyTutorialLink": "Ücretsiz anahtar al →",
   "SPIRETALK-MSG.ErrEmpty": "Model boş bir yanıt gönderdi. Yanıtlamadan önce düşünen modeller (Gemini Pro vb.) tüm bütçeyi düşünmeye harcayabilir: bir Flash modeli deneyin.",
+  "SPIRETALK-MSG.ErrNotAi": "Bu adres yapay zekâ yanıtı yerine bir web sayfası döndürdü. SpireTalk ayarlarındaki API adresini kontrol et (genelde /v1 ile biter).",
+  "SPIRETALK-MSG.EventRescued": "Mod hatası atlandı. Devam edebilirsin.",
   "SPIRETALK-MSG.SourceYumina": "Yumina hesabı (ücretsiz kota, anahtar yok)",
   "SPIRETALK-MSG.FreeTitle": "API anahtarın yok mu? Yumina hesabıyla ücretsiz oyna",
   "SPIRETALK-MSG.FreeSub": "Tarayıcıda bir kez giriş yap, konuşmaya başlasınlar. Her hesap her ay ücretsiz mushies alır.",
