@@ -41,7 +41,7 @@ public abstract class DealRelic : CustomRelicModel
 
     public override RelicRarity Rarity => RelicRarity.Event;
     public override bool IsAllowedInShops => false;
-    public override bool IsAllowed(IRunState runState) => runState.Players.Count == 1;
+    // single player only: see Safety/SoloRelicsAllowed (IsAllowed is no longer virtual on 0.114)
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {

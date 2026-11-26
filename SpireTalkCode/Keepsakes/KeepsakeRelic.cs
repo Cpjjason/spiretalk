@@ -68,7 +68,7 @@ public abstract class KeepsakeRelic : CustomRelicModel
 
     public override bool IsAllowedInShops => false;
 
-    public override bool IsAllowed(IRunState runState) => runState.Players.Count == 1;
+    // single player only: see Safety/SoloRelicsAllowed (IsAllowed is no longer virtual on 0.114)
 
     [SavedProperty]
     public int Level
