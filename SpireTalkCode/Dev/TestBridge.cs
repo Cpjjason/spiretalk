@@ -272,6 +272,26 @@ public sealed partial class TestBridge : Node
             case "state":
                 WriteResult(true, State());
                 break;
+            case "overlay":
+            {
+                // What the overlay stack holds and which control would get a click at (x, y) in texture space.
+                var sb = new StringBuilder();
+                var stack = MegaCrit.Sts2.Core.Nodes.Screens.Overlays.NOverlayStack.Instance;
+                if (stack != null)
+                {
+                    var list = HarmonyLib.AccessTools.Field(stack.GetType(), "_overlays")?.GetValue(stack) as System.Collections.IList;
+                    var backstop = HarmonyLib.AccessTools.Field(stack.GetType(), "_backstop")?.GetValue(stack) as Control;
+                    sb.Append($"overlays={list?.Count}: ");
+                    if (list != null) foreach (var o in list) sb.Append(o?.GetType().Name + (o is GodotObject g && !GodotObject.IsInstanceValid(g) ? "(freed)" : "") + " ");
+                    sb.Append($"| backstop filter={backstop?.MouseFilter} vis={backstop?.Visible} a={backstop?.Modulate.A}");
+                }
+                var at = TextureToWindow(new Vector2(cmd["x"]?.GetValue<float?>() ?? 960f, cmd["y"]?.GetValue<float?>() ?? 540f));
+                Input.ParseInputEvent(new InputEventMouseMotion { Position = at, GlobalPosition = at });
+                var hovered = GetViewport().GuiGetHoveredControl();
+                sb.Append($" | hovered={hovered?.GetType().Name} {hovered?.GetPath()}");
+                WriteResult(true, sb.ToString());
+                break;
+            }
             case "ls":
             {
                 // List a res:// (pck) directory, one level; used to find the game's own UI art.

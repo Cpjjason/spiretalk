@@ -11,7 +11,7 @@ namespace SpireTalk;
 public partial class MainFile : Node
 {
     public const string ModId = "SpireTalk";
-    public const string Version = "0.8.2";
+    public const string Version = "0.8.3";
 
     public static MegaCrit.Sts2.Core.Logging.Logger Logger { get; } = new(ModId, MegaCrit.Sts2.Core.Logging.LogType.Generic);
 
